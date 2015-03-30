@@ -1,11 +1,12 @@
 
 /**
  * GAMEPANEL CLASS
- * Handles game loop updating/rendering, displays game within panel.
+ * Handles game loop updating/rendering within game JPanel.
  */
 
 package ui;
 
+import logic.Camera;
 import logic.World;
 
 import java.awt.Color;
@@ -17,42 +18,40 @@ import javax.swing.JPanel;
 
 
 public class GamePanel extends JPanel implements Runnable {
-    private int smoothTicks;
-    private int framerate;
-    private boolean running = false;
-    private boolean threadActive;
+    final int FPS = 30;
+    private boolean running;
 
     private World world;
+    private Camera camera;
     private Thread thread;
 
 
-    public GamePanel(int framerate) {
-        this.smoothTicks = 2;
-        this.framerate = framerate;
-        setPreferredSize(new Dimension(720, 480));
-        this.world = new World(720, 480, 8);
+    public GamePanel() {
+        setPreferredSize(new Dimension(800, 600));
+        this.world = new World(2000, 2000, 6);
+        this.camera = new Camera(world.getTiles(), world.getGrid(), 6, 800, 600);
     }
 
     @Override
     public void run() {
         long start, end, sleepTime;
+        int smoothTicks = 6;
 
-        while (threadActive) {
+        while (running) {
             start = System.currentTimeMillis();
 
             if (smoothTicks > 0) {
                 world.update();
                 smoothTicks--;
-            } 
-
-            if (running) {
-                
+            } else {
+                camera.playerMove();
             }
 
             repaint();
+
             end = System.currentTimeMillis();
             // Sleep to match FPS limit
-            sleepTime = (1000 / framerate) - (end - start);
+            sleepTime = (1000 / FPS) - (end - start);
             if (sleepTime > 0) {
                 try {
                     Thread.sleep(sleepTime); 
@@ -72,30 +71,21 @@ public class GamePanel extends JPanel implements Runnable {
         gfx.setColor(new Color(0x2c3e50));
         gfx.fillRect(0, 0, getWidth(), getHeight());
         // Render next frame
-        world.render(gfx);
+        camera.render(gfx);
     }
 
     public synchronized void start() {
         this.thread = new Thread(this, "Display");
-        this.threadActive = true;
+        this.running = true;
         thread.start(); // call run()
     }
 
     public synchronized void stop() {
         running = false;
-        threadActive = false;
         try {
             thread.join();
         } catch (InterruptedException e) {
             thread.interrupt();
-        }
-    }
-
-    public void pause() {
-        if (running) {
-            running = false;
-        } else {
-            running = true;
         }
     }
 }

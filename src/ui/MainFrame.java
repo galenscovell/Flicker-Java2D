@@ -11,7 +11,6 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 
-import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 
 
@@ -29,7 +28,6 @@ public class MainFrame implements Runnable {
     public void run() {
         this.frame = new JFrame("Flicker");
         frame.setPreferredSize(new Dimension(windowX, windowY));
-        frame.getContentPane().setBackground(new Color(0x2c3e50));
         frame.setResizable(false);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -41,9 +39,7 @@ public class MainFrame implements Runnable {
     }
 
     private void createComponents(Container container) {
-        container.setLayout(new FlowLayout());
-        GamePanel gamePanel = new GamePanel(30);
-        gamePanel.setBorder(BorderFactory.createLineBorder(Color.white));
+        GamePanel gamePanel = new GamePanel();
         container.add(gamePanel);
         gamePanel.start();
     }

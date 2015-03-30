@@ -2,7 +2,7 @@
 /**
  * TILE CLASS
  * Keeps track of tile position and state.
- * State can be one of Wall(0), Floor(1) or Explored(2)
+ * State can be one of Wall(0), Floor(1)
  */
 
 package logic;
