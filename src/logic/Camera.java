@@ -11,7 +11,9 @@ import creatures.Player;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 
 public class Camera {
@@ -22,6 +24,8 @@ public class Camera {
 
     private int viewportWidth;
     private int viewportHeight;
+    private int centerX;
+    private int centerY;
 
 
     public Camera(List<Tile> tiles, int[][] grid, int tileSize, int x, int y) {
@@ -30,12 +34,16 @@ public class Camera {
         this.tileSize = tileSize;
         this.viewportWidth = x;
         this.viewportHeight = y;
-        this.player = new Player(100, 200);
+        this.player = new Player(1000, 1800);
+    }
+
+    private void findCameraCenter() {
+        centerX = player.getX() - (viewportWidth / 2);
+        centerY = player.getY() - (viewportHeight / 2);
     }
 
     public void render(Graphics2D gfx) {
-        int centerX = player.getX() - (viewportWidth / 2);
-        int centerY = player.getY() - (viewportHeight / 2);
+        findCameraCenter();
         int maxX = centerX + viewportWidth;
         int maxY = centerY + viewportHeight;
         int minX = centerX - (viewportWidth / 2);
@@ -72,7 +80,40 @@ public class Camera {
     }
 
     public void playerMove() {
-        player.move(2, 2);
-        System.out.println(player);
+        int playerX = (player.getX() / tileSize);
+        int playerY = (player.getY() / tileSize);
+
+        List<Point> options = new ArrayList<Point>();
+
+        for (int dx = -1; dx <= 1; dx += 2) {
+            Tile nextLocation = findTile(playerX + dx, playerY);
+            if (nextLocation != null && nextLocation.isFloor(grid)) {
+                options.add(new Point(dx * tileSize, 0));
+            }
+        }
+
+        for (int dy = -1; dy <= 1; dy += 2) {
+            Tile nextLocation = findTile(playerX, playerY + dy);
+            if (nextLocation != null && nextLocation.isFloor(grid)) {
+                options.add(new Point(0, dy * tileSize));
+            }
+        }
+
+        if (options.size() > 0) {
+            Random random = new Random();
+            int choice = random.nextInt(options.size());
+            Point chosenPoint = options.get(choice);
+            player.move(chosenPoint.getX(), chosenPoint.getY());
+        }
+
+    }
+
+    private Tile findTile(int x, int y) {
+        for (Tile tile : tiles) {
+            if (tile.getX() == x && tile.getY() == y) {
+                return tile;
+            }
+        }
+        return null;
     }
 }

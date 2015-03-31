@@ -18,7 +18,7 @@ import javax.swing.JPanel;
 
 
 public class GamePanel extends JPanel implements Runnable {
-    final int FPS = 30;
+    final int FPS = 20;
     private boolean running;
 
     private World world;
@@ -28,14 +28,14 @@ public class GamePanel extends JPanel implements Runnable {
 
     public GamePanel() {
         setPreferredSize(new Dimension(800, 600));
-        this.world = new World(2000, 2000, 6);
-        this.camera = new Camera(world.getTiles(), world.getGrid(), 6, 800, 600);
+        this.world = new World(2000, 2000, 10);
+        this.camera = new Camera(world.getTiles(), world.getGrid(), 10, 800, 600);
     }
 
     @Override
     public void run() {
         long start, end, sleepTime;
-        int smoothTicks = 6;
+        int smoothTicks = 4;
 
         while (running) {
             start = System.currentTimeMillis();
