@@ -24,7 +24,6 @@ public class MainFrame implements Runnable {
         this.windowY = y;
     }
 
-    @Override
     public void run() {
         this.frame = new JFrame("Flicker");
         frame.setPreferredSize(new Dimension(windowX, windowY));

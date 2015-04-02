@@ -7,6 +7,7 @@
 package ui;
 
 import logic.Camera;
+import logic.InputHandler;
 import logic.World;
 
 import java.awt.Color;
@@ -17,8 +18,9 @@ import java.awt.Graphics2D;
 import javax.swing.JPanel;
 
 
+@SuppressWarnings("serial")
 public class GamePanel extends JPanel implements Runnable {
-    final int FPS = 20;
+    final int FPS = 30;
     private boolean running;
 
     private World world;
@@ -30,9 +32,11 @@ public class GamePanel extends JPanel implements Runnable {
         setPreferredSize(new Dimension(800, 600));
         this.world = new World(2000, 2000, 10);
         this.camera = new Camera(world.getTiles(), world.getGrid(), 10, 800, 600);
+        InputHandler listener = new InputHandler();
+        addKeyListener(listener);
+        setFocusable(true);
     }
 
-    @Override
     public void run() {
         long start, end, sleepTime;
         int smoothTicks = 4;
@@ -43,9 +47,7 @@ public class GamePanel extends JPanel implements Runnable {
             if (smoothTicks > 0) {
                 world.update();
                 smoothTicks--;
-            } else {
-                camera.playerMove();
-            }
+            } 
 
             repaint();
 

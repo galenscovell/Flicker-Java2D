@@ -79,33 +79,26 @@ public class Camera {
         gfx.translate(centerX, centerY);
     }
 
-    public void playerMove() {
+    public void playerMove(String direction) {
         int playerX = (player.getX() / tileSize);
         int playerY = (player.getY() / tileSize);
+        int dx = 0;
+        int dy = 0;
 
-        List<Point> options = new ArrayList<Point>();
-
-        for (int dx = -1; dx <= 1; dx += 2) {
-            Tile nextLocation = findTile(playerX + dx, playerY);
-            if (nextLocation != null && nextLocation.isFloor(grid)) {
-                options.add(new Point(dx * tileSize, 0));
-            }
+        if (direction.equals("up")) {
+            dy--;
+        } else if (direction.equals("down")) {
+            dy++;
+        } else if (direction.equals("left")) {
+            dx--;
+        } else if (direction.equals("right")) {
+            dx++;
         }
 
-        for (int dy = -1; dy <= 1; dy += 2) {
-            Tile nextLocation = findTile(playerX, playerY + dy);
-            if (nextLocation != null && nextLocation.isFloor(grid)) {
-                options.add(new Point(0, dy * tileSize));
-            }
+        Tile nextLocation = findTile(playerX + dx, playerY + dy);
+        if (nextLocation != null && nextLocation.isFloor(grid)) {
+            player.move(nextLocation.getX(), nextLocation.getY());
         }
-
-        if (options.size() > 0) {
-            Random random = new Random();
-            int choice = random.nextInt(options.size());
-            Point chosenPoint = options.get(choice);
-            player.move(chosenPoint.getX(), chosenPoint.getY());
-        }
-
     }
 
     private Tile findTile(int x, int y) {
