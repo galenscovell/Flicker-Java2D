@@ -21,14 +21,16 @@ import javax.swing.Action;
 import javax.swing.AbstractAction;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
-import javax.swing.Timer;
 
 
 @SuppressWarnings("serial")
 public class GamePanel extends JPanel implements Runnable {
     final int FPS = 30;
     private boolean running;
-    private String moveFlag = "";
+    private boolean upPressed = false;
+    private boolean downPressed = false;
+    private boolean leftPressed = false;
+    private boolean rightPressed = false;
 
     private World world;
     private Camera camera;
@@ -45,81 +47,97 @@ public class GamePanel extends JPanel implements Runnable {
         getInputMap().put(KeyStroke.getKeyStroke("DOWN"), "moveDown");
         getInputMap().put(KeyStroke.getKeyStroke("LEFT"), "moveLeft");
         getInputMap().put(KeyStroke.getKeyStroke("RIGHT"), "moveRight");
-        getInputMap().put(KeyStroke.getKeyStroke("released UP"), "releaseKey");
-        getInputMap().put(KeyStroke.getKeyStroke("released DOWN"), "releaseKey");
-        getInputMap().put(KeyStroke.getKeyStroke("released LEFT"), "releaseKey");
-        getInputMap().put(KeyStroke.getKeyStroke("released RIGHT"), "releaseKey");
+
+        getInputMap().put(KeyStroke.getKeyStroke("released UP"), "releaseUp");
+        getInputMap().put(KeyStroke.getKeyStroke("released DOWN"), "releaseDown");
+        getInputMap().put(KeyStroke.getKeyStroke("released LEFT"), "releaseLeft");
+        getInputMap().put(KeyStroke.getKeyStroke("released RIGHT"), "releaseRight");
 
         getActionMap().put("moveUp", moveUp);
         getActionMap().put("moveDown", moveDown);
         getActionMap().put("moveLeft", moveLeft);
         getActionMap().put("moveRight", moveRight);
-        getActionMap().put("releaseKey", releaseKey);
+
+        getActionMap().put("releaseUp", releaseUp);
+        getActionMap().put("releaseDown", releaseDown);
+        getActionMap().put("releaseLeft", releaseLeft);
+        getActionMap().put("releaseRight", releaseRight);
     }
 
     Action moveUp = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
-            if (moveFlag.equals("left")) {
-                moveFlag = "upleft";
-            } else if (moveFlag.equals("right")) {
-                moveFlag = "upright";
-            } else {
-                moveFlag = "up";
-            }
+            upPressed = true;
         }
     };
 
     Action moveDown = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
-            if (moveFlag.equals("left")) {
-                moveFlag = "downleft";
-            } else if (moveFlag.equals("right")) {
-                moveFlag = "downright";
-            } else {
-                moveFlag = "down";
-            }
+            downPressed = true;
         }
     };
 
     Action moveLeft = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
-            if (moveFlag.equals("up")) {
-                moveFlag = "upleft";
-            } else if (moveFlag.equals("down")) {
-                moveFlag = "downleft";
-            } else {
-                moveFlag = "left";
-            }
+            leftPressed = true;
         }
     };
 
     Action moveRight = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
-            if (moveFlag.equals("up")) {
-                moveFlag = "upright";
-            } else if (moveFlag.equals("down")) {
-                moveFlag = "downright";
-            } else {
-                moveFlag = "right";
-            }
+            rightPressed = true;
         }
     };
 
-    Action releaseKey = new AbstractAction() {
+    Action releaseUp = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
-            moveFlag = "";
+            upPressed = false;
         }
     };
+
+    Action releaseDown = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+            downPressed = false;
+        }
+    };
+
+    Action releaseLeft = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+            leftPressed = false;
+        }
+    };
+
+    Action releaseRight = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+            rightPressed = false;
+        }
+    };
+
+    private int[] checkInput() {
+        int[] directions = new int[2];
+        if (upPressed) {
+            directions[1]--;
+        }
+        if (downPressed) {
+            directions[1]++;
+        }
+        if (leftPressed) {
+            directions[0]--;
+        }
+        if (rightPressed) {
+            directions[0]++;
+        }
+        return directions;
+    }
 
     public void run() {
         long start, end, sleepTime;
+        int[] inputDirections;
 
         while (running) {
             start = System.currentTimeMillis();
 
-            if (!moveFlag.isEmpty()) {
-                camera.playerMove(moveFlag);
-            }
+            inputDirections = checkInput();
+            camera.playerMove(inputDirections[0], inputDirections[1]);
 
             repaint();
             end = System.currentTimeMillis();

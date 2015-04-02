@@ -79,33 +79,9 @@ public class Camera {
         gfx.translate(centerX, centerY);
     }
 
-    public void playerMove(String direction) {
+    public void playerMove(int dx, int dy) {
         int playerX = (player.getX() / tileSize);
         int playerY = (player.getY() / tileSize);
-        int dx = 0;
-        int dy = 0;
-
-        if (direction.equals("up")) {
-            dy--;
-        } else if (direction.equals("down")) {
-            dy++;
-        } else if (direction.equals("left")) {
-            dx--;
-        } else if (direction.equals("right")) {
-            dx++;
-        } else if (direction.equals("upright")) {
-            dx++;
-            dy--;
-        } else if (direction.equals("upleft")) {
-            dx--;
-            dy--;
-        } else if (direction.equals("downright")) {
-            dx++;
-            dy++;
-        } else if (direction.equals("downleft")) {
-            dx--;
-            dy++;
-        }
 
         Tile nextLocation = findTile(playerX + dx, playerY + dy);
         if (nextLocation != null && nextLocation.isFloor(grid)) {
