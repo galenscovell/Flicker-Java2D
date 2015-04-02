@@ -1,7 +1,7 @@
 
 /**
  * GAMEPANEL CLASS
- * Handles game loop updating/rendering within game JPanel.
+ * Handles game loop updating/rendering within game JPanel as well as player input.
  */
 
 package ui;
@@ -14,16 +14,21 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
+import javax.swing.Action;
+import javax.swing.AbstractAction;
 import javax.swing.JPanel;
+import javax.swing.KeyStroke;
+import javax.swing.Timer;
 
 
 @SuppressWarnings("serial")
 public class GamePanel extends JPanel implements Runnable {
     final int FPS = 30;
     private boolean running;
+    private String moveFlag = "";
 
     private World world;
     private Camera camera;
@@ -35,42 +40,88 @@ public class GamePanel extends JPanel implements Runnable {
         this.world = new World(2000, 2000, 10);
         this.camera = new Camera(world.getTiles(), world.getGrid(), 10, 800, 600);
 
-        // Setup input handler as anonymous class
-        KeyListener listener = new KeyListener() {
-            public void keyTyped(KeyEvent e) { }
-            public void keyReleased(KeyEvent e) { }
-            public void keyPressed(KeyEvent e) {
-                int command = e.getKeyCode();
-                if (command == 38) {
-                    camera.playerMove("up");
-                } else if (command == 40) {
-                    camera.playerMove("down");
-                } else if (command == 37) {
-                    camera.playerMove("left");
-                } else if (command == 39) {
-                    camera.playerMove("right");
-                }
-            }
-        };
+        // Setup player input bindings
+        getInputMap().put(KeyStroke.getKeyStroke("UP"), "moveUp");
+        getInputMap().put(KeyStroke.getKeyStroke("DOWN"), "moveDown");
+        getInputMap().put(KeyStroke.getKeyStroke("LEFT"), "moveLeft");
+        getInputMap().put(KeyStroke.getKeyStroke("RIGHT"), "moveRight");
+        getInputMap().put(KeyStroke.getKeyStroke("released UP"), "releaseKey");
+        getInputMap().put(KeyStroke.getKeyStroke("released DOWN"), "releaseKey");
+        getInputMap().put(KeyStroke.getKeyStroke("released LEFT"), "releaseKey");
+        getInputMap().put(KeyStroke.getKeyStroke("released RIGHT"), "releaseKey");
 
-        addKeyListener(listener);
-        setFocusable(true);
+        getActionMap().put("moveUp", moveUp);
+        getActionMap().put("moveDown", moveDown);
+        getActionMap().put("moveLeft", moveLeft);
+        getActionMap().put("moveRight", moveRight);
+        getActionMap().put("releaseKey", releaseKey);
     }
+
+    Action moveUp = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+            if (moveFlag.equals("left")) {
+                moveFlag = "upleft";
+            } else if (moveFlag.equals("right")) {
+                moveFlag = "upright";
+            } else {
+                moveFlag = "up";
+            }
+        }
+    };
+
+    Action moveDown = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+            if (moveFlag.equals("left")) {
+                moveFlag = "downleft";
+            } else if (moveFlag.equals("right")) {
+                moveFlag = "downright";
+            } else {
+                moveFlag = "down";
+            }
+        }
+    };
+
+    Action moveLeft = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+            if (moveFlag.equals("up")) {
+                moveFlag = "upleft";
+            } else if (moveFlag.equals("down")) {
+                moveFlag = "downleft";
+            } else {
+                moveFlag = "left";
+            }
+        }
+    };
+
+    Action moveRight = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+            if (moveFlag.equals("up")) {
+                moveFlag = "upright";
+            } else if (moveFlag.equals("down")) {
+                moveFlag = "downright";
+            } else {
+                moveFlag = "right";
+            }
+        }
+    };
+
+    Action releaseKey = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+            moveFlag = "";
+        }
+    };
 
     public void run() {
         long start, end, sleepTime;
-        int smoothTicks = 4;
 
         while (running) {
             start = System.currentTimeMillis();
 
-            if (smoothTicks > 0) {
-                world.update();
-                smoothTicks--;
+            if (!moveFlag.isEmpty()) {
+                camera.playerMove(moveFlag);
             }
 
             repaint();
-
             end = System.currentTimeMillis();
             // Sleep to match FPS limit
             sleepTime = (1000 / FPS) - (end - start);
@@ -98,6 +149,13 @@ public class GamePanel extends JPanel implements Runnable {
 
     public synchronized void start() {
         this.thread = new Thread(this, "Display");
+
+        int smoothTicks = 4;
+        while (smoothTicks > 0) {
+            world.update();
+            smoothTicks--;
+        }
+
         this.running = true;
         thread.start(); // call run()
     }

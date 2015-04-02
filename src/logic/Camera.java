@@ -93,6 +93,18 @@ public class Camera {
             dx--;
         } else if (direction.equals("right")) {
             dx++;
+        } else if (direction.equals("upright")) {
+            dx++;
+            dy--;
+        } else if (direction.equals("upleft")) {
+            dx--;
+            dy--;
+        } else if (direction.equals("downright")) {
+            dx++;
+            dy++;
+        } else if (direction.equals("downleft")) {
+            dx--;
+            dy++;
         }
 
         Tile nextLocation = findTile(playerX + dx, playerY + dy);
