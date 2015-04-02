@@ -7,13 +7,15 @@
 package ui;
 
 import logic.Camera;
-import logic.InputHandler;
 import logic.World;
 
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 import javax.swing.JPanel;
 
@@ -32,7 +34,25 @@ public class GamePanel extends JPanel implements Runnable {
         setPreferredSize(new Dimension(800, 600));
         this.world = new World(2000, 2000, 10);
         this.camera = new Camera(world.getTiles(), world.getGrid(), 10, 800, 600);
-        InputHandler listener = new InputHandler();
+
+        // Setup input handler as anonymous class
+        KeyListener listener = new KeyListener() {
+            public void keyTyped(KeyEvent e) { }
+            public void keyReleased(KeyEvent e) { }
+            public void keyPressed(KeyEvent e) {
+                int command = e.getKeyCode();
+                if (command == 38) {
+                    camera.playerMove("up");
+                } else if (command == 40) {
+                    camera.playerMove("down");
+                } else if (command == 37) {
+                    camera.playerMove("left");
+                } else if (command == 39) {
+                    camera.playerMove("right");
+                }
+            }
+        };
+
         addKeyListener(listener);
         setFocusable(true);
     }
@@ -47,7 +67,7 @@ public class GamePanel extends JPanel implements Runnable {
             if (smoothTicks > 0) {
                 world.update();
                 smoothTicks--;
-            } 
+            }
 
             repaint();
 

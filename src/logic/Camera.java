@@ -97,7 +97,7 @@ public class Camera {
 
         Tile nextLocation = findTile(playerX + dx, playerY + dy);
         if (nextLocation != null && nextLocation.isFloor(grid)) {
-            player.move(nextLocation.getX(), nextLocation.getY());
+            player.move(dx * tileSize, dy * tileSize);
         }
     }
 
