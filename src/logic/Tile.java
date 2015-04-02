@@ -9,18 +9,17 @@ package logic;
 
 
 public class Tile {
-    private int gridX;
-    private int gridY;
+    private int x;
+    private int y;
     private int floorNeighbors;
 
     public Tile(int x, int y) {
-        this.gridX = x;
-        this.gridY = y;
-        this.floorNeighbors = 0;
+        this.x = x;
+        this.y = y;
     }
 
     public boolean isWall(int[][] grid) {
-        if (grid[gridX][gridY] == 0) {
+        if (grid[x][y] == 0) {
             return true;
         } else {
             return false;
@@ -28,7 +27,7 @@ public class Tile {
     }
 
     public boolean isFloor(int[][] grid) {
-        if (grid[gridX][gridY] == 1) {
+        if (grid[x][y] == 1) {
             return true;
         } else {
             return false;
@@ -44,10 +43,10 @@ public class Tile {
     }
 
     public int getX() {
-        return gridX;
+        return x;
     }
 
     public int getY() {
-        return gridY;
+        return y;
     }
 }

@@ -6,10 +6,8 @@
 
 package ui;
 
-import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 
 import javax.swing.JFrame;
 
@@ -29,9 +27,7 @@ public class MainFrame implements Runnable {
         frame.setPreferredSize(new Dimension(windowX, windowY));
         frame.setResizable(false);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
         createComponents(frame);
-
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
