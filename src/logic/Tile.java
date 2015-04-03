@@ -7,39 +7,66 @@
 
 package logic;
 
+import logic.Point;
+
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class Tile {
     private int x;
     private int y;
+    private int state;
     private int floorNeighbors;
+    private List<Point> neighbors;
 
-    public Tile(int x, int y) {
+    public Tile(int x, int y, int state, int columns, int rows) {
         this.x = x;
         this.y = y;
+        this.state = state;
+        this.neighbors = findNeighbors(columns, rows);
     }
 
-    public boolean isWall(int[][] grid) {
-        if (grid[x][y] == 0) {
+    public boolean isWall() {
+        if (state == 0) {
             return true;
         } else {
             return false;
         }
     }
 
-    public boolean isFloor(int[][] grid) {
-        if (grid[x][y] == 1) {
+    public boolean isFloor() {
+        if (state == 1) {
             return true;
         } else {
             return false;
         }
     }
 
-    public void updateNeighbors(int value) {
+    public boolean isOutOfBounds(int i, int j, int columns, int rows) {
+        if (i < 0 || j < 0){
+            return true;
+        } else if (i >= columns || j >= rows){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public void setNeighbors(int value) {
         floorNeighbors = value;
     }
 
-    public int getNeighbors() {
+    public List<Point> getNeighbors() {
+        return neighbors;
+    }
+
+    public int getFloorNeighbors() {
         return floorNeighbors;
+    }
+
+    public void setState(int value) {
+        state = value;
     }
 
     public int getX() {
@@ -48,5 +75,23 @@ public class Tile {
 
     public int getY() {
         return y;
+    }
+
+    private List<Point> findNeighbors(int columns, int rows) {
+        List<Point> points = new ArrayList<Point>();
+        int sumX, sumY;
+
+        for (int i = -1; i <= 1; i++) {
+            for (int j = -1; j <= 1; j++) {
+                sumX = x + i;
+                sumY = y + j;
+
+                if ((sumX == x && sumY == y || (isOutOfBounds(sumX, sumY, columns, rows)))) {
+                    continue;
+                }
+                points.add(new Point(sumX, sumY));
+            }
+        }
+        return points;
     }
 }

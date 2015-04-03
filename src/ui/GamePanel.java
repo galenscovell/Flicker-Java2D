@@ -39,7 +39,7 @@ public class GamePanel extends JPanel implements Runnable {
     public GamePanel() {
         setPreferredSize(new Dimension(800, 600));
         this.world = new World(2000, 2000, 10);
-        this.camera = new Camera(world.getTiles(), world.getGrid(), 10, 800, 600);
+        this.camera = new Camera(world.getTiles(), 10, 800, 600);
 
         // Setup player input bindings
         getInputMap().put(KeyStroke.getKeyStroke("UP"), "moveUp");

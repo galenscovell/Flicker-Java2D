@@ -12,13 +12,11 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 
 import java.util.List;
-import java.util.Random;
 
 
 public class Camera {
     private int tileSize;
     private List<Tile> tiles;
-    private int[][] grid;
     private Player player;
 
     private int viewportWidth;
@@ -27,18 +25,12 @@ public class Camera {
     private int centerY;
 
 
-    public Camera(List<Tile> tiles, int[][] grid, int tileSize, int x, int y) {
+    public Camera(List<Tile> tiles, int tileSize, int x, int y) {
         this.tiles = tiles;
-        this.grid = grid;
         this.tileSize = tileSize;
         this.viewportWidth = x;
         this.viewportHeight = y;
         this.player = new Player(1000, 1800);
-    }
-
-    private void findCameraCenter() {
-        centerX = player.getX() - (viewportWidth / 2);
-        centerY = player.getY() - (viewportHeight / 2);
     }
 
     public void render(Graphics2D gfx) {
@@ -64,9 +56,9 @@ public class Camera {
                 continue;
             }
 
-            if (tile.isFloor(grid)) {
+            if (tile.isFloor()) {
                 gfx.setColor(floor);
-            } else if (tile.isWall(grid)) {
+            } else if (tile.isWall()) {
                 gfx.setColor(wall);
             }
             gfx.fillRect(tileX, tileY, tileSize, tileSize);
@@ -83,7 +75,7 @@ public class Camera {
         int playerY = (player.getY() / tileSize);
 
         Tile nextLocation = findTile(playerX + dx, playerY + dy);
-        if (nextLocation != null && nextLocation.isFloor(grid)) {
+        if (nextLocation != null && nextLocation.isFloor()) {
             player.move(dx * tileSize, dy * tileSize);
         }
     }
@@ -95,5 +87,10 @@ public class Camera {
             }
         }
         return null;
+    }
+
+    private void findCameraCenter() {
+        centerX = player.getX() - (viewportWidth / 2);
+        centerY = player.getY() - (viewportHeight / 2);
     }
 }

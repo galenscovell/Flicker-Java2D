@@ -13,70 +13,44 @@ public class World {
     private int tileSize;
     private int columns;
     private int rows;
-
     private Builder builder;
-    public int[][] grid;
     private List<Tile> tiles;
-    
 
     public World(int width, int height, int tileSize) {
         this.tileSize = tileSize;
         this.columns = width / tileSize;
         this.rows = height / tileSize;
-
         this.builder = new CaveBuilder(columns, rows);
+
         builder.build();
 
-        this.grid = builder.getGrid();
         this.tiles = builder.getTiles();
     }
 
-    public int checkAdjacent(Tile tile) {
-        int sumX, sumY;
-        int floorNeighbors = 0;
-                
-        for (int x = -1; x <= 1; x++) {
-            for (int y = -1; y <= 1; y++) {
-                sumX = tile.getX() + x;
-                sumY = tile.getY() + y;
-                if (sumX == tile.getX() && sumY == tile.getY()) {
-                    continue;
-                }
-                if (isOutOfBounds(sumX, sumY)) {
-                    continue;
-                }
-                if (grid[sumX][sumY] == 1) {
+    public void checkAdjacent() {
+        Tile[][] grid = builder.getGrid();
+
+        for (Tile tile : tiles) {
+            int floorNeighbors = 0;
+            List<Point> neighborPoints = tile.getNeighbors();
+            for (Point point : neighborPoints) {
+                if (grid[point.getX()][point.getY()].isFloor()) {
                     floorNeighbors++;
                 }
             }
-        }
-        return floorNeighbors;
-    }
-
-    public boolean isOutOfBounds(int x, int y) {
-        if (x < 0 || y < 0){
-            return true;
-        } else if (x >= columns || y >= rows){
-            return true;
-        } else {
-            return false;
+            tile.setNeighbors(floorNeighbors);
         }
     }
 
     public void update() {
-        for (Tile tile : tiles) {
-            tile.updateNeighbors(checkAdjacent(tile));
-        }
+        checkAdjacent();
+
         for (Tile tile : tiles) {
             builder.smooth(tile);
         }
     }
 
-    public int[][] getGrid() {
-        return builder.getGrid();
-    }
-
     public List<Tile> getTiles() {
-        return builder.getTiles();
+        return tiles;
     }
 }

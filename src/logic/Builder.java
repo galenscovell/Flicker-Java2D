@@ -1,7 +1,7 @@
 
 /**
  * BUILDER INTERFACE
- * All builders utilize build(), smooth(), getGrid() and getTiles()
+ * All builders utilize build(), smooth(), getTiles() and getGrid()
  */
 
 package logic;
@@ -12,6 +12,6 @@ import java.util.List;
 public interface Builder {
     public void build();
     public void smooth(Tile tile);
-    public int[][] getGrid();
     public List<Tile> getTiles();
+    public Tile[][] getGrid();
 }
