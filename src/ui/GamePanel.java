@@ -36,10 +36,10 @@ public class GamePanel extends JPanel implements Runnable {
     private Thread thread;
 
 
-    public GamePanel() {
-        setPreferredSize(new Dimension(800, 600));
-        this.world = new World(2000, 2000, 10);
-        this.camera = new Camera(world.getTiles(), 10, 800, 600);
+    public GamePanel(int panelWidth, int panelHeight, int tileSize) {
+        setPreferredSize(new Dimension(panelWidth, panelHeight));
+        this.world = new World(1000, 1000, tileSize);
+        this.camera = new Camera(world.getTiles(), tileSize, panelWidth, panelHeight);
 
         // Setup player input bindings
         getInputMap().put(KeyStroke.getKeyStroke("UP"), "moveUp");

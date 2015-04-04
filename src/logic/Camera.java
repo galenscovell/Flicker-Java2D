@@ -34,7 +34,9 @@ public class Camera {
 
     public void placePlayer() {
         // Ensure player start position is on floor and near bottom-center
-        for (int i = 37500; i < 40000; i++) {
+        int numberOfTiles = tiles.size();
+        int lastFourthTiles = (int) Math.round(numberOfTiles * 0.8);
+        for (int i = lastFourthTiles; i < numberOfTiles; i++) {
             Tile tile = tiles.get(i);
             if (tile.isFloor()) {
                 this.player = new Player(tile.getX() * tileSize, tile.getY() * tileSize);

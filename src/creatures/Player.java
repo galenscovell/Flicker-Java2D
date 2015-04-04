@@ -16,7 +16,7 @@ public class Player {
     private int y;
 
     public Player(int x, int y) {
-        this.size = 10;
+        this.size = 16;
         this.x = x;
         this.y = y;
     }

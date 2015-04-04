@@ -34,7 +34,8 @@ public class MainFrame implements Runnable {
     }
 
     private void createComponents(Container container) {
-        GamePanel gamePanel = new GamePanel();
+        // New GamePanel: width, height, tileSize
+        GamePanel gamePanel = new GamePanel(800, 600, 16);
         container.add(gamePanel);
         gamePanel.start();
     }
