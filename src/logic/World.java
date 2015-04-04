@@ -23,7 +23,6 @@ public class World {
         this.builder = new CaveBuilder(columns, rows);
 
         builder.build();
-
         this.tiles = builder.getTiles();
     }
 

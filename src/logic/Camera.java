@@ -21,8 +21,8 @@ public class Camera {
 
     private int viewportWidth;
     private int viewportHeight;
-    private int centerX;
-    private int centerY;
+    private int camUpperLeftX;
+    private int camUpperLeftY;
 
 
     public Camera(List<Tile> tiles, int tileSize, int x, int y) {
@@ -30,29 +30,37 @@ public class Camera {
         this.tileSize = tileSize;
         this.viewportWidth = x;
         this.viewportHeight = y;
-        this.player = new Player(1000, 1800);
+    }
+
+    public void placePlayer() {
+        // Ensure player start position is on floor and near bottom-center
+        for (int i = 37500; i < 40000; i++) {
+            Tile tile = tiles.get(i);
+            if (tile.isFloor()) {
+                this.player = new Player(tile.getX() * tileSize, tile.getY() * tileSize);
+                return;
+            }
+        }
     }
 
     public void render(Graphics2D gfx) {
-        findCameraCenter();
-        int maxX = centerX + viewportWidth;
-        int maxY = centerY + viewportHeight;
-        int minX = centerX - (viewportWidth / 2);
-        int minY = centerY - (viewportHeight / 2);
+        findCameraUpperLeft();
+        int maxX = camUpperLeftX + viewportWidth;
+        int maxY = camUpperLeftY + viewportHeight;
 
         int tileX, tileY;
         Color floor = new Color(0x34495e);
         Color wall = new Color(0x2c3e50);
 
-        // Translate graphics origin as player position
-        gfx.translate(-centerX, -centerY);
+        // Translate graphics origin to camera's upper left
+        gfx.translate(-camUpperLeftX, -camUpperLeftY);
 
         for (Tile tile : tiles) {
             tileX = tile.getX() * tileSize;
             tileY = tile.getY() * tileSize;
 
             // Ignore tiles outside of viewport
-            if (tileX < minX || tileX > maxX || tileY < minY || tileY > maxY) {
+            if (tileX < camUpperLeftX || tileX > maxX || tileY < camUpperLeftY || tileY > maxY) {
                 continue;
             }
 
@@ -67,7 +75,7 @@ public class Camera {
         player.draw(gfx);
 
         // Reset graphics origin
-        gfx.translate(centerX, centerY);
+        gfx.translate(camUpperLeftX, camUpperLeftY);
     }
 
     public void playerMove(int dx, int dy) {
@@ -89,8 +97,9 @@ public class Camera {
         return null;
     }
 
-    private void findCameraCenter() {
-        centerX = player.getX() - (viewportWidth / 2);
-        centerY = player.getY() - (viewportHeight / 2);
+    private void findCameraUpperLeft() {
+        // These values are in pixels, not tile units
+        camUpperLeftX = player.getX() - (viewportWidth / 2);
+        camUpperLeftY = player.getY() - (viewportHeight / 2);
     }
 }
