@@ -10,7 +10,7 @@ import graphics.Sprite;
 import graphics.SpriteSheet;
 
 import java.awt.Color;
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 
 
 public class Player {
@@ -18,14 +18,12 @@ public class Player {
     private int x;
     private int y;
     private Sprite sprite;
-    private SpriteSheet sheet;
 
     public Player(int x, int y) {
-        this.size = 16;
+        this.size = 32;
         this.x = x;
         this.y = y;
-        this.sheet = new SpriteSheet("/res/textures/charsheet.png", 256);
-        this.sprite = new Sprite(16, 0, 0, sheet);
+        this.sprite = new Sprite(SpriteSheet.charsheet, 0);
     }
 
     public void move(int dx, int dy) {
@@ -45,8 +43,8 @@ public class Player {
         return y;
     }
 
-    public void draw(Graphics gfx) {
-        gfx.drawImage(sprite.getImageFromPixels(), x, y, null);
+    public void draw(Graphics2D gfx) {
+        gfx.drawImage(sprite.getSprite(), x, y, 32, 32, null);
     }
 
     public String toString() {

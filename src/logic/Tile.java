@@ -1,11 +1,17 @@
 
 /**
  * TILE CLASS
- * Keeps track of tile position and state.
+ * Keeps track of tile position and state and tile drawing.
  * State can be one of Wall(0), Floor(1)
  */
 
 package logic;
+
+import graphics.Sprite;
+import graphics.SpriteSheet;
+
+import java.awt.Color;
+import java.awt.Graphics2D;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +23,7 @@ public class Tile {
     private int state;
     private int floorNeighbors;
     private List<Point> neighboringTiles;
+    private Sprite sprite;
 
     public Tile(int x, int y, int state, int columns, int rows) {
         this.x = x;
@@ -63,6 +70,18 @@ public class Tile {
 
     public List<Point> getNeighbors() {
         return neighboringTiles;
+    }
+
+    public void draw(Graphics2D gfx, int tileSize) {
+        if (this.isFloor()) {
+            this.sprite = new Sprite(SpriteSheet.tilesheet, 2);
+            gfx.setColor(new Color(0x34495e));
+        } else if (this.isWall()) {
+            this.sprite = new Sprite(SpriteSheet.tilesheet, 16);
+            gfx.setColor(new Color(0x2c3e50));
+        }
+        gfx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
+        gfx.drawImage(sprite.getSprite(), x * tileSize, y * tileSize, tileSize, tileSize, null);
     }
 
     private List<Point> findNeighbors(int columns, int rows) {

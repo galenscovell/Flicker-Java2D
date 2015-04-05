@@ -9,7 +9,7 @@ package logic;
 import creatures.Player;
 
 import java.awt.Color;
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 
 import java.util.List;
 
@@ -45,7 +45,7 @@ public class Camera {
         }
     }
 
-    public void render(Graphics gfx) {
+    public void render(Graphics2D gfx) {
         findCameraUpperLeft();
         int maxX = camUpperLeftX + viewportWidth;
         int maxY = camUpperLeftY + viewportHeight;
@@ -65,13 +65,7 @@ public class Camera {
             if (tileX < camUpperLeftX || tileX > maxX || tileY < camUpperLeftY || tileY > maxY) {
                 continue;
             }
-
-            if (tile.isFloor()) {
-                gfx.setColor(floor);
-            } else if (tile.isWall()) {
-                gfx.setColor(wall);
-            }
-            gfx.fillRect(tileX, tileY, tileSize, tileSize);
+            tile.draw(gfx, tileSize);
         }
 
         player.draw(gfx);

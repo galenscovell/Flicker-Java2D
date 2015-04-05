@@ -12,6 +12,7 @@ import logic.World;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 
 import java.awt.event.ActionEvent;
 
@@ -152,7 +153,8 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     @Override
-    protected void paintComponent(Graphics gfx) {
+    protected void paintComponent(Graphics g) {
+        Graphics2D gfx = (Graphics2D) g;
         super.paintComponent(gfx);
 
         // Clear screen
