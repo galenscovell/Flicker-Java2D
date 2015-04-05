@@ -68,7 +68,7 @@ public class Camera {
             tile.draw(gfx, tileSize);
         }
 
-        player.draw(gfx);
+        player.draw(gfx, tileSize);
 
         // Reset graphics origin
         gfx.translate(camUpperLeftX, camUpperLeftY);
@@ -95,7 +95,7 @@ public class Camera {
 
     private void findCameraUpperLeft() {
         // These values are in pixels, not tile units
-        camUpperLeftX = player.getX() - (viewportWidth / 2);
+        camUpperLeftX = player.getX() - (viewportWidth / 2) - (tileSize / 2);
         camUpperLeftY = player.getY() - (viewportHeight / 2);
     }
 }

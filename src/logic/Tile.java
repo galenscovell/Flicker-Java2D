@@ -73,15 +73,18 @@ public class Tile {
     }
 
     public void draw(Graphics2D gfx, int tileSize) {
+        int screenX = x * tileSize;
+        int screenY = y * tileSize;
+
         if (this.isFloor()) {
-            this.sprite = new Sprite(SpriteSheet.tilesheet, 2);
-            gfx.setColor(new Color(0x34495e));
+            this.sprite = new Sprite(SpriteSheet.tilesheet, 3);
+            gfx.setColor(new Color(0x2c3e50));
         } else if (this.isWall()) {
             this.sprite = new Sprite(SpriteSheet.tilesheet, 16);
             gfx.setColor(new Color(0x2c3e50));
         }
-        gfx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
-        gfx.drawImage(sprite.getSprite(), x * tileSize, y * tileSize, tileSize, tileSize, null);
+        gfx.fillRect(screenX, screenY, tileSize, tileSize);
+        gfx.drawImage(sprite.getSprite(), screenX, screenY, tileSize, tileSize, null);
     }
 
     private List<Point> findNeighbors(int columns, int rows) {

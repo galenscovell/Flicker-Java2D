@@ -10,7 +10,7 @@ import javax.swing.SwingUtilities;
 
 public class Main {
     public static void main(String[] args) {
-        MainFrame mainframe = new MainFrame(800, 600);
+        MainFrame mainframe = new MainFrame(800, 640);
         SwingUtilities.invokeLater(mainframe);
     }
 }

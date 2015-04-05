@@ -158,7 +158,7 @@ public class GamePanel extends JPanel implements Runnable {
         super.paintComponent(gfx);
 
         // Clear screen
-        gfx.setColor(new Color(0x2c3e50));
+        gfx.setColor(Color.BLACK);
         gfx.fillRect(0, 0, getWidth(), getHeight());
         // Render next frame
         camera.render(gfx);
