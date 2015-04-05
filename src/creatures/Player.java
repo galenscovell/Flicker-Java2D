@@ -6,19 +6,26 @@
 
 package creatures;
 
+import graphics.Sprite;
+import graphics.SpriteSheet;
+
 import java.awt.Color;
-import java.awt.Graphics2D;
+import java.awt.Graphics;
 
 
 public class Player {
     private int size;
     private int x;
     private int y;
+    private Sprite sprite;
+    private SpriteSheet sheet;
 
     public Player(int x, int y) {
         this.size = 16;
         this.x = x;
         this.y = y;
+        this.sheet = new SpriteSheet("/res/textures/charsheet.png", 256);
+        this.sprite = new Sprite(16, 0, 0, sheet);
     }
 
     public void move(int dx, int dy) {
@@ -38,9 +45,8 @@ public class Player {
         return y;
     }
 
-    public void draw(Graphics2D gfx) {
-        gfx.setColor(new Color(0x2ecc71));
-        gfx.fillRect(x, y, size, size);
+    public void draw(Graphics gfx) {
+        gfx.drawImage(sprite.getImageFromPixels(), x, y, null);
     }
 
     public String toString() {

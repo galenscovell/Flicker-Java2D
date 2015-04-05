@@ -9,7 +9,7 @@ package logic;
 import creatures.Player;
 
 import java.awt.Color;
-import java.awt.Graphics2D;
+import java.awt.Graphics;
 
 import java.util.List;
 
@@ -45,7 +45,7 @@ public class Camera {
         }
     }
 
-    public void render(Graphics2D gfx) {
+    public void render(Graphics gfx) {
         findCameraUpperLeft();
         int maxX = camUpperLeftX + viewportWidth;
         int maxY = camUpperLeftY + viewportHeight;
