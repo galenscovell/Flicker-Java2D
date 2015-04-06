@@ -49,10 +49,7 @@ public class Camera {
         findCameraUpperLeft();
         int maxX = camUpperLeftX + viewportWidth;
         int maxY = camUpperLeftY + viewportHeight;
-
         int tileX, tileY;
-        Color floor = new Color(0x34495e);
-        Color wall = new Color(0x2c3e50);
 
         // Translate graphics origin to camera's upper left
         gfx.translate(-camUpperLeftX, -camUpperLeftY);
@@ -62,12 +59,10 @@ public class Camera {
             tileY = tile.getY() * tileSize;
 
             // Ignore tiles outside of viewport
-            if (tileX < camUpperLeftX || tileX > maxX || tileY < camUpperLeftY || tileY > maxY) {
-                continue;
+            if (tileX > camUpperLeftX || tileX < maxX || tileY > camUpperLeftY || tileY < maxY) {
+                tile.draw(gfx, tileSize);
             }
-            tile.draw(gfx, tileSize);
         }
-
         player.draw(gfx, tileSize);
 
         // Reset graphics origin
@@ -96,6 +91,6 @@ public class Camera {
     private void findCameraUpperLeft() {
         // These values are in pixels, not tile units
         camUpperLeftX = player.getX() - (viewportWidth / 2) - (tileSize / 2);
-        camUpperLeftY = player.getY() - (viewportHeight / 2);
+        camUpperLeftY = player.getY() - (viewportHeight / 2) - (tileSize / 2);
     }
 }

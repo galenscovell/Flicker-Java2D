@@ -23,7 +23,6 @@ public class Tile {
     private int state;
     private int floorNeighbors;
     private List<Point> neighboringTiles;
-    private Sprite sprite;
 
     public Tile(int x, int y, int state, int columns, int rows) {
         this.x = x;
@@ -77,14 +76,12 @@ public class Tile {
         int screenY = y * tileSize;
 
         if (this.isFloor()) {
-            this.sprite = new Sprite(SpriteSheet.tilesheet, 3);
-            gfx.setColor(new Color(0x2c3e50));
+            Sprite sprite = new Sprite(SpriteSheet.tilesheet, 17);
+            gfx.drawImage(sprite.getSprite(), screenX, screenY, tileSize, tileSize, null);
         } else if (this.isWall()) {
-            this.sprite = new Sprite(SpriteSheet.tilesheet, 16);
-            gfx.setColor(new Color(0x2c3e50));
+            Sprite sprite = new Sprite(SpriteSheet.tilesheet, 16);
+            gfx.drawImage(sprite.getSprite(), screenX, screenY, tileSize, tileSize, null);
         }
-        gfx.fillRect(screenX, screenY, tileSize, tileSize);
-        gfx.drawImage(sprite.getSprite(), screenX, screenY, tileSize, tileSize, null);
     }
 
     private List<Point> findNeighbors(int columns, int rows) {

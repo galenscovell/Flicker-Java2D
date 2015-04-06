@@ -38,7 +38,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     public GamePanel(int panelWidth, int panelHeight, int tileSize) {
         setPreferredSize(new Dimension(panelWidth, panelHeight));
-        this.world = new World(1000, 1000, tileSize);
+        this.world = new World(2000, 2000, tileSize);
         this.camera = new Camera(world.getTiles(), tileSize, panelWidth, panelHeight);
 
         // Setup player input bindings
@@ -112,31 +112,28 @@ public class GamePanel extends JPanel implements Runnable {
     };
 
     private int[] checkInput() {
-        int[] directions = new int[2];
+        int[] direction = new int[2];
         if (upPressed) {
-            directions[1]--;
+            direction[1]--;
+        } else if (downPressed) {
+            direction[1]++;
+        } else if (leftPressed) {
+            direction[0]--;
+        } else if (rightPressed) {
+            direction[0]++;
         }
-        if (downPressed) {
-            directions[1]++;
-        }
-        if (leftPressed) {
-            directions[0]--;
-        }
-        if (rightPressed) {
-            directions[0]++;
-        }
-        return directions;
+        return direction;
     }
 
     public void run() {
         long start, end, sleepTime;
-        int[] inputDirections;
+        int[] inputDirection;
 
         while (running) {
             start = System.currentTimeMillis();
 
-            inputDirections = checkInput();
-            camera.playerMove(inputDirections[0], inputDirections[1]);
+            inputDirection = checkInput();
+            camera.playerMove(inputDirection[0], inputDirection[1]);
 
             repaint();
             end = System.currentTimeMillis();
