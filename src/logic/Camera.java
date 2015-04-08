@@ -19,10 +19,8 @@ public class Camera {
     private List<Tile> tiles;
     private Player player;
 
-    private int viewportWidth;
-    private int viewportHeight;
-    private int camUpperLeftX;
-    private int camUpperLeftY;
+    private int viewportWidth, viewportHeight;
+    private int camUpperLeftX, camUpperLeftY;
 
 
     public Camera(List<Tile> tiles, int tileSize, int x, int y) {
@@ -33,13 +31,10 @@ public class Camera {
     }
 
     public void placePlayer() {
-        // Ensure player start position is on floor and near bottom-center
-        int numberOfTiles = tiles.size();
-        int lastFourthTiles = (int) Math.round(numberOfTiles * 0.8);
-        for (int i = lastFourthTiles; i < numberOfTiles; i++) {
-            Tile tile = tiles.get(i);
+        // Ensure player start position is on floor
+        for (Tile tile : tiles) {
             if (tile.isFloor()) {
-                this.player = new Player(tile.getX() * tileSize, tile.getY() * tileSize);
+                this.player = new Player(tile.x * tileSize, tile.y * tileSize, tileSize);
                 return;
             }
         }
@@ -55,8 +50,8 @@ public class Camera {
         gfx.translate(-camUpperLeftX, -camUpperLeftY);
 
         for (Tile tile : tiles) {
-            tileX = tile.getX() * tileSize;
-            tileY = tile.getY() * tileSize;
+            tileX = tile.x * tileSize;
+            tileY = tile.y * tileSize;
 
             // Ignore tiles outside of viewport
             if (tileX > camUpperLeftX || tileX < maxX || tileY > camUpperLeftY || tileY < maxY) {
@@ -70,8 +65,8 @@ public class Camera {
     }
 
     public void playerMove(int dx, int dy) {
-        int playerX = (player.getX() / tileSize);
-        int playerY = (player.getY() / tileSize);
+        int playerX = (player.x / tileSize);
+        int playerY = (player.y / tileSize);
 
         Tile nextLocation = findTile(playerX + dx, playerY + dy);
         if (nextLocation != null && nextLocation.isFloor()) {
@@ -81,7 +76,7 @@ public class Camera {
 
     private Tile findTile(int x, int y) {
         for (Tile tile : tiles) {
-            if (tile.getX() == x && tile.getY() == y) {
+            if (tile.x == x && tile.y == y) {
                 return tile;
             }
         }
@@ -90,7 +85,7 @@ public class Camera {
 
     private void findCameraUpperLeft() {
         // These values are in pixels, not tile units
-        camUpperLeftX = player.getX() - (viewportWidth / 2) - (tileSize / 2);
-        camUpperLeftY = player.getY() - (viewportHeight / 2) - (tileSize / 2);
+        camUpperLeftX = player.x - (viewportWidth / 2) - (tileSize / 2);
+        camUpperLeftY = player.y - (viewportHeight / 2) - (tileSize / 2);
     }
 }

@@ -11,16 +11,16 @@ import java.util.List;
 
 public class World {
     private int tileSize;
-    private int columns;
-    private int rows;
+    private int columns, rows;
     private Builder builder;
     private List<Tile> tiles;
+
 
     public World(int width, int height, int tileSize) {
         this.tileSize = tileSize;
         this.columns = width / tileSize;
         this.rows = height / tileSize;
-        this.builder = new CaveBuilder(columns, rows);
+        this.builder = new DungeonBuilder(columns, rows);
 
         builder.build();
         this.tiles = builder.getTiles();
@@ -33,7 +33,7 @@ public class World {
             int floorNeighbors = 0;
             List<Point> neighborPoints = tile.getNeighbors();
             for (Point point : neighborPoints) {
-                if (grid[point.getX()][point.getY()].isFloor()) {
+                if (grid[point.x][point.y].isFloor()) {
                     floorNeighbors++;
                 }
             }
@@ -50,15 +50,14 @@ public class World {
     }
 
     public void skin() {
+        Tile[][] grid = builder.getGrid();
         Bitmasker bitmasker = new Bitmasker();
         int value;
-        
+
         for (Tile tile : tiles) {
             if (tile.isWall()) {
-                value = bitmasker.findBitmask(tile);
+                value = bitmasker.findBitmask(tile, grid);
                 tile.setBitmask(value);
-            } else if (tile.isFloor()) {
-                tile.setBitmask(0);
             }
         }
 

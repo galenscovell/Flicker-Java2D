@@ -16,7 +16,6 @@ public class Sprite {
     private int size;
     private SpriteSheet spritesheet;
 
-    public static Sprite player;
 
     public Sprite(SpriteSheet sheet, int sheetPos) {
         this.spritesheet = sheet;

@@ -13,9 +13,9 @@ import javax.swing.JFrame;
 
 
 public class MainFrame implements Runnable {
-    private int windowX;
-    private int windowY;
+    private int windowX, windowY;
     private JFrame frame;
+
 
     public MainFrame(int x, int y) {
         this.windowX = x;

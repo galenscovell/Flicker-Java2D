@@ -21,6 +21,7 @@ public class SpriteSheet {
     public static SpriteSheet charsheet = new SpriteSheet("/res/textures/charsheet.png", 16);
     public static SpriteSheet tilesheet = new SpriteSheet("/res/textures/tilesheet.png", 16);
 
+
     public SpriteSheet(String path, int spriteSize) {
         this.path = path;
         this.spriteSize = spriteSize;
