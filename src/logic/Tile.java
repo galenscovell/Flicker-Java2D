@@ -23,6 +23,9 @@ public class Tile {
     private int state;
     private int floorNeighbors;
     private List<Point> neighboringTiles;
+    private int bitmask;
+    private boolean spriteSet = false;
+    private Sprite sprite = null;
 
     public Tile(int x, int y, int state, int columns, int rows) {
         this.x = x;
@@ -34,17 +37,15 @@ public class Tile {
     public boolean isWall() {
         if (state == 0) {
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 
     public boolean isFloor() {
         if (state == 1) {
             return true;
-        } else {
-            return false;
-        }
+        } 
+        return false;
     }
 
     public void setFloorNeighbors(int value) {
@@ -67,6 +68,10 @@ public class Tile {
         return y;
     }
 
+    public void setBitmask(int value) {
+        bitmask = value;
+    }
+
     public List<Point> getNeighbors() {
         return neighboringTiles;
     }
@@ -75,13 +80,21 @@ public class Tile {
         int screenX = x * tileSize;
         int screenY = y * tileSize;
 
-        if (this.isFloor()) {
-            Sprite sprite = new Sprite(SpriteSheet.tilesheet, 17);
-            gfx.drawImage(sprite.getSprite(), screenX, screenY, tileSize, tileSize, null);
-        } else if (this.isWall()) {
-            Sprite sprite = new Sprite(SpriteSheet.tilesheet, 16);
-            gfx.drawImage(sprite.getSprite(), screenX, screenY, tileSize, tileSize, null);
+        gfx.drawImage(sprite.getSprite(), screenX, screenY, tileSize, tileSize, null);
+    }
+
+    public void findSprite() {
+        SpriteSheet sheet = SpriteSheet.tilesheet;
+        if (bitmask == 0) {
+            sprite = new Sprite(sheet, 6);
+        } else {
+            if (bitmask == 196) {
+                sprite = new Sprite(sheet, 34);
+            } else {
+                sprite = new Sprite(sheet, 0);
+            }
         }
+        spriteSet = true;
     }
 
     private List<Point> findNeighbors(int columns, int rows) {

@@ -49,6 +49,24 @@ public class World {
         }
     }
 
+    public void skin() {
+        Bitmasker bitmasker = new Bitmasker();
+        int value;
+        
+        for (Tile tile : tiles) {
+            if (tile.isWall()) {
+                value = bitmasker.findBitmask(tile);
+                tile.setBitmask(value);
+            } else if (tile.isFloor()) {
+                tile.setBitmask(0);
+            }
+        }
+
+        for (Tile tile : tiles) {
+            tile.findSprite();
+        }
+    }
+
     public List<Tile> getTiles() {
         return tiles;
     }

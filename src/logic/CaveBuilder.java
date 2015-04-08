@@ -50,7 +50,6 @@ public class CaveBuilder implements Builder {
 
     public List<Tile> getTiles() {
         List<Tile> tiles = new ArrayList<Tile>();
-
         for (int y = 0; y < rows; y++) {
             for (int x = 0; x < columns; x++) {
                 tiles.add(grid[x][y]);
