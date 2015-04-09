@@ -1,8 +1,8 @@
 
 /**
  * TILE CLASS
- * Keeps track of tile position and state and tile drawing.
- * State can be one of Wall(0), Floor(1), or Corridor(2) (temporary)
+ * Keeps track of tile position, state and rendering of Tile sprite.
+ * State can be Wall(0), Floor(1), Corridor(2) or Perimeter(3)
  */
 
 package logic;
@@ -17,49 +17,35 @@ import java.util.List;
 
 
 public class Tile {
-    public int x, y;
-    private int state;
+    public int x, y, state;
     private int floorNeighbors;
-    private List<Point> neighboringTiles;
-    private int bitmask = 0;
-    private Sprite sprite = null;
+    private List<Point> neighborTilePoints;
+    private int bitmask;
+    private Sprite sprite;
 
 
-    public Tile(int x, int y, int state, int columns, int rows) {
+    public Tile(int x, int y, int columns, int rows) {
         this.x = x;
         this.y = y;
-        this.state = state;
-        this.neighboringTiles = findNeighbors(columns, rows);
+        this.state = 0;
+        this.bitmask = 0;
+        this.neighborTilePoints = findNeighbors(columns, rows);
     }
 
     public boolean isWall() {
-        if (state == 0) {
-            return true;
-        }
-        return false;
+        return state == 0;
     }
 
     public boolean isFloor() {
-        if (state == 1) {
-            return true;
-        } 
-        return false;
+        return state == 1;
     }
 
     public boolean isCorridor() {
-        if (state == 2) {
-            state = 1;
-            return true;
-        } else {
-            return false;
-        }
+        return state == 2;
     }
 
-    public boolean isTest() {
-        if (state == 3) {
-            return true;
-        } 
-        return false;
+    public boolean isPerimeter() {
+        return state == 3;
     }
 
     public void setFloorNeighbors(int value) {
@@ -70,16 +56,12 @@ public class Tile {
         return floorNeighbors;
     }
 
-    public void setState(int value) {
-        state = value;
+    public List<Point> getNeighbors() {
+        return neighborTilePoints;
     }
 
     public void setBitmask(int value) {
         bitmask = value;
-    }
-
-    public List<Point> getNeighbors() {
-        return neighboringTiles;
     }
 
     public void draw(Graphics2D gfx, int tileSize) {
@@ -90,11 +72,10 @@ public class Tile {
 
     public void findSprite() {
         SpriteSheet sheet = SpriteSheet.tilesheet;
+
         if (isFloor()) {
             sprite = new Sprite(sheet, 6);
-        } else if (isTest()) {
-            sprite = new Sprite(sheet, 7);
-        } else {
+        } else if (isPerimeter()){
             switch (bitmask) {
                 case 1:
                 case 100:
@@ -133,15 +114,17 @@ public class Tile {
                 case 1111:
                     sprite = new Sprite(sheet, 5);
                     break;
-                case 0:
-                    setState(1);
+                default:
+                    state = 1;
                     sprite = new Sprite(sheet, 6);
             }
+        } else {
+            sprite = new Sprite(sheet, 5);
         }
     }
 
     private List<Point> findNeighbors(int columns, int rows) {
-        // Compute neighboring tiles only once at object construction
+        // Compute neighboring tiles once during object construction
         List<Point> points = new ArrayList<Point>();
         int sumX, sumY;
 

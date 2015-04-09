@@ -13,7 +13,7 @@ import java.awt.Graphics2D;
 
 
 public class Player {
-    public int x, y, size;
+    public int x, y;
     private int spriteNumber, waitFrames;
 
     private SpriteSheet sheet;
@@ -22,8 +22,7 @@ public class Player {
     private Sprite[] upSprites, downSprites, leftSprites, rightSprites;
 
 
-    public Player(int x, int y, int size) {
-        this.size = size;
+    public Player(int x, int y) {
         this.x = x;
         this.y = y;
         this.sheet = SpriteSheet.charsheet;
@@ -64,7 +63,7 @@ public class Player {
 
     public void draw(Graphics2D gfx, int tileSize) {
         animate(currentSet);
-        gfx.drawImage(sprite.getSprite(), x, y, size, size, null);
+        gfx.drawImage(sprite.getSprite(), x, y, tileSize, tileSize, null);
     }
 
     public String toString() {

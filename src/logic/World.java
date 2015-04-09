@@ -6,6 +6,7 @@
 
 package logic;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -30,14 +31,14 @@ public class World {
         Tile[][] grid = builder.getGrid();
 
         for (Tile tile : tiles) {
-            int floorNeighbors = 0;
+            int value = 0;
             List<Point> neighborPoints = tile.getNeighbors();
             for (Point point : neighborPoints) {
                 if (grid[point.x][point.y].isFloor()) {
-                    floorNeighbors++;
+                    value++;
                 }
             }
-            tile.setFloorNeighbors(floorNeighbors);
+            tile.setFloorNeighbors(value);
         }
     }
 
@@ -52,15 +53,35 @@ public class World {
     public void skin() {
         Tile[][] grid = builder.getGrid();
         Bitmasker bitmasker = new Bitmasker();
-        int value;
+        List<Tile> pruned = new ArrayList<Tile>();
 
+        // If Tile is a wall connected to a floor Tile, it becomes a perimeter Tile
         for (Tile tile : tiles) {
             if (tile.isWall()) {
-                value = bitmasker.findBitmask(tile, grid);
-                tile.setBitmask(value);
+                if (tile.getFloorNeighbors() > 0) {
+                    tile.state = 3;
+                } else {
+                    pruned.add(tile);
+                }
             }
         }
 
+        // Remove non-perimeter walls from Tiles list
+        for (Tile tile : pruned) {
+            tiles.remove(tile);
+        }
+
+        // Find bitmask for perimeter Tiles
+        for (Tile tile : tiles) {
+            if (tile.isPerimeter()) {
+                tile.setBitmask(bitmasker.findBitmask(tile, grid));
+            }
+        }
+
+        // Remove builder reference
+        builder = null;
+
+        // Find sprites for remaining Tiles
         for (Tile tile : tiles) {
             tile.findSprite();
         }

@@ -31,7 +31,8 @@ public class Bitmasker {
             int x = neighbor.x;
             int y = neighbor.y;
 
-            if (grid[x][y].isWall()) {
+            // Find neighboring perimeter Tiles
+            if (grid[x][y].isPerimeter()) {
                 int diffX = tile.x - x;
                 int diffY = tile.y - y;
 
@@ -61,10 +62,9 @@ public class Bitmasker {
         if (right) value += 2;
 
         if (value == 0) {
-            return value;
+            return 0;
         } else {
-            int bitmask = calculateBinary(value);
-            return bitmask;
+            return calculateBinary(value);
         }
     }
 
@@ -72,6 +72,9 @@ public class Bitmasker {
         int remainder;
         String strResult = "";
 
+        // Binary value: divide value by 2, remainder is digit of binary.
+        // Current value is then value from division, repeat.
+        // Reverse final result.
         while (value != 0) {
             remainder = value % 2;
             strResult += Integer.toString(remainder);

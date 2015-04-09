@@ -30,16 +30,6 @@ public class Camera {
         this.viewportHeight = y;
     }
 
-    public void placePlayer() {
-        // Ensure player start position is on floor
-        for (Tile tile : tiles) {
-            if (tile.isFloor()) {
-                this.player = new Player(tile.x * tileSize, tile.y * tileSize, tileSize);
-                return;
-            }
-        }
-    }
-
     public void render(Graphics2D gfx) {
         findCameraUpperLeft();
         int maxX = camUpperLeftX + viewportWidth;
@@ -62,6 +52,16 @@ public class Camera {
 
         // Reset graphics origin
         gfx.translate(camUpperLeftX, camUpperLeftY);
+    }
+
+    public void placePlayer() {
+        // Ensure player start position is on floor
+        for (Tile tile : tiles) {
+            if (tile.isFloor()) {
+                this.player = new Player(tile.x * tileSize, tile.y * tileSize);
+                return;
+            }
+        }
     }
 
     public void playerMove(int dx, int dy) {

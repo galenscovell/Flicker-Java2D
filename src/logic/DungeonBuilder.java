@@ -2,7 +2,7 @@
 /**
  * DUNGEONBUILDER CLASS
  * Constructs a new world grid and tileset with dungeon features. 
- * (rectangular rooms connected with corridors)
+ * (Rectangular rooms connected by Tile-width corridors)
  */
 
 package logic;
@@ -27,7 +27,7 @@ public class DungeonBuilder implements Builder {
         for (int y = 0; y < rows; y++) {
             for (int x = 0; x < columns; x++) {
                 // All tiles begin as walls
-                grid[x][y] = new Tile(x, y, 0, columns, rows);
+                grid[x][y] = new Tile(x, y, columns, rows);
             }
         }
         // Find center of Tile grid for creation of first room
@@ -44,13 +44,14 @@ public class DungeonBuilder implements Builder {
         int sumX, sumY;
 
         // Set center Tile as floor
-        grid[centerX][centerY].setState(1);
+        grid[centerX][centerY].state = 1;
+        
         // Find all tiles within (-roomsize, roomsize) from center
         for (int x = -roomSize; x <= roomSize; x++) {
             for (int y = -roomSize; y <= roomSize; y++) {
                 sumX = centerX + x;
                 sumY = centerY + y;
-                // Toss if out of bounds
+
                 if (isOutOfBounds(sumX, sumY)) {
                     continue;
                 }
@@ -58,13 +59,11 @@ public class DungeonBuilder implements Builder {
                 if (x == -roomSize || x == roomSize || y == -roomSize || y == roomSize) {
                     // If point is corner of room, do not use as corridor entry point
                     if ((x == -roomSize && y == -roomSize) || (x == -roomSize && y == roomSize) || (x == roomSize && y == -roomSize) || (x == roomSize && y == roomSize)) {
-                        grid[sumX][sumY].setState(3);
-                    } else {
-                        grid[sumX][sumY].setState(3);
-                        perimeterPoints.add(new Point(sumX, sumY));
-                    }
-                } else {
-                    grid[sumX][sumY].setState(1);
+                        grid[sumX][sumY].state = 1;
+                        continue;
+                    } 
+                    grid[sumX][sumY].state = 1;
+                    perimeterPoints.add(new Point(sumX, sumY));
                 }
             }
         }
@@ -93,7 +92,6 @@ public class DungeonBuilder implements Builder {
                 }
             }
         }
-
         for (int y = -1; y <= 1; y += 2) {
             sumX = startX;
             sumY = startY + y;
@@ -113,14 +111,15 @@ public class DungeonBuilder implements Builder {
     }
 
     public void extendCorridor(String direction, int startX, int startY) {
-        // Possible corridor length from 5 to 10 tiles
         Random generator = new Random();
+        // Possible corridor length from 5 to 10 tiles
         int corridorSize = generator.nextInt(6) + 5;
         int currentX = startX;
         int currentY = startY;
         
         // Set corridor starting point as Floor
-        grid[startX][startY].setState(1);
+        grid[startX][startY].state = 1;
+
         for (int i = 0; i < corridorSize; i++) {
             if (direction.equals("up") && !isOutOfBounds(currentX, currentY - 1)) {
                 currentY -= 1;
@@ -131,10 +130,10 @@ public class DungeonBuilder implements Builder {
             } else if (direction.equals("left") && !isOutOfBounds(currentX - 1, currentY)) {
                 currentX -= 1;
             } 
-            grid[currentX][currentY].setState(1);
+            grid[currentX][currentY].state = 1;
         }
-        // Create new room from ending Tile
-        grid[currentX][currentY].setState(2);
+        // Set final Tile as Corridor for next room creation
+        grid[currentX][currentY].state = 2;
     }
 
     public boolean isOutOfBounds(int x, int y) {
@@ -148,9 +147,13 @@ public class DungeonBuilder implements Builder {
     }
 
     public void smooth(Tile tile) {
-        // Create new room at Tile that isCorridor from extendCorridor()
-        if (tile.isCorridor() && tile.getFloorNeighbors() < 2) {
-            createRoom(tile.x, tile.y);
+        // Create new room at final Tile from extendCorridor()
+        if (tile.isCorridor()) {
+            if (tile.getFloorNeighbors() < 5) {
+                createRoom(tile.x, tile.y);
+            } else {
+                tile.state = 1;
+            }
         }
     }
 
