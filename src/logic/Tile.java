@@ -73,59 +73,56 @@ public class Tile {
     public void findSprite() {
         SpriteSheet sheet = SpriteSheet.tilesheet;
 
-        if (isFloor()) {
-            sprite = new Sprite(sheet, 7);
-        } else if (isPerimeter()){
-            switch (bitmask) {
-                case 1:
-                case 100:
-                case 101:
-                    sprite = new Sprite(sheet, 16);
-                    break;
-                case 10:
-                case 1000:
-                case 1010:
-                    sprite = new Sprite(sheet, 1);
-                    break;
-                case 11:
-                    sprite = new Sprite(sheet, 32);
-                    break;
-                case 110:
-                    sprite = new Sprite(sheet, 0);
-                    break;
-                case 111:
-                    sprite = new Sprite(sheet, 19);
-                    break;
-                case 1001:
-                    sprite = new Sprite(sheet, 34);
-                    break;
-                case 1011:
-                    sprite = new Sprite(sheet, 36);
-                    break;
-                case 1100:
-                    sprite = new Sprite(sheet, 2);
-                    break;
-                case 1101:
-                    sprite = new Sprite(sheet, 21);
-                    break;
-                case 1110:
-                    sprite = new Sprite(sheet, 4);
-                    break;
-                case 1111:
-                    sprite = new Sprite(sheet, 5);
-                    break;
-                default:
-                    state = 1;
-                    sprite = new Sprite(sheet, 7);
-            }
+        switch (bitmask) {
+            case 0:
+                sprite = new Sprite(sheet, 6);
+                break;
+            case 1:
+            case 100:
+            case 101:
+                sprite = new Sprite(sheet, 16);
+                break;
+            case 10:
+            case 1000:
+            case 1010:
+                sprite = new Sprite(sheet, 1);
+                break;
+            case 11:
+                sprite = new Sprite(sheet, 32);
+                break;
+            case 110:
+                sprite = new Sprite(sheet, 0);
+                break;
+            case 111:
+                sprite = new Sprite(sheet, 19);
+                break;
+            case 1001:
+                sprite = new Sprite(sheet, 34);
+                break;
+            case 1011:
+                sprite = new Sprite(sheet, 36);
+                break;
+            case 1100:
+                sprite = new Sprite(sheet, 2);
+                break;
+            case 1101:
+                sprite = new Sprite(sheet, 21);
+                break;
+            case 1110:
+                sprite = new Sprite(sheet, 4);
+                break;
+            case 1111:
+                sprite = new Sprite(sheet, 5);
+                break;
+            default:
+                state = 1;
+                sprite = new Sprite(sheet, 7);
         }
     }
 
     private List<Point> findNeighbors(int columns, int rows) {
-        // Compute neighboring tiles once during object construction
         List<Point> points = new ArrayList<Point>();
         int sumX, sumY;
-
         for (int i = -1; i <= 1; i++) {
             for (int j = -1; j <= 1; j++) {
                 sumX = x + i;

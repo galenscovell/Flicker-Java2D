@@ -25,7 +25,6 @@ public class Bitmasker {
         boolean right = false;
 
         List<Point> neighbors = tile.getNeighbors();
-        int perimeterNeighbors = 0;
 
         // Find neighbor positions
         for (Point neighbor : neighbors) {
@@ -34,7 +33,6 @@ public class Bitmasker {
 
             // Find neighboring perimeter Tiles
             if (grid[x][y].isPerimeter()) {
-                perimeterNeighbors++;
                 int diffX = tile.x - x;
                 int diffY = tile.y - y;
 
@@ -64,9 +62,6 @@ public class Bitmasker {
         if (right) value += 2;
 
         if (value == 0) {
-            return 0;
-        } else if (perimeterNeighbors == 1) {
-            tile.state = 1;
             return 0;
         } else {
             return calculateBinary(value);

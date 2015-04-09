@@ -60,27 +60,69 @@ public class World {
             if (tile.isWall()) {
                 if (tile.getFloorNeighbors() > 0) {
                     tile.state = 3;
+                // Otherwise add Tile to remove list
                 } else {
                     pruned.add(tile);
                 }
-            } else if (tile.getNeighbors().size() < 8) {
+            }
+        }
+
+        // Set perimeter Tiles not on perimeter to be floor Tiles
+        int wallNeighbors;
+        for (Tile tile : tiles) {
+            if (tile.isPerimeter()) {
+                wallNeighbors = 0;
+                for (Point neighbor : tile.getNeighbors()) {
+                    if (grid[neighbor.x][neighbor.y].isWall()) {
+                        wallNeighbors++;
+                    }
+                }
+                if (wallNeighbors == 0) {
+                    tile.state = 1;
+                }
+            }
+        }
+
+        // If Tile is on world boundary or has adjacent non-perimeter wall, make it perimeter
+        for (Tile tile : tiles) {
+            if (tile.isFloor()) {
+                wallNeighbors = 0;
+                for (Point neighbor : tile.getNeighbors()) {
+                    if (grid[neighbor.x][neighbor.y].isWall()) {
+                        wallNeighbors++;
+                    }
+                }
+                if (wallNeighbors > 0 || tile.getNeighbors().size() < 8) {
+                    tile.state = 3;
+                }
+            }
+        }
+
+        // Recheck Tiles for floor neighbors, if floor exists without any adjacent
+        //  floor Tiles remove it. If Tile has only one adjacent floor make it perimeter.
+        checkAdjacent();
+        for (Tile tile : tiles) {
+            if (tile.getFloorNeighbors() == 0) {
+                tile.state = 0;
+                pruned.add(tile);
+            } else if (tile.getFloorNeighbors() == 1) {
                 tile.state = 3;
             }
         }
 
-        // Remove non-perimeter wall Tiles from Tiles list
+        // Remove pruned Tiles from Tiles list
         for (Tile tile : pruned) {
             tiles.remove(tile);
         }
 
-        // Find bitmask for perimeter Tiles
+        // Bitmask perimeter Tiles
         for (Tile tile : tiles) {
             if (tile.isPerimeter()) {
                 tile.setBitmask(bitmasker.findBitmask(tile, grid));
             }
         }
 
-        // Find sprites for remaining Tiles
+        // Find sprites for all Tiles
         for (Tile tile : tiles) {
             tile.findSprite();
         }
