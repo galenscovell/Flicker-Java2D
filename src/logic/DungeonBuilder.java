@@ -59,12 +59,11 @@ public class DungeonBuilder implements Builder {
                 if (x == -roomSize || x == roomSize || y == -roomSize || y == roomSize) {
                     // If point is corner of room, do not use as corridor entry point
                     if ((x == -roomSize && y == -roomSize) || (x == -roomSize && y == roomSize) || (x == roomSize && y == -roomSize) || (x == roomSize && y == roomSize)) {
-                        grid[sumX][sumY].state = 1;
                         continue;
                     } 
-                    grid[sumX][sumY].state = 1;
                     perimeterPoints.add(new Point(sumX, sumY));
                 }
+                grid[sumX][sumY].state = 1;
             }
         }
 

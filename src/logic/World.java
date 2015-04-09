@@ -63,10 +63,12 @@ public class World {
                 } else {
                     pruned.add(tile);
                 }
+            } else if (tile.getNeighbors().size() < 8) {
+                tile.state = 3;
             }
         }
 
-        // Remove non-perimeter walls from Tiles list
+        // Remove non-perimeter wall Tiles from Tiles list
         for (Tile tile : pruned) {
             tiles.remove(tile);
         }
@@ -78,13 +80,13 @@ public class World {
             }
         }
 
-        // Remove builder reference
-        builder = null;
-
         // Find sprites for remaining Tiles
         for (Tile tile : tiles) {
             tile.findSprite();
         }
+
+        // Remove builder reference
+        builder = null;
     }
 
     public List<Tile> getTiles() {

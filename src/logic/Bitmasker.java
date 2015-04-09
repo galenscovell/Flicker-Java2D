@@ -3,9 +3,9 @@
  * BITMASKER CLASS
  * Handles calculation of bitmask value for Tiles.
  *
- *    1        1       Total = (Sum of occupied values)
- *  8 T 2      T 2     ex total = (1 + 2) = 3
- *    4                Bitmask = binary value of total = 11
+ *    1         1       Total = (Sum of occupied values)
+ *  8 * 2       * 2     ex total = (1 + 2) = 3
+ *    4                 Bitmask = binary value of total = 11
  *
  * Bitmask value range: 0, 1111 [0, 15] (None occupied, all occupied)
  * Bitmask value determines sprite of Tile.
@@ -25,6 +25,7 @@ public class Bitmasker {
         boolean right = false;
 
         List<Point> neighbors = tile.getNeighbors();
+        int perimeterNeighbors = 0;
 
         // Find neighbor positions
         for (Point neighbor : neighbors) {
@@ -33,6 +34,7 @@ public class Bitmasker {
 
             // Find neighboring perimeter Tiles
             if (grid[x][y].isPerimeter()) {
+                perimeterNeighbors++;
                 int diffX = tile.x - x;
                 int diffY = tile.y - y;
 
@@ -62,6 +64,9 @@ public class Bitmasker {
         if (right) value += 2;
 
         if (value == 0) {
+            return 0;
+        } else if (perimeterNeighbors == 1) {
+            tile.state = 1;
             return 0;
         } else {
             return calculateBinary(value);

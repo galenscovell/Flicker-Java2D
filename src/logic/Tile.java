@@ -74,7 +74,7 @@ public class Tile {
         SpriteSheet sheet = SpriteSheet.tilesheet;
 
         if (isFloor()) {
-            sprite = new Sprite(sheet, 6);
+            sprite = new Sprite(sheet, 7);
         } else if (isPerimeter()){
             switch (bitmask) {
                 case 1:
@@ -116,10 +116,8 @@ public class Tile {
                     break;
                 default:
                     state = 1;
-                    sprite = new Sprite(sheet, 6);
+                    sprite = new Sprite(sheet, 7);
             }
-        } else {
-            sprite = new Sprite(sheet, 5);
         }
     }
 
