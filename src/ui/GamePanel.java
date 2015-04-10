@@ -165,7 +165,7 @@ public class GamePanel extends JPanel implements Runnable {
     public synchronized void start() {
         this.thread = new Thread(this, "Display");
 
-        int smoothTicks = 4;
+        int smoothTicks = 6;
         while (smoothTicks > 0) {
             world.update();
             smoothTicks--;

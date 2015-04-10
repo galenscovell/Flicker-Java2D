@@ -6,7 +6,8 @@
 
 package logic;
 
-import creatures.Player;
+import entities.Fog;
+import entities.Player;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -18,6 +19,7 @@ public class Camera {
     private int tileSize;
     private List<Tile> tiles;
     private Player player;
+    private Fog fog;
 
     private int viewportWidth, viewportHeight;
     private int camUpperLeftX, camUpperLeftY;
@@ -28,6 +30,7 @@ public class Camera {
         this.tileSize = tileSize;
         this.viewportWidth = x;
         this.viewportHeight = y;
+        this.fog = new Fog();
     }
 
     public void render(Graphics2D gfx) {
@@ -49,6 +52,7 @@ public class Camera {
             }
         }
         player.draw(gfx, tileSize);
+        fog.render(gfx);
 
         // Reset graphics origin
         gfx.translate(camUpperLeftX, camUpperLeftY);
@@ -85,7 +89,7 @@ public class Camera {
 
     private void findCameraUpperLeft() {
         // These values are in pixels, not tile units
-        camUpperLeftX = player.x - (viewportWidth / 2) - (tileSize / 2);
-        camUpperLeftY = player.y - (viewportHeight / 2) - (tileSize / 2);
+        camUpperLeftX = player.x - (viewportWidth / 2);
+        camUpperLeftY = player.y - (viewportHeight / 2);
     }
 }

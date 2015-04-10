@@ -38,8 +38,8 @@ public class DungeonBuilder implements Builder {
 
     public void createRoom(int centerX, int centerY) {
         Random generator = new Random();
-        // Possible room sizes from (5x5) to (13x13) tiles
-        int roomSize = generator.nextInt(5) + 2;
+        // Possible room sizes from (5x5) to (9x9) tiles
+        int roomSize = generator.nextInt(3) + 2;
         List<Point> perimeterPoints = new ArrayList<Point>();
         int sumX, sumY;
 

@@ -4,7 +4,7 @@
  * Displays player sprite and handles player coordinates.
  */
 
-package creatures;
+package entities;
 
 import graphics.Sprite;
 import graphics.SpriteSheet;
