@@ -102,11 +102,10 @@ public class World {
         //  floor Tiles remove it. If Tile has only one adjacent floor make it perimeter.
         checkAdjacent();
         for (Tile tile : tiles) {
-            if (tile.getFloorNeighbors() == 0) {
-                tile.state = 0;
-                pruned.add(tile);
-            } else if (tile.getFloorNeighbors() == 1) {
+            if (tile.getFloorNeighbors() == 1) {
                 tile.state = 3;
+            } else if (tile.getFloorNeighbors() == 0) {
+                pruned.add(tile);
             }
         }
 

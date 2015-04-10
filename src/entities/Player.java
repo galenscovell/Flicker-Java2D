@@ -23,7 +23,7 @@ public class Player {
 
 
     public Player(int x, int y) {
-        this.x = x;
+        this.x = x; // Pixel units, not Tiles
         this.y = y;
         this.sheet = SpriteSheet.charsheet;
 
@@ -56,6 +56,7 @@ public class Player {
         } else if (dx > 0) {
             currentSet = rightSprites;
         }
+
         animate(currentSet);
         x += dx;
         y += dy;

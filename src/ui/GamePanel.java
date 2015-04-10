@@ -24,7 +24,9 @@ import javax.swing.KeyStroke;
 
 @SuppressWarnings("serial")
 public class GamePanel extends JPanel implements Runnable {
-    final int FPS = 30;
+    final float TIMESTEP = 1.0f / 10.0f;
+    final float FRAMERATE = 1.0f / 60.0f;
+
     private boolean running;
     private boolean upPressed, downPressed, leftPressed, rightPressed;
 
@@ -124,30 +126,29 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void run() {
-        long start, end, sleepTime, moveDelta;
+        double updateAccumulator = 0.0f;
+        double renderAccumulator = 0.0f;
+        long oldTime = System.nanoTime();
+        long currentTime = System.nanoTime();
+        double deltaSeconds;
         int[] inputDirection;
 
-        moveDelta = System.currentTimeMillis();
         while (running) {
-            start = System.currentTimeMillis();
+            currentTime = System.nanoTime();
+            deltaSeconds = (double) (currentTime - oldTime) / 1000000000;
+            oldTime = currentTime;
 
-            // Only handle movement every 3 frames
-            if (moveDelta - System.currentTimeMillis() < -100) {
+            updateAccumulator += deltaSeconds;
+            while (updateAccumulator > TIMESTEP) {
                 inputDirection = checkInput();
                 camera.playerMove(inputDirection[0], inputDirection[1]);
-                moveDelta = System.currentTimeMillis();
+                updateAccumulator -= TIMESTEP;
             }
-
-            repaint();
-            end = System.currentTimeMillis();
-            // Sleep to match FPS limit
-            sleepTime = (1000 / FPS) - (end - start);
-            if (sleepTime > 0) {
-                try {
-                    Thread.sleep(sleepTime); 
-                } catch (InterruptedException e) {
-                    thread.interrupt();
-                }
+            
+            renderAccumulator += deltaSeconds;
+            if (renderAccumulator > FRAMERATE) {
+                repaint();
+                renderAccumulator = 0.0f;
             }
         }
     }
@@ -157,10 +158,9 @@ public class GamePanel extends JPanel implements Runnable {
         Graphics2D gfx = (Graphics2D) g;
         super.paintComponent(gfx);
 
-        // Clear screen
         gfx.setColor(Color.BLACK);
         gfx.fillRect(0, 0, getWidth(), getHeight());
-        // Render next frame
+
         camera.render(gfx);
     }
 

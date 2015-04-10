@@ -47,7 +47,7 @@ public class Camera {
             tileY = tile.y * tileSize;
 
             // Ignore tiles outside of viewport
-            if (tileX > camUpperLeftX || tileX < maxX || tileY > camUpperLeftY || tileY < maxY) {
+            if (tileX >= camUpperLeftX && tileX <= maxX && tileY >= camUpperLeftY && tileY <= maxY) {
                 tile.draw(gfx, tileSize);
             }
         }
@@ -72,8 +72,8 @@ public class Camera {
         int playerX = (player.x / tileSize);
         int playerY = (player.y / tileSize);
 
-        Tile nextLocation = findTile(playerX + dx, playerY + dy);
-        if (nextLocation != null && nextLocation.isFloor()) {
+        Tile nextTile = findTile(playerX + dx, playerY + dy);
+        if (nextTile.isFloor()) {
             player.move(dx * tileSize, dy * tileSize);
         }
     }
@@ -89,7 +89,7 @@ public class Camera {
 
     private void findCameraUpperLeft() {
         // These values are in pixels, not tile units
-        camUpperLeftX = player.x - (viewportWidth / 2);
-        camUpperLeftY = player.y - (viewportHeight / 2);
+        camUpperLeftX = player.x - (viewportWidth / 2) + (tileSize / 2);
+        camUpperLeftY = player.y - (viewportHeight / 2) + tileSize;
     }
 }
