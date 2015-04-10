@@ -26,10 +26,7 @@ import javax.swing.KeyStroke;
 public class GamePanel extends JPanel implements Runnable {
     final int FPS = 30;
     private boolean running;
-    private boolean upPressed = false;
-    private boolean downPressed = false;
-    private boolean leftPressed = false;
-    private boolean rightPressed = false;
+    private boolean upPressed, downPressed, leftPressed, rightPressed;
 
     private World world;
     private Camera camera;
@@ -127,14 +124,19 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void run() {
-        long start, end, sleepTime;
+        long start, end, sleepTime, moveDelta;
         int[] inputDirection;
 
+        moveDelta = System.currentTimeMillis();
         while (running) {
             start = System.currentTimeMillis();
 
-            inputDirection = checkInput();
-            camera.playerMove(inputDirection[0], inputDirection[1]);
+            // Only handle movement every 3 frames
+            if (moveDelta - System.currentTimeMillis() < -100) {
+                inputDirection = checkInput();
+                camera.playerMove(inputDirection[0], inputDirection[1]);
+                moveDelta = System.currentTimeMillis();
+            }
 
             repaint();
             end = System.currentTimeMillis();
