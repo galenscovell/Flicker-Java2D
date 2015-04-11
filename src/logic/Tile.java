@@ -65,58 +65,109 @@ public class Tile {
     }
 
     public void draw(Graphics2D gfx, int tileSize) {
-        int screenX = x * tileSize;
-        int screenY = y * tileSize;
-        gfx.drawImage(sprite.getSprite(), screenX, screenY, tileSize, tileSize, null);
+        gfx.drawImage(sprite.getSprite(), x * tileSize, y * tileSize, tileSize, tileSize, null);
     }
 
     public void findSprite() {
         SpriteSheet sheet = SpriteSheet.tilesheet;
 
-        switch (bitmask) {
-            case 0:
-                sprite = new Sprite(sheet, 6);
-                break;
-            case 1:
-            case 100:
-            case 101:
-                sprite = new Sprite(sheet, 16);
-                break;
-            case 10:
-            case 1000:
-            case 1010:
-                sprite = new Sprite(sheet, 1);
-                break;
-            case 11:
-                sprite = new Sprite(sheet, 32);
-                break;
-            case 110:
-                sprite = new Sprite(sheet, 0);
-                break;
-            case 111:
-                sprite = new Sprite(sheet, 19);
-                break;
-            case 1001:
-                sprite = new Sprite(sheet, 34);
-                break;
-            case 1011:
-                sprite = new Sprite(sheet, 36);
-                break;
-            case 1100:
-                sprite = new Sprite(sheet, 2);
-                break;
-            case 1101:
-                sprite = new Sprite(sheet, 21);
-                break;
-            case 1110:
-                sprite = new Sprite(sheet, 4);
-                break;
-            case 1111:
-                sprite = new Sprite(sheet, 5);
-                break;
-            default:
-                state = 1;
-                sprite = new Sprite(sheet, 7);
+        if (isPerimeter()) {
+            switch (bitmask) {
+                case 0:
+                    sprite = new Sprite(sheet, 53);
+                    break;
+                case 1:
+                case 100:
+                case 101:
+                    sprite = new Sprite(sheet, 16);
+                    break;
+                case 10:
+                case 1000:
+                case 1010:
+                    sprite = new Sprite(sheet, 1);
+                    break;
+                case 11:
+                    sprite = new Sprite(sheet, 32);
+                    break;
+                case 110:
+                    sprite = new Sprite(sheet, 0);
+                    break;
+                case 111:
+                    sprite = new Sprite(sheet, 19);
+                    break;
+                case 1001:
+                    sprite = new Sprite(sheet, 34);
+                    break;
+                case 1011:
+                    sprite = new Sprite(sheet, 36);
+                    break;
+                case 1100:
+                    sprite = new Sprite(sheet, 2);
+                    break;
+                case 1101:
+                    sprite = new Sprite(sheet, 21);
+                    break;
+                case 1110:
+                    sprite = new Sprite(sheet, 4);
+                    break;
+                case 1111:
+                default:
+                    state = 1;
+                    sprite = new Sprite(sheet, 5);
+            }
+        } else if (isFloor()) {
+            switch (bitmask) {
+                case 0:
+                    sprite = new Sprite(sheet, 65);
+                    break;
+                case 1:
+                    sprite = new Sprite(sheet, 49);
+                    break;
+                case 10:
+                    sprite = new Sprite(sheet, 66);
+                    break;
+                case 11:
+                    sprite = new Sprite(sheet, 50);
+                    break;
+                case 100:
+                    sprite = new Sprite(sheet, 81);
+                    break;
+                case 101:
+                    sprite = new Sprite(sheet, 69);
+                    break;
+                case 110:
+                    sprite = new Sprite(sheet, 82);
+                    break;
+                case 111:
+                    sprite = new Sprite(sheet, 70);
+                    break;
+                case 1000:
+                    sprite = new Sprite(sheet, 64);
+                    break;
+                case 1001:
+                    sprite = new Sprite(sheet, 48);
+                    break;
+                case 1010:
+                    sprite = new Sprite(sheet, 67);
+                    break;
+                case 1011:
+                    sprite = new Sprite(sheet, 51);
+                    break;
+                case 1100:
+                    sprite = new Sprite(sheet, 80);
+                    break;
+                case 1101:
+                    sprite = new Sprite(sheet, 68);
+                    break;
+                case 1110:
+                    sprite = new Sprite(sheet, 83);
+                    break;
+                case 1111:
+                    sprite = new Sprite(sheet, 53);
+                    break;
+                default:
+                    sprite = new Sprite(sheet, 65);
+            }
         }
     }
 

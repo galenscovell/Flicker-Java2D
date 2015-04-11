@@ -157,10 +157,8 @@ public class GamePanel extends JPanel implements Runnable {
     protected void paintComponent(Graphics g) {
         Graphics2D gfx = (Graphics2D) g;
         super.paintComponent(gfx);
-
         gfx.setColor(Color.BLACK);
         gfx.fillRect(0, 0, getWidth(), getHeight());
-
         camera.render(gfx);
     }
 
@@ -174,7 +172,6 @@ public class GamePanel extends JPanel implements Runnable {
         }
         world.skin();
         camera.placePlayer();
-
         this.running = true;
         thread.start(); // call run()
     }

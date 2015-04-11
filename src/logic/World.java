@@ -99,7 +99,7 @@ public class World {
         }
 
         // Recheck Tiles for floor neighbors, if floor exists without any adjacent
-        //  floor Tiles remove it. If Tile has only one adjacent floor make it perimeter.
+        // floor Tiles remove it. If Tile has only one adjacent floor make it perimeter.
         checkAdjacent();
         for (Tile tile : tiles) {
             if (tile.getFloorNeighbors() == 1) {
@@ -114,19 +114,16 @@ public class World {
             tiles.remove(tile);
         }
 
-        // Bitmask perimeter Tiles
         for (Tile tile : tiles) {
-            if (tile.isPerimeter()) {
+            if (tile.isPerimeter() || tile.isFloor()) {
                 tile.setBitmask(bitmasker.findBitmask(tile, grid));
             }
         }
 
-        // Find sprites for all Tiles
         for (Tile tile : tiles) {
             tile.findSprite();
         }
 
-        // Remove builder reference
         builder = null;
     }
 
