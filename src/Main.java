@@ -11,7 +11,7 @@ import javax.swing.SwingUtilities;
 public class Main {
     
     public static void main(String[] args) {
-        MainFrame mainframe = new MainFrame(960, 740);
+        MainFrame mainframe = new MainFrame(960, 704);
         SwingUtilities.invokeLater(mainframe);
     }
 }

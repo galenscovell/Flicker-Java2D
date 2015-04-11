@@ -90,6 +90,6 @@ public class Camera {
     private void findCameraUpperLeft() {
         // These values are in pixels, not tile units
         camUpperLeftX = player.x - (viewportWidth / 2) + (tileSize / 2);
-        camUpperLeftY = player.y - (viewportHeight / 2) + tileSize;
+        camUpperLeftY = player.y - (viewportHeight / 2) + (tileSize / 2);
     }
 }

@@ -38,7 +38,7 @@ public class GamePanel extends JPanel implements Runnable {
     public GamePanel(int panelWidth, int panelHeight, int tileSize) {
         setPreferredSize(new Dimension(panelWidth, panelHeight));
         setDoubleBuffered(true);
-        this.world = new World(2000, 2000, tileSize);
+        this.world = new World(3000, 3000, tileSize);
         this.camera = new Camera(world.getTiles(), tileSize, panelWidth, panelHeight);
 
         // Setup player input bindings
