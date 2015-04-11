@@ -24,8 +24,8 @@ import javax.swing.KeyStroke;
 
 @SuppressWarnings("serial")
 public class GamePanel extends JPanel implements Runnable {
-    final float TIMESTEP = 1.0f / 10.0f;
-    final float FRAMERATE = 1.0f / 60.0f;
+    final int FRAMERATE = 60;
+    final int TIMESTEP = FRAMERATE / 10;
 
     private boolean running;
     private boolean upPressed, downPressed, leftPressed, rightPressed;
@@ -126,29 +126,30 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void run() {
-        double updateAccumulator = 0.0f;
-        double renderAccumulator = 0.0f;
-        long oldTime = System.nanoTime();
-        long currentTime = System.nanoTime();
-        double deltaSeconds;
+        long startTime, endTime, sleepTime;
+        int updateAccumulator = 0;
         int[] inputDirection;
 
         while (running) {
-            currentTime = System.nanoTime();
-            deltaSeconds = (double) (currentTime - oldTime) / 1000000000;
-            oldTime = currentTime;
+            updateAccumulator++;
+            startTime = System.currentTimeMillis();
 
-            updateAccumulator += deltaSeconds;
-            while (updateAccumulator > TIMESTEP) {
+            if (updateAccumulator > TIMESTEP) {
                 inputDirection = checkInput();
                 camera.playerMove(inputDirection[0], inputDirection[1]);
                 updateAccumulator -= TIMESTEP;
             }
-            
-            renderAccumulator += deltaSeconds;
-            if (renderAccumulator > FRAMERATE) {
-                repaint();
-                renderAccumulator = 0.0f;
+
+            repaint();
+            endTime = System.currentTimeMillis();
+            // Sleep to match FPS limit
+            sleepTime = (1000 / FRAMERATE) - (endTime - startTime);
+            if (sleepTime > 0) {
+                try {
+                    Thread.sleep(sleepTime); 
+                } catch (InterruptedException e) {
+                    thread.interrupt();
+                }
             }
         }
     }

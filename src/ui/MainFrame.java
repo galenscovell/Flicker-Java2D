@@ -6,6 +6,7 @@
 
 package ui;
 
+import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
 
@@ -34,9 +35,10 @@ public class MainFrame implements Runnable {
     }
 
     private void createComponents(Container container) {
-        // New GamePanel: width, height, tileSize
-        GamePanel gamePanel = new GamePanel(960, 640, 64);
-        container.add(gamePanel);
+        GamePanel gamePanel = new GamePanel(windowX, windowY - 100, 64);
+        HUDPanel hud = new HUDPanel(windowX, 100);
+        container.add(gamePanel, BorderLayout.PAGE_START);
+        container.add(hud, BorderLayout.PAGE_END);
         gamePanel.start();
     }
 }
