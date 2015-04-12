@@ -22,13 +22,13 @@ public class Updater {
         this.tileSize = tileSize;
     }
 
-    public void update(List<Entity> entitiesOutOfView, List<Entity> entitiesInView) {
-        for (Entity entity : entitiesOutOfView) {
-            randomMove(entity);
-        }
+    public void update(List<Entity> entities) {
+        for (Entity entity : entities) {
+            if (entity.isInView()) {
 
-        for (Entity entity : entitiesInView) {
-            
+            } else {
+                randomMove(entity);
+            }
         }
     }
 

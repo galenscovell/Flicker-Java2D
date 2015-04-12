@@ -15,6 +15,7 @@ import java.awt.Graphics2D;
 public class Salamander implements Entity {
     private int x, y, prevX, prevY;
     private int spriteNumber, waitFrames;
+    private boolean inView;
 
     private SpriteSheet sheet;
     private Sprite sprite;
@@ -52,8 +53,16 @@ public class Salamander implements Entity {
         return y;
     }
 
-    public String toString() {
-        return "Salamander at [" + x + ", " + y + "]";
+    public void toggleInView() {
+        if (inView) {
+            inView = false;
+        } else {
+            inView = true;
+        }
+    }
+
+    public boolean isInView() {
+        return inView;
     }
 
     public void move(int dx, int dy, boolean possible) {

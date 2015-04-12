@@ -12,7 +12,7 @@ import graphics.SpriteSheet;
 import java.awt.Graphics2D;
 
 
-public class Player implements Entity {
+public class Player {
     private int x, y, prevX, prevY;
     private int spriteNumber, waitFrames;
 
@@ -23,7 +23,7 @@ public class Player implements Entity {
 
 
     public Player(int x, int y) {
-        this.x = x; // Pixel units, not Tiles
+        this.x = x;
         this.y = y; 
         this.prevX = x;
         this.prevY = y;
@@ -54,10 +54,6 @@ public class Player implements Entity {
 
     public int getY() {
         return y;
-    }
-
-    public String toString() {
-        return "Player at [" + x + ", " + y + "]";
     }
 
     public void move(int dx, int dy, boolean possible) {

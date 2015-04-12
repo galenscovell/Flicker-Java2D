@@ -2,6 +2,7 @@
 /**
 * ENTITY INTERFACE
 * All entities move(), draw() and getX()/getY()
+* They also utilize toggleInView() and isInView()
 */
 
 package entities;
@@ -14,4 +15,6 @@ public interface Entity {
     public void draw(Graphics2D gfx, int tileSize);
     public int getX();
     public int getY();
+    public void toggleInView();
+    public boolean isInView();
 }

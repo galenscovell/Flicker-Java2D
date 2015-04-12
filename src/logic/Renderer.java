@@ -11,7 +11,6 @@ import entities.Player;
 import entities.Salamander;
 import graphics.Fog;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 
 import java.util.ArrayList;
@@ -26,8 +25,6 @@ public class Renderer {
     private Fog fog;
     private Player player;
     private List<Entity> entities;
-    private List<Entity> entitiesInView;
-    private List<Entity> entitiesOutOfView;
 
 
     public Renderer(List<Tile> tiles, int tileSize, int x, int y) {
@@ -37,11 +34,9 @@ public class Renderer {
         this.viewportHeight = y;
         this.fog = new Fog();
         this.entities = new ArrayList<Entity>();
-        this.entitiesInView = new ArrayList<Entity>();
-        this.entitiesOutOfView = new ArrayList<Entity>();
     }
 
-    public void render(Graphics2D gfx) {
+    public void render(Graphics2D gfx, int updateAccumulator) {
         // These values are in pixels, not tile units
         int camUpperLeftX = player.getX() - (viewportWidth / 2) + (tileSize / 2);
         int camUpperLeftY = player.getY() - (viewportHeight / 2) + (tileSize / 2);
@@ -57,26 +52,24 @@ public class Renderer {
             tileX = tile.x * tileSize;
             tileY = tile.y * tileSize;
             // Ignore tiles outside of current viewport
-            if (tileX >= camUpperLeftX && tileX <= (maxX - tileSize) && tileY >= camUpperLeftY && tileY <= (maxY - tileSize)) {
+            if (tileX >= camUpperLeftX && tileX < maxX && tileY >= camUpperLeftY && tileY < maxY) {
                 tile.draw(gfx, tileSize);
             }
         }
 
-        entitiesInView = new ArrayList<Entity>();
-        entitiesOutOfView = new ArrayList<Entity>();
         for (Entity entity : entities) {
             // Entity [x, y] are in pixels
             // Ignore entities outside of current viewport
-            if (entity.getX() >= camUpperLeftX && entity.getX() <= (maxX - tileSize) && entity.getY() >= camUpperLeftY && entity.getY() <= (maxY - tileSize)) {
+            if (entity.getX() >= camUpperLeftX && entity.getX() < maxX && entity.getY() >= camUpperLeftY && entity.getY() < maxY) {
                 entity.draw(gfx, tileSize);
-                if (entity != player) {
-                    entitiesInView.add(entity);
+                if (!entity.isInView()) {
+                    entity.toggleInView();
                 }
-            } else {
-                entitiesOutOfView.add(entity);
+            } else if (entity.isInView()) {
+                entity.toggleInView();
             }
         }
-
+        player.draw(gfx, tileSize);
         fog.render(gfx);
 
         // Reset graphics origin
@@ -90,7 +83,6 @@ public class Renderer {
             if (tile.isFloor() && !playerPlaced) {
                 this.player = new Player(tile.x * tileSize, tile.y * tileSize);
                 tile.toggleOccupied();
-                entities.add(player);
                 playerPlaced = true;
             } else if (tile.isFloor() && playerPlaced) {
                 entities.add(new Salamander(tile.x * tileSize, tile.y * tileSize));
@@ -117,12 +109,8 @@ public class Renderer {
         }
     }
 
-    public List<Entity> getEntityOutOfViewList() {
-        return entitiesOutOfView;
-    }
-
-    public List<Entity> getEntityInViewList() {
-        return entitiesInView;
+    public List<Entity> getEntityList() {
+        return entities;
     }
 
     private Tile findTile(int x, int y) {

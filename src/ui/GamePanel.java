@@ -1,7 +1,7 @@
 
 /**
  * GAMEPANEL CLASS
- * Handles game loop updating/rendering within game JPanel as well as player input.
+ * Handles game thread, game loop calls to updater/renderer, and player input.
  */
 
 package ui;
@@ -27,14 +27,15 @@ import javax.swing.KeyStroke;
 public class GamePanel extends JPanel implements Runnable {
     final int FRAMERATE = 60;
     final int TIMESTEP = FRAMERATE / 10;
+    private int updateAccumulator;
 
     private boolean running;
     private boolean upPressed, downPressed, leftPressed, rightPressed;
 
     private World world;
+    private Thread thread;
     private Renderer renderer;
     private Updater updater;
-    private Thread thread;
 
 
     public GamePanel(int panelWidth, int panelHeight, int tileSize) {
@@ -130,8 +131,8 @@ public class GamePanel extends JPanel implements Runnable {
 
     public void run() {
         long startTime, endTime, sleepTime;
-        int updateAccumulator = 0;
         int[] inputDirection;
+        updateAccumulator = 0;
 
         while (running) {
             updateAccumulator++;
@@ -139,9 +140,9 @@ public class GamePanel extends JPanel implements Runnable {
 
             if (updateAccumulator > TIMESTEP) {
                 inputDirection = checkInput();
-                updater.update(renderer.getEntityOutOfViewList(), renderer.getEntityInViewList());
+                updater.update(renderer.getEntityList());
                 renderer.playerMove(inputDirection[0], inputDirection[1]);
-                updateAccumulator -= TIMESTEP;
+                updateAccumulator = 0;
             }
 
             repaint();
@@ -164,7 +165,7 @@ public class GamePanel extends JPanel implements Runnable {
         super.paintComponent(gfx);
         gfx.setColor(Color.BLACK);
         gfx.fillRect(0, 0, getWidth(), getHeight());
-        renderer.render(gfx);
+        renderer.render(gfx, updateAccumulator);
     }
 
     public synchronized void start() {
