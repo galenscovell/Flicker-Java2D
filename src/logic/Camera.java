@@ -6,23 +6,27 @@
 
 package logic;
 
-import entities.Fog;
+import entities.Entity;
 import entities.Player;
+import entities.Salamander;
+import graphics.Fog;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
 public class Camera {
     private int tileSize;
     private List<Tile> tiles;
-    private Player player;
-    private Fog fog;
-
     private int viewportWidth, viewportHeight;
     private int camUpperLeftX, camUpperLeftY;
+
+    private Fog fog;
+    private Player player;
+    private List<Entity> entities;
 
 
     public Camera(List<Tile> tiles, int tileSize, int x, int y) {
@@ -31,6 +35,7 @@ public class Camera {
         this.viewportWidth = x;
         this.viewportHeight = y;
         this.fog = new Fog();
+        this.entities = new ArrayList<Entity>();
     }
 
     public void render(Graphics2D gfx) {
@@ -46,12 +51,16 @@ public class Camera {
             tileX = tile.x * tileSize;
             tileY = tile.y * tileSize;
 
-            // Ignore tiles outside of viewport
+            // Ignore tiles outside of current viewport
             if (tileX >= camUpperLeftX && tileX <= maxX && tileY >= camUpperLeftY && tileY <= maxY) {
                 tile.draw(gfx, tileSize);
             }
         }
-        player.draw(gfx, tileSize);
+
+        for (Entity entity : entities) {
+            entity.draw(gfx, tileSize);
+        }
+
         fog.render(gfx);
 
         // Reset graphics origin
@@ -59,10 +68,17 @@ public class Camera {
     }
 
     public void placePlayer() {
+        boolean playerPlaced = false;
         // Ensure player start position is on floor
         for (Tile tile : tiles) {
-            if (tile.isFloor()) {
+            if (tile.isFloor() && !playerPlaced) {
                 this.player = new Player(tile.x * tileSize, tile.y * tileSize);
+                tile.toggleOccupied();
+                entities.add(player);
+                playerPlaced = true;
+            } else if (tile.isFloor() && playerPlaced) {
+                entities.add(new Salamander(tile.x * tileSize, tile.y * tileSize));
+                tile.toggleOccupied();
                 return;
             }
         }
@@ -73,8 +89,15 @@ public class Camera {
         int playerY = (player.y / tileSize);
 
         Tile nextTile = findTile(playerX + dx, playerY + dy);
-        if (nextTile.isFloor()) {
-            player.move(dx * tileSize, dy * tileSize);
+        if (nextTile.isFloor() && !nextTile.isOccupied()) {
+            // Move to new Tile if possible, set old Tile as unoccupied
+            Tile currentTile = findTile(playerX, playerY);
+            currentTile.toggleOccupied();
+            player.move(dx * tileSize, dy * tileSize, true);
+            nextTile.toggleOccupied();
+        } else {
+            // Otherwise just turn in that direction
+            player.move(dx * tileSize, dy * tileSize, false);
         }
     }
 

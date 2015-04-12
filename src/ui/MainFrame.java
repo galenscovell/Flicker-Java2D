@@ -37,8 +37,8 @@ public class MainFrame implements Runnable {
     private void createComponents(Container container) {
         GamePanel gamePanel = new GamePanel(windowX, windowY - 128, 64);
         HUDPanel hud = new HUDPanel(windowX, 100);
-        container.add(gamePanel, BorderLayout.PAGE_START);
-        container.add(hud, BorderLayout.PAGE_END);
+        container.add(hud, BorderLayout.PAGE_START);
+        container.add(gamePanel, BorderLayout.PAGE_END);
         gamePanel.start();
     }
 }

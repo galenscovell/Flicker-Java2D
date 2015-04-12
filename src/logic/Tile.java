@@ -22,6 +22,7 @@ public class Tile {
     private List<Point> neighborTilePoints;
     private int bitmask;
     private Sprite sprite;
+    private boolean occupied;
 
 
     public Tile(int x, int y, int columns, int rows) {
@@ -46,6 +47,18 @@ public class Tile {
 
     public boolean isPerimeter() {
         return state == 3;
+    }
+
+    public boolean isOccupied() {
+        return occupied;
+    }
+
+    public void toggleOccupied() {
+        if (occupied) {
+            occupied = false;
+        } else {
+            occupied = true;
+        }
     }
 
     public void setFloorNeighbors(int value) {

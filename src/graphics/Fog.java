@@ -4,7 +4,7 @@
  * Displays transparent fog sprite.
  */
 
-package entities;
+package graphics;
 
 import java.awt.AlphaComposite;
 import java.awt.Graphics2D;
@@ -26,10 +26,10 @@ public class Fog {
         } catch (IOException e) {
             System.err.println("Unable to load fog image.");
         }
-        this.x = -64;
-        this.y = -64;
+        this.x = -1024;
+        this.y = -1024;
         this.size = 4096;
-        this.frameSkip = 2;
+        this.frameSkip = 3;
     }
 
     public void render(Graphics2D gfx) {
@@ -38,7 +38,7 @@ public class Fog {
         gfx.drawImage(image, x, y, size, size, null);
         if (frameSkip == 0) {
             animate();
-            frameSkip = 2;
+            frameSkip = 3;
         } else {
             frameSkip--;
         }
@@ -47,9 +47,9 @@ public class Fog {
     private void animate() {
         x--;
         y--;
-        if ((x < -size / 4)) {
-            x = 0;
-            y = 0;
+        if ((x < -size / 2)) {
+            x = -1024;
+            y = -1024;
         }
     }
 }

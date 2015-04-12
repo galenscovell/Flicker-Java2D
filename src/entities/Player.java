@@ -12,8 +12,8 @@ import graphics.SpriteSheet;
 import java.awt.Graphics2D;
 
 
-public class Player {
-    public int x, y;
+public class Player implements Entity {
+    public int x, y, prevX, prevY;
     private int spriteNumber, waitFrames;
 
     private SpriteSheet sheet;
@@ -24,7 +24,9 @@ public class Player {
 
     public Player(int x, int y) {
         this.x = x; // Pixel units, not Tiles
-        this.y = y;
+        this.y = y; 
+        this.prevX = x;
+        this.prevY = y;
         this.sheet = SpriteSheet.charsheet;
 
         this.upSprites = new Sprite[4];
@@ -46,7 +48,10 @@ public class Player {
         this.waitFrames = 20;
     }
 
-    public void move(int dx, int dy) {
+    public void move(int dx, int dy, boolean possible) {
+        prevX = x;
+        prevY = y;
+
         if (dy < 0) {
             currentSet = upSprites;
         } else if (dy > 0) {
@@ -57,18 +62,16 @@ public class Player {
             currentSet = rightSprites;
         }
 
-        animate(currentSet);
-        x += dx;
-        y += dy;
+        if (possible) {
+            animate(currentSet);
+            x += dx;
+            y += dy;
+        }
     }
 
     public void draw(Graphics2D gfx, int tileSize) {
         animate(currentSet);
         gfx.drawImage(sprite.getSprite(), x, y, tileSize, tileSize, null);
-    }
-
-    public String toString() {
-        return "Player at [" + x + ", " + y + "]";
     }
 
     private void animate(Sprite[] currentSet) {
