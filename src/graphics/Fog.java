@@ -28,8 +28,8 @@ public class Fog {
         }
         this.x = -1024;
         this.y = -1024;
-        this.size = 4096;
-        this.frameSkip = 3;
+        this.size = 8192;
+        this.frameSkip = 2;
     }
 
     public void render(Graphics2D gfx) {
@@ -38,7 +38,7 @@ public class Fog {
         gfx.drawImage(image, x, y, size, size, null);
         if (frameSkip == 0) {
             animate();
-            frameSkip = 3;
+            frameSkip = 2;
         } else {
             frameSkip--;
         }
@@ -47,7 +47,7 @@ public class Fog {
     private void animate() {
         x--;
         y--;
-        if ((x < -size / 2)) {
+        if ((x < -size / 4)) {
             x = -1024;
             y = -1024;
         }

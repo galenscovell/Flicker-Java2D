@@ -40,7 +40,7 @@ public class HUDPanel extends JPanel {
     private void createComponents(Container container) {
         Font retroFont = new Font("SDS_8x8", Font.PLAIN, 14);
         Dimension labelSize = new Dimension((x / 3) - 20, y / 3);
-        Dimension healthTickSize = new Dimension(25, 35);
+        Dimension healthTickSize = new Dimension(30, 30);
 
         JPanel healthPanel = new JPanel();
         healthPanel.setPreferredSize(new Dimension((x / 3) - 20, y));

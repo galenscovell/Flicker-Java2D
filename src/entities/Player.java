@@ -13,7 +13,7 @@ import java.awt.Graphics2D;
 
 
 public class Player implements Entity {
-    public int x, y, prevX, prevY;
+    private int x, y, prevX, prevY;
     private int spriteNumber, waitFrames;
 
     private SpriteSheet sheet;
@@ -46,6 +46,18 @@ public class Player implements Entity {
         this.sprite = currentSet[0];
         this.spriteNumber = 0;
         this.waitFrames = 20;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public String toString() {
+        return "Player at [" + x + ", " + y + "]";
     }
 
     public void move(int dx, int dy, boolean possible) {

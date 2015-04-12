@@ -6,7 +6,8 @@
 
 package ui;
 
-import logic.Camera;
+import logic.Renderer;
+import logic.Updater;
 import logic.World;
 
 import java.awt.Color;
@@ -31,7 +32,8 @@ public class GamePanel extends JPanel implements Runnable {
     private boolean upPressed, downPressed, leftPressed, rightPressed;
 
     private World world;
-    private Camera camera;
+    private Renderer renderer;
+    private Updater updater;
     private Thread thread;
 
 
@@ -39,7 +41,8 @@ public class GamePanel extends JPanel implements Runnable {
         setPreferredSize(new Dimension(panelWidth, panelHeight));
         setDoubleBuffered(true);
         this.world = new World(3000, 3000, tileSize);
-        this.camera = new Camera(world.getTiles(), tileSize, panelWidth, panelHeight);
+        this.renderer = new Renderer(world.getTiles(), tileSize, panelWidth, panelHeight);
+        this.updater = new Updater(world.getTiles(), tileSize);
 
         // Setup player input bindings
         getInputMap().put(KeyStroke.getKeyStroke("UP"), "moveUp");
@@ -136,13 +139,14 @@ public class GamePanel extends JPanel implements Runnable {
 
             if (updateAccumulator > TIMESTEP) {
                 inputDirection = checkInput();
-                camera.playerMove(inputDirection[0], inputDirection[1]);
+                updater.update(renderer.getEntityOutOfViewList(), renderer.getEntityInViewList());
+                renderer.playerMove(inputDirection[0], inputDirection[1]);
                 updateAccumulator -= TIMESTEP;
             }
 
             repaint();
             endTime = System.currentTimeMillis();
-            // Sleep to match FPS limit
+            // Sleep to keep graphics rendering at framerate
             sleepTime = (1000 / FRAMERATE) - (endTime - startTime);
             if (sleepTime > 0) {
                 try {
@@ -160,7 +164,7 @@ public class GamePanel extends JPanel implements Runnable {
         super.paintComponent(gfx);
         gfx.setColor(Color.BLACK);
         gfx.fillRect(0, 0, getWidth(), getHeight());
-        camera.render(gfx);
+        renderer.render(gfx);
     }
 
     public synchronized void start() {
@@ -172,7 +176,7 @@ public class GamePanel extends JPanel implements Runnable {
             smoothTicks--;
         }
         world.skin();
-        camera.placePlayer();
+        renderer.placePlayer();
         this.running = true;
         thread.start(); // call run()
     }

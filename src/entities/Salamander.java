@@ -13,7 +13,7 @@ import java.awt.Graphics2D;
 
 
 public class Salamander implements Entity {
-    public int x, y, prevX, prevY;
+    private int x, y, prevX, prevY;
     private int spriteNumber, waitFrames;
 
     private SpriteSheet sheet;
@@ -44,8 +44,33 @@ public class Salamander implements Entity {
         this.waitFrames = 20;
     }
 
-    public void move(int dx, int dy, boolean possible) {
+    public int getX() {
+        return x;
+    }
 
+    public int getY() {
+        return y;
+    }
+
+    public String toString() {
+        return "Salamander at [" + x + ", " + y + "]";
+    }
+
+    public void move(int dx, int dy, boolean possible) {
+        prevX = x;
+        prevY = y;
+
+        if (dx < 0) {
+            currentSet = leftSprites;
+        } else if (dx > 0) {
+            currentSet = rightSprites;
+        }
+
+        if (possible) {
+            animate(currentSet);
+            x += dx;
+            y += dy;
+        }
     }
 
     public void draw(Graphics2D gfx, int tileSize) {
