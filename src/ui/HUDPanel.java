@@ -13,7 +13,10 @@ import java.awt.Dimension;
 import java.awt.Font;
 
 import javax.swing.BorderFactory;
+import javax.swing.border.Border;
 import javax.swing.border.BevelBorder;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.MatteBorder;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -25,7 +28,7 @@ public class HUDPanel extends JPanel {
     private JPanel[] healthTicks;
     private boolean[] healthChecker;
 
-    private Color full = new Color(0xD14233);
+    private Color full = new Color(0x26A65B);
 
 
     public HUDPanel(int panelWidth, int panelHeight) {
@@ -46,13 +49,17 @@ public class HUDPanel extends JPanel {
         healthPanel.setPreferredSize(new Dimension((x / 3) - 20, y));
         healthPanel.setOpaque(false);
 
+        Border tickBorderRaised = BorderFactory.createRaisedBevelBorder();
+        Border tickBorderMatte = BorderFactory.createMatteBorder(2, 5, 2, 2, new Color(0x87D37C));
+        Border tickBorderCompound = BorderFactory.createCompoundBorder(tickBorderRaised, tickBorderMatte);
+
         healthChecker = new boolean[5];
         healthTicks = new JPanel[5];
         for (int i = 0; i < 5; i++) {
             JPanel tick = new JPanel();
             tick.setPreferredSize(healthTickSize);
             tick.setBackground(full);
-            tick.setBorder(BorderFactory.createRaisedBevelBorder());
+            tick.setBorder(tickBorderCompound);
             healthTicks[i] = tick;
             healthPanel.add(tick);
         }

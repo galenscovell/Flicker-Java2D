@@ -36,15 +36,15 @@ public class Renderer {
         this.entities = new ArrayList<Entity>();
     }
 
-    public void render(Graphics2D gfx, int updateAccumulator) {
+    public void render(Graphics2D gfx, double interpolation) {
         // These values are in pixels, not tile units
-        int camUpperLeftX = player.getX() - (viewportWidth / 2) + (tileSize / 2);
-        int camUpperLeftY = player.getY() - (viewportHeight / 2) + (tileSize / 2);
+        int camUpperLeftX = player.getCurrentX() - (viewportWidth / 2);
+        int camUpperLeftY = player.getCurrentY() - (viewportHeight / 2);
         int maxX = camUpperLeftX + viewportWidth;
         int maxY = camUpperLeftY + viewportHeight;
-
+        
         // Translate graphics origin to camera's upper left
-        gfx.translate(-camUpperLeftX, -camUpperLeftY);
+        gfx.translate(-(camUpperLeftX + tileSize / 2), -(camUpperLeftY + tileSize / 2));
 
         int tileX, tileY;
         for (Tile tile : tiles) {
@@ -52,7 +52,7 @@ public class Renderer {
             tileX = tile.x * tileSize;
             tileY = tile.y * tileSize;
             // Ignore tiles outside of current viewport
-            if (tileX >= camUpperLeftX && tileX < maxX && tileY >= camUpperLeftY && tileY < maxY) {
+            if ((tileX + tileSize) >= camUpperLeftX && (tileX - tileSize) <= maxX && (tileY + tileSize) >= camUpperLeftY && (tileY - tileSize) <= maxY) {
                 tile.draw(gfx, tileSize);
             }
         }
@@ -60,8 +60,8 @@ public class Renderer {
         for (Entity entity : entities) {
             // Entity [x, y] are in pixels
             // Ignore entities outside of current viewport
-            if (entity.getX() >= camUpperLeftX && entity.getX() < maxX && entity.getY() >= camUpperLeftY && entity.getY() < maxY) {
-                entity.draw(gfx, tileSize);
+            if (entity.getX() >= camUpperLeftX && entity.getX() <= maxX && entity.getY() >= camUpperLeftY && entity.getY() <= maxY) {
+                entity.draw(gfx, tileSize, interpolation);
                 if (!entity.isInView()) {
                     entity.toggleInView();
                 }
@@ -69,11 +69,11 @@ public class Renderer {
                 entity.toggleInView();
             }
         }
-        player.draw(gfx, tileSize);
+        player.draw(gfx, tileSize, interpolation);
         fog.render(gfx);
 
         // Reset graphics origin
-        gfx.translate(camUpperLeftX, camUpperLeftY);
+        gfx.translate((camUpperLeftX + tileSize / 2), (camUpperLeftY + tileSize / 2));
     }
 
     public void placePlayer() {

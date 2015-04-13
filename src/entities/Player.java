@@ -13,7 +13,7 @@ import java.awt.Graphics2D;
 
 
 public class Player {
-    private int x, y, prevX, prevY;
+    private int x, y, prevX, prevY, currentX, currentY;
     private int spriteNumber, waitFrames;
 
     private SpriteSheet sheet;
@@ -27,6 +27,8 @@ public class Player {
         this.y = y; 
         this.prevX = x;
         this.prevY = y;
+        this.currentX = x;
+        this.currentY = y;
         this.sheet = SpriteSheet.charsheet;
 
         this.upSprites = new Sprite[4];
@@ -56,6 +58,14 @@ public class Player {
         return y;
     }
 
+    public int getCurrentX() {
+        return currentX;
+    }
+
+    public int getCurrentY() {
+        return currentY;
+    }
+
     public void move(int dx, int dy, boolean possible) {
         prevX = x;
         prevY = y;
@@ -77,9 +87,12 @@ public class Player {
         }
     }
 
-    public void draw(Graphics2D gfx, int tileSize) {
+    public void draw(Graphics2D gfx, int tileSize, double interpolation) {
         animate(currentSet);
-        gfx.drawImage(sprite.getSprite(), x, y, tileSize, tileSize, null);
+        currentX = (int) (prevX + ((x - prevX) * interpolation));
+        currentY = (int) (prevY + ((y - prevY) * interpolation));
+        
+        gfx.drawImage(sprite.getSprite(), currentX, currentY, tileSize, tileSize, null);
     }
 
     private void animate(Sprite[] currentSet) {

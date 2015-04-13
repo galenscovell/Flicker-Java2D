@@ -25,9 +25,9 @@ import javax.swing.KeyStroke;
 
 @SuppressWarnings("serial")
 public class GamePanel extends JPanel implements Runnable {
-    final int FRAMERATE = 60;
-    final int TIMESTEP = FRAMERATE / 10;
-    private int updateAccumulator;
+    final int FRAMERATE = 45;
+    final int TIMESTEP = 10;
+    private double interpolation;
 
     private boolean running;
     private boolean upPressed, downPressed, leftPressed, rightPressed;
@@ -132,19 +132,20 @@ public class GamePanel extends JPanel implements Runnable {
     public void run() {
         long startTime, endTime, sleepTime;
         int[] inputDirection;
-        updateAccumulator = 0;
+        int updateAccumulator = 0;
 
         while (running) {
             updateAccumulator++;
             startTime = System.currentTimeMillis();
 
-            if (updateAccumulator > TIMESTEP) {
+            if (updateAccumulator >= TIMESTEP) {
                 inputDirection = checkInput();
                 updater.update(renderer.getEntityList());
                 renderer.playerMove(inputDirection[0], inputDirection[1]);
                 updateAccumulator = 0;
             }
 
+            interpolation = (double) updateAccumulator / TIMESTEP;
             repaint();
             endTime = System.currentTimeMillis();
             // Sleep to keep graphics rendering at framerate
@@ -165,7 +166,7 @@ public class GamePanel extends JPanel implements Runnable {
         super.paintComponent(gfx);
         gfx.setColor(Color.BLACK);
         gfx.fillRect(0, 0, getWidth(), getHeight());
-        renderer.render(gfx, updateAccumulator);
+        renderer.render(gfx, interpolation);
     }
 
     public synchronized void start() {

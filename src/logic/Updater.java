@@ -25,7 +25,7 @@ public class Updater {
     public void update(List<Entity> entities) {
         for (Entity entity : entities) {
             if (entity.isInView()) {
-
+                randomMove(entity);
             } else {
                 randomMove(entity);
             }
@@ -38,13 +38,16 @@ public class Updater {
         int entityY = (entity.getY() / tileSize);
 
         Random generator = new Random();
-        int coordinate = generator.nextInt(2);
-        if (coordinate == 0) {
+        int choice = generator.nextInt(5);
+        if (choice == 0) {
             dx = generator.nextInt(3) - 1;
             dy = 0;
-        } else {
+        } else if (choice == 1) {
             dx = 0;
             dy = generator.nextInt(3) - 1;
+        } else {
+            dx = 0;
+            dy = 0;
         }
 
         Tile nextTile = findTile(entityX + dx, entityY + dy);
