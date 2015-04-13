@@ -113,6 +113,10 @@ public class Renderer {
         return entities;
     }
 
+    public Player getPlayer() {
+        return player;
+    }
+
     private Tile findTile(int x, int y) {
         for (Tile tile : tiles) {
             if (tile.x == x && tile.y == y) {
