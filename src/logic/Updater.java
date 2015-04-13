@@ -25,14 +25,14 @@ public class Updater {
     public void update(List<Entity> entities) {
         for (Entity entity : entities) {
             if (entity.isInView()) {
-                randomMove(entity);
+                attackMove(entity);
             } else {
-                randomMove(entity);
+                exploreMove(entity);
             }
         }
     }
 
-    private void randomMove(Entity entity) {
+    private void exploreMove(Entity entity) {
         int dx, dy;
         int entityX = (entity.getX() / tileSize);
         int entityY = (entity.getY() / tileSize);
@@ -63,8 +63,8 @@ public class Updater {
         }
     }
 
-    private void chaseMove() {
-
+    private void attackMove(Entity entity) {
+        
     }
 
     private Tile findTile(int x, int y) {

@@ -18,9 +18,8 @@ import java.util.List;
 
 
 public class Renderer {
-    private int tileSize;
+    private int tileSize, viewportWidth, viewportHeight;
     private List<Tile> tiles;
-    private int viewportWidth, viewportHeight;
 
     private Fog fog;
     private Player player;
@@ -44,6 +43,7 @@ public class Renderer {
         int maxY = camUpperLeftY + viewportHeight;
         
         // Translate graphics origin to camera's upper left
+        // Extend the corner by half a tile in both directions to prevent rendering issues
         gfx.translate(-(camUpperLeftX + tileSize / 2), -(camUpperLeftY + tileSize / 2));
 
         int tileX, tileY;

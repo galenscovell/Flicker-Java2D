@@ -26,7 +26,6 @@ import javax.swing.JPanel;
 public class HUDPanel extends JPanel {
     private int x, y;
     private JPanel[] healthTicks;
-    private boolean[] healthChecker;
 
     private Color full = new Color(0x26A65B);
 
@@ -43,34 +42,14 @@ public class HUDPanel extends JPanel {
     private void createComponents(Container container) {
         Font retroFont = new Font("SDS_8x8", Font.PLAIN, 14);
         Dimension labelSize = new Dimension((x / 3) - 20, y / 3);
-        Dimension healthTickSize = new Dimension(30, 30);
 
         JPanel healthPanel = new JPanel();
         healthPanel.setPreferredSize(new Dimension((x / 3) - 20, y));
         healthPanel.setOpaque(false);
 
-        Border tickBorderRaised = BorderFactory.createRaisedBevelBorder();
-        Border tickBorderMatte = BorderFactory.createMatteBorder(2, 5, 2, 2, new Color(0x87D37C));
-        Border tickBorderCompound = BorderFactory.createCompoundBorder(tickBorderRaised, tickBorderMatte);
-
-        healthChecker = new boolean[5];
-        healthTicks = new JPanel[5];
-        for (int i = 0; i < 5; i++) {
-            JPanel tick = new JPanel();
-            tick.setPreferredSize(healthTickSize);
-            tick.setBackground(full);
-            tick.setBorder(tickBorderCompound);
-            healthTicks[i] = tick;
-            healthPanel.add(tick);
-        }
-        
-        JLabel healthLabel = new JLabel("HEALTH", JLabel.CENTER);
-        healthLabel.setPreferredSize(labelSize);
-        healthLabel.setFont(retroFont);
-        healthLabel.setForeground(Color.WHITE);
-        healthPanel.add(healthLabel);
+        createHealthBar(healthPanel, labelSize, retroFont);
         container.add(healthPanel);
-
+        
         JPanel itemsPanel = new JPanel();
         itemsPanel.setPreferredSize(new Dimension(x / 3, y));
         itemsPanel.setOpaque(false);
@@ -103,6 +82,7 @@ public class HUDPanel extends JPanel {
     }
 
     private int currentHealthTick() {
+        boolean[] healthChecker = new boolean[MainFrame.playerStats.getCon()];
         int currentHealthTick = 0;
         for (boolean state : healthChecker) {
             if (state) {
@@ -112,5 +92,29 @@ public class HUDPanel extends JPanel {
             }
         }
         return 0;
+    }
+
+    private void createHealthBar(Container container, Dimension labelSize, Font retroFont) {
+        Dimension healthTickSize = new Dimension(30, 30);
+        Border tickBorderRaised = BorderFactory.createRaisedBevelBorder();
+        Border tickBorderMatte = BorderFactory.createMatteBorder(2, 5, 2, 2, new Color(0x87D37C));
+        Border tickBorderCompound = BorderFactory.createCompoundBorder(tickBorderRaised, tickBorderMatte);
+
+        int con = MainFrame.playerStats.getCon();
+        healthTicks = new JPanel[con];
+        for (int i = 0; i < con; i++) {
+            JPanel tick = new JPanel();
+            tick.setPreferredSize(healthTickSize);
+            tick.setBackground(full);
+            tick.setBorder(tickBorderCompound);
+            healthTicks[i] = tick;
+            container.add(tick);
+        }
+        
+        JLabel healthLabel = new JLabel("HEALTH", JLabel.CENTER);
+        healthLabel.setPreferredSize(labelSize);
+        healthLabel.setFont(retroFont);
+        healthLabel.setForeground(Color.WHITE);
+        container.add(healthLabel);
     }
 }

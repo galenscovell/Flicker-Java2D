@@ -2,6 +2,7 @@
 /**
  * MAINFRAME CLASS
  * Main frame for application.
+ * This class also is the sole creator of PlayerStats used throughout the application.
  */
 
 package ui;
@@ -16,11 +17,13 @@ import javax.swing.JFrame;
 public class MainFrame implements Runnable {
     private int windowX, windowY;
     private JFrame frame;
+    public static PlayerStats playerStats;
 
 
     public MainFrame(int x, int y) {
         this.windowX = x;
         this.windowY = y;
+        playerStats = new PlayerStats();
     }
 
     public void run() {

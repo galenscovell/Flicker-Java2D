@@ -1,7 +1,7 @@
 
 /**
  * TILE CLASS
- * Keeps track of tile position, state and rendering of Tile sprite.
+ * Keeps track of tile position, state and rendering.
  * State can be Wall(0), Floor(1), Corridor(2) or Perimeter(3)
  */
 
