@@ -92,7 +92,7 @@ public class Renderer {
         }
     }
 
-    public void playerMove(int dx, int dy) {
+    public boolean playerMove(int dx, int dy) {
         int playerX = (player.getX() / tileSize);
         int playerY = (player.getY() / tileSize);
 
@@ -103,9 +103,11 @@ public class Renderer {
             currentTile.toggleOccupied();
             player.move(dx * tileSize, dy * tileSize, true);
             nextTile.toggleOccupied();
+            return true;
         } else {
             // Otherwise just turn in that direction
             player.move(dx * tileSize, dy * tileSize, false);
+            return false;
         }
     }
 

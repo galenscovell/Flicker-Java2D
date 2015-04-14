@@ -6,7 +6,6 @@
 
 package ui;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -17,7 +16,6 @@ import javax.swing.border.Border;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.MatteBorder;
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -26,7 +24,6 @@ import javax.swing.JPanel;
 public class HUDPanel extends JPanel {
     private int x, y;
     private JPanel[] healthTicks;
-
     private Color full = new Color(0x26A65B);
 
 

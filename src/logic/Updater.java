@@ -23,13 +23,19 @@ public class Updater {
         this.tileSize = tileSize;
     }
 
-    public void update(List<Entity> entities, Player player) {
+    public void entityMove(List<Entity> entities, Player player) {
         for (Entity entity : entities) {
             if (entity.isInView()) {
                 chaseMove(entity, player);
             } else {
                 exploreMove(entity);
             }
+        }
+    }
+
+    public void haltEntityMove(List<Entity> entities) {
+        for (Entity entity : entities) {
+            entity.move(0, 0, false);
         }
     }
 
@@ -77,24 +83,27 @@ public class Updater {
         boolean left = false;
         boolean right = false;
 
-        if ((diffX == 0 && (diffY == 1 || diffY == -1)) || (diffY == 0 && (diffX == 1 || diffX == -1))) {
+        // If entity is horizontally or vertically aligned with and adjacent to Player, attack
+        if (diffX == 0 && (diffY == 1 || diffY == -1)) {
+            attackMove(entity, player);
+        } else if (diffY == 0 && (diffX == 1 || diffX == -1)) {
             attackMove(entity, player);
         }
 
         Tile upTile = findTile(entityX, entityY - 1);
         Tile downTile = findTile(entityX, entityY + 1);
         if (diffY >= 1 && upTile.isFloor() && !upTile.isOccupied()) {
-                up = true;
+            up = true;
         } else if (diffY <= -1 && downTile.isFloor() && !downTile.isOccupied()) {
-                down = true;
+            down = true;
         }
 
         Tile leftTile = findTile(entityX - 1, entityY);
         Tile rightTile = findTile(entityX + 1, entityY);
         if (diffX >= 1 && leftTile.isFloor() && !leftTile.isOccupied()) {
-                left = true;
+            left = true;
         } else if (diffX <= -1 && rightTile.isFloor() && !rightTile.isOccupied()) {
-                right = true;
+            right = true;
         }
 
         int dx = 0;

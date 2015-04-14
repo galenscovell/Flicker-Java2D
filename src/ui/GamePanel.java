@@ -133,18 +133,36 @@ public class GamePanel extends JPanel implements Runnable {
         long startTime, endTime, sleepTime;
         int[] inputDirection;
         int updateAccumulator = 0;
+        int playerMoves = 4;
+        int entityMoves = 0;
 
         while (running) {
             updateAccumulator++;
             startTime = System.currentTimeMillis();
 
+            // Player movement and entity logic
             if (updateAccumulator >= TIMESTEP) {
-                inputDirection = checkInput();
-                updater.update(renderer.getEntityList(), renderer.getPlayer());
-                renderer.playerMove(inputDirection[0], inputDirection[1]);
+                if (playerMoves > 0) {
+                    inputDirection = checkInput();
+                    if (renderer.playerMove(inputDirection[0], inputDirection[1])) {
+                        playerMoves--;
+                    }
+                } else if (playerMoves == 0) {
+                    renderer.playerMove(0, 0);
+                    playerMoves--;
+                    entityMoves = 3;
+                } else if (entityMoves > 0) {
+                    updater.entityMove(renderer.getEntityList(), renderer.getPlayer());
+                    entityMoves--;
+                } else if (entityMoves == 0) {
+                    updater.haltEntityMove(renderer.getEntityList());
+                    entityMoves--;
+                    playerMoves = 4;
+                }
                 updateAccumulator = 0;
             }
 
+            // Rendering
             interpolation = (double) updateAccumulator / TIMESTEP;
             repaint();
             endTime = System.currentTimeMillis();
@@ -189,6 +207,14 @@ public class GamePanel extends JPanel implements Runnable {
             thread.join();
         } catch (InterruptedException e) {
             thread.interrupt();
+        }
+    }
+
+    public void pause() {
+        if (running) {
+            running = false;
+        } else {
+            running = true;
         }
     }
 }
