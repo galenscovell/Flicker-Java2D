@@ -38,12 +38,12 @@ public class GamePanel extends JPanel implements Runnable {
     private Updater updater;
 
 
-    public GamePanel(int panelWidth, int panelHeight, int tileSize) {
+    public GamePanel(int panelWidth, int panelHeight, int tileSize, MainFrame root) {
         setPreferredSize(new Dimension(panelWidth, panelHeight));
         setDoubleBuffered(true);
         this.world = new World(3000, 3000, tileSize);
         this.renderer = new Renderer(world.getTiles(), tileSize, panelWidth, panelHeight);
-        this.updater = new Updater(world.getTiles(), tileSize);
+        this.updater = new Updater(world.getTiles(), tileSize, root.getHud());
 
         // Setup player input bindings
         getInputMap().put(KeyStroke.getKeyStroke("UP"), "moveUp");

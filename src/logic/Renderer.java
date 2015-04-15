@@ -77,20 +77,23 @@ public class Renderer {
 
     public void placePlayer() {
         boolean playerPlaced = false;
-        int critterPlaced = 0;
         // Ensure player start position is on floor
         for (Tile tile : tiles) {
             if (tile.isFloor() && !playerPlaced) {
-                this.player = new Player(tile.x * tileSize, tile.y * tileSize);
-                tile.toggleOccupied();
-                playerPlaced = true;
+                // If Player exists, set new position
+                if (player != null) {
+                    player.setCoords(tile.x * tileSize, tile.y * tileSize);
+                    playerPlaced = true;
+                // Else create new Player instance
+                } else {
+                    this.player = new Player(tile.x * tileSize, tile.y * tileSize);
+                    tile.toggleOccupied();
+                    playerPlaced = true;
+                }
             } else if (tile.isFloor() && playerPlaced) {
                 entities.add(new Salamander(tile.x * tileSize, tile.y * tileSize));
                 tile.toggleOccupied();
-                critterPlaced++;
-                if (critterPlaced == 2) {
-                    return;
-                }
+                return;
             }
         }
     }

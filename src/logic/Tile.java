@@ -83,7 +83,6 @@ public class Tile {
 
     public void findSprite() {
         SpriteSheet sheet = SpriteSheet.tilesheet;
-
         if (isPerimeter()) {
             switch (bitmask) {
                 case 0:

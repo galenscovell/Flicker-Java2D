@@ -10,7 +10,6 @@ import entities.Entity;
 import entities.Player;
 
 import ui.HUDPanel;
-import ui.MainFrame;
 
 import java.util.List;
 import java.util.Random;
@@ -22,13 +21,14 @@ public class Updater {
     private Player player;
     private boolean playerTurn;
     private int playerMoves;
+    private HUDPanel hud;
 
 
-    public Updater(List<Tile> tiles, int tileSize) {
+    public Updater(List<Tile> tiles, int tileSize, HUDPanel hud) {
         this.tiles = tiles;
         this.tileSize = tileSize;
         this.playerTurn = true;
-        this.playerMoves = MainFrame.playerStats.getAgi();
+        this.hud = hud;
     }
 
     public void updateTurn(int[] input, List<Entity> entities) {
@@ -48,7 +48,8 @@ public class Updater {
                 } else {
                     haltEntityMove(entity);
                     entity.resetMoves();
-                    playerMoves = MainFrame.playerStats.getAgi();
+                    entity.resetAttacks();
+                    playerMoves = player.getAgi();
                     playerTurn = true;
                 }
             }
@@ -57,6 +58,7 @@ public class Updater {
 
     public void setPlayer(Player player) {
         this.player = player;
+        this.playerMoves = player.getAgi();
     }
 
     public boolean playerMove(int dx, int dy) {
@@ -91,21 +93,17 @@ public class Updater {
     }
 
     private void exploreMove(Entity entity) {
-        int dx, dy;
+        Random generator = new Random();
         int entityX = (entity.getX() / tileSize);
         int entityY = (entity.getY() / tileSize);
+        int dx = 0;
+        int dy = 0;
 
-        Random generator = new Random();
         int choice = generator.nextInt(2);
         if (choice == 0) {
-            dx = generator.nextInt(3) - 1;
-            dy = 0;
+            dx += generator.nextInt(3) - 1;
         } else if (choice == 1) {
-            dx = 0;
-            dy = generator.nextInt(3) - 1;
-        } else {
-            dx = 0;
-            dy = 0;
+            dy += generator.nextInt(3) - 1;
         }
 
         Tile nextTile = findTile(entityX + dx, entityY + dy);
@@ -122,12 +120,10 @@ public class Updater {
     }
 
     private void chaseMove(Entity entity) {
-        int playerX = (player.getX() / tileSize);
-        int playerY = (player.getY() / tileSize);
         int entityX = (entity.getX() / tileSize);
         int entityY = (entity.getY() / tileSize);
-        int diffX = (entityX - playerX);
-        int diffY = (entityY - playerY);
+        int diffX = (entityX - (player.getX() / tileSize));
+        int diffY = (entityY - (player.getY() / tileSize));
 
         boolean up = false;
         boolean down = false;
@@ -135,10 +131,14 @@ public class Updater {
         boolean right = false;
 
         // If entity is horizontally or vertically aligned with and adjacent to Player, attack
-        if (diffX == 0 && (diffY == 1 || diffY == -1)) {
-            attackMove(entity);
-        } else if (diffY == 0 && (diffX == 1 || diffX == -1)) {
-            attackMove(entity);
+        if (entity.getAttacks() > 0) {
+            if (diffX == 0 && (diffY == 1 || diffY == -1)) {
+                attackMove(entity);
+                entity.decrementAttacks();
+            } else if (diffY == 0 && (diffX == 1 || diffX == -1)) {
+                attackMove(entity);
+                entity.decrementAttacks();
+            }
         }
 
         Tile upTile = findTile(entityX, entityY - 1);
@@ -185,7 +185,7 @@ public class Updater {
 
     private void attackMove(Entity entity) {
         System.out.println("Salamander attacks!");
-        MainFrame.hud.changeHealth(-1);
+        hud.changeHealth(-1);
     }
 
     private Tile findTile(int x, int y) {

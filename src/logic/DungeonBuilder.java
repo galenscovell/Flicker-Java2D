@@ -51,7 +51,6 @@ public class DungeonBuilder implements Builder {
             for (int y = -roomSize; y <= roomSize; y++) {
                 sumX = centerX + x;
                 sumY = centerY + y;
-
                 if (isOutOfBounds(sumX, sumY)) {
                     continue;
                 }
@@ -66,7 +65,6 @@ public class DungeonBuilder implements Builder {
                 grid[sumX][sumY].state = 1;
             }
         }
-
         int chosenPoint = generator.nextInt(perimeterPoints.size() - 1);
         Point corridorPoint = perimeterPoints.get(chosenPoint);
         findCorridorDirection(corridorPoint.x, corridorPoint.y);
@@ -79,7 +77,6 @@ public class DungeonBuilder implements Builder {
         for (int x = -1; x <= 1; x += 2) {
             sumX = startX + x;
             sumY = startY;
-
             if (isOutOfBounds(sumX, sumY)) {
                 continue;
             }
@@ -94,7 +91,6 @@ public class DungeonBuilder implements Builder {
         for (int y = -1; y <= 1; y += 2) {
             sumX = startX;
             sumY = startY + y;
-
             if (isOutOfBounds(sumX, sumY)) {
                 continue;
             }
@@ -158,7 +154,6 @@ public class DungeonBuilder implements Builder {
 
     public List<Tile> getTiles() {
         List<Tile> tiles = new ArrayList<Tile>();
-
         for (int y = 0; y < rows; y++) {
             for (int x = 0; x < columns; x++) {
                 tiles.add(grid[x][y]);

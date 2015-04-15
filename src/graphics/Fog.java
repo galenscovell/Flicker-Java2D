@@ -1,7 +1,7 @@
 
 /**
  * FOG CLASS
- * Displays transparent fog sprite.
+ * Displays and animates transparent fog sprite.
  */
 
 package graphics;

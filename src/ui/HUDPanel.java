@@ -22,7 +22,6 @@ public class HUDPanel extends JPanel {
     private int x, y;
     private JPanel[] healthTicks;
     private boolean[] healthChecker;
-    private Color full = new Color(0x26A65B);
 
 
     public HUDPanel(int panelWidth, int panelHeight) {
@@ -69,10 +68,10 @@ public class HUDPanel extends JPanel {
     public void changeHealth(int i) {
         int currentHealth = currentHealthTick();
         if (i < 0) {
-            healthTicks[currentHealth].setBackground(Color.WHITE);
+            healthTicks[currentHealth].setBackground(new Color(0x34495e));
             healthChecker[currentHealth] = false;
         } else if (i > 0) {
-            healthTicks[currentHealth].setBackground(full);
+            healthTicks[currentHealth].setBackground(new Color(0x26A65B));
             healthChecker[currentHealth] = true;
         }
         
@@ -80,8 +79,8 @@ public class HUDPanel extends JPanel {
 
     private int currentHealthTick() {
         int currentHealthTick = 0;
-        for (boolean full : healthChecker) {
-            if (full) {
+        for (boolean state : healthChecker) {
+            if (state) {
                 currentHealthTick++;
             } else {
                 return currentHealthTick - 1;
@@ -91,15 +90,14 @@ public class HUDPanel extends JPanel {
     }
 
     private void createHealthBar(Container container, Dimension labelSize, Font retroFont) {
-        Dimension healthTickSize = new Dimension(30, 30);
+        Dimension healthTickSize = new Dimension(20, 15);
         
-        int con = MainFrame.playerStats.getCon();
-        healthTicks = new JPanel[con];
-        healthChecker = new boolean[con];
-        for (int i = 0; i < con; i++) {
+        healthTicks = new JPanel[8];
+        healthChecker = new boolean[8];
+        for (int i = 0; i < 8; i++) {
             JPanel tick = new JPanel();
             tick.setPreferredSize(healthTickSize);
-            tick.setBackground(full);
+            tick.setBackground(new Color(0x26A65B));
             tick.setBorder(BorderFactory.createRaisedBevelBorder());
             healthTicks[i] = tick;
             healthChecker[i] = true;

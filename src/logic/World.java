@@ -22,14 +22,12 @@ public class World {
         this.columns = width / tileSize;
         this.rows = height / tileSize;
         this.builder = new DungeonBuilder(columns, rows);
-
         builder.build();
         this.tiles = builder.getTiles();
     }
 
     public void checkAdjacent() {
         Tile[][] grid = builder.getGrid();
-
         for (Tile tile : tiles) {
             int value = 0;
             List<Point> neighborPoints = tile.getNeighbors();
@@ -44,7 +42,6 @@ public class World {
 
     public void update() {
         checkAdjacent();
-
         for (Tile tile : tiles) {
             builder.smooth(tile);
         }

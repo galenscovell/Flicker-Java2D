@@ -2,7 +2,6 @@
 /**
  * MAINFRAME CLASS
  * Main frame for application.
- * This class also is the sole creator of PlayerStats used throughout the application.
  */
 
 package ui;
@@ -17,14 +16,12 @@ import javax.swing.JFrame;
 public class MainFrame implements Runnable {
     private int windowX, windowY;
     private JFrame frame;
-    public static HUDPanel hud;
-    public static PlayerStats playerStats;
+    private HUDPanel hud;
 
 
     public MainFrame(int x, int y) {
         this.windowX = x;
         this.windowY = y;
-        playerStats = new PlayerStats();
     }
 
     public void run() {
@@ -38,9 +35,13 @@ public class MainFrame implements Runnable {
         frame.setVisible(true);
     }
 
+    public HUDPanel getHud() {
+        return hud;
+    }
+
     private void createComponents(Container container) {
-        GamePanel gamePanel = new GamePanel(windowX, windowY - 100, 64);
         hud = new HUDPanel(windowX, 100);
+        GamePanel gamePanel = new GamePanel(windowX, windowY - 100, 64, this);
         container.add(hud, BorderLayout.PAGE_START);
         container.add(gamePanel, BorderLayout.PAGE_END);
         gamePanel.start();

@@ -24,6 +24,7 @@ public class Salamander implements Entity {
 
     private int agi;
     private int moves;
+    private int attacks;
 
 
     public Salamander(int x, int y) {
@@ -64,20 +65,24 @@ public class Salamander implements Entity {
         moves--;
     }
 
+    public int getAttacks() {
+        return attacks;
+    }
+
+    public void resetAttacks() {
+        attacks = agi / 3;
+    }
+
+    public void decrementAttacks() {
+        attacks--;
+    }
+
     public int getX() {
         return x;
     }
 
     public int getY() {
         return y;
-    }
-
-    public int getCurrentX() {
-        return currentX;
-    }
-
-    public int getCurrentY() {
-        return currentY;
     }
 
     public void toggleInView() {
@@ -115,6 +120,10 @@ public class Salamander implements Entity {
         currentY = (int) (prevY + ((y - prevY) * interpolation));
         
         gfx.drawImage(sprite.getSprite(), currentX, currentY, tileSize, tileSize, null);
+    }
+
+    public void attack(Graphics2D gfx, int, tileSize, double interpolation) {
+        
     }
 
     private void animate(Sprite[] currentSet) {
