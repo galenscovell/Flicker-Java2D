@@ -22,6 +22,9 @@ public class Salamander implements Entity {
     private Sprite[] currentSet;
     private Sprite[] leftSprites, rightSprites;
 
+    private int agi;
+    private int moves;
+
 
     public Salamander(int x, int y) {
         this.x = x;
@@ -45,6 +48,20 @@ public class Salamander implements Entity {
         this.sprite = currentSet[0];
         this.spriteNumber = 0;
         this.waitFrames = 20;
+
+        this.agi = 3;
+    }
+
+    public int getMoves() {
+        return moves;
+    }
+
+    public void resetMoves() {
+        moves = agi;
+    }
+
+    public void decrementMoves() {
+        moves--;
     }
 
     public int getX() {

@@ -2,7 +2,7 @@
 /**
 * ENTITY INTERFACE
 * All entities move(), draw(), getX()/getY() and getCurrentX()/getCurrentY()
-* They also utilize toggleInView() and isInView()
+* They also utilize toggleInView(), isInView() and move accessors.
 */
 
 package entities;
@@ -19,4 +19,8 @@ public interface Entity {
     public int getCurrentY();
     public void toggleInView();
     public boolean isInView();
+
+    public int getMoves();
+    public void resetMoves();
+    public void decrementMoves();
 }

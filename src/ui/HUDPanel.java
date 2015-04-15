@@ -12,10 +12,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 
 import javax.swing.BorderFactory;
-import javax.swing.border.Border;
 import javax.swing.border.BevelBorder;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.MatteBorder;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -24,6 +21,7 @@ import javax.swing.JPanel;
 public class HUDPanel extends JPanel {
     private int x, y;
     private JPanel[] healthTicks;
+    private boolean[] healthChecker;
     private Color full = new Color(0x26A65B);
 
 
@@ -70,41 +68,41 @@ public class HUDPanel extends JPanel {
 
     public void changeHealth(int i) {
         int currentHealth = currentHealthTick();
-        if (i < 0 && currentHealth > 0) {
+        if (i < 0) {
             healthTicks[currentHealth].setBackground(Color.WHITE);
-        } else if (i > 0 && currentHealth < 4) {
+            healthChecker[currentHealth] = false;
+        } else if (i > 0) {
             healthTicks[currentHealth].setBackground(full);
+            healthChecker[currentHealth] = true;
         }
         
     }
 
     private int currentHealthTick() {
-        boolean[] healthChecker = new boolean[MainFrame.playerStats.getCon()];
         int currentHealthTick = 0;
-        for (boolean state : healthChecker) {
-            if (state) {
+        for (boolean full : healthChecker) {
+            if (full) {
                 currentHealthTick++;
             } else {
-                return currentHealthTick;
+                return currentHealthTick - 1;
             }
         }
-        return 0;
+        return healthChecker.length - 1;
     }
 
     private void createHealthBar(Container container, Dimension labelSize, Font retroFont) {
         Dimension healthTickSize = new Dimension(30, 30);
-        Border tickBorderRaised = BorderFactory.createRaisedBevelBorder();
-        Border tickBorderMatte = BorderFactory.createMatteBorder(2, 5, 2, 2, new Color(0x87D37C));
-        Border tickBorderCompound = BorderFactory.createCompoundBorder(tickBorderRaised, tickBorderMatte);
-
+        
         int con = MainFrame.playerStats.getCon();
         healthTicks = new JPanel[con];
+        healthChecker = new boolean[con];
         for (int i = 0; i < con; i++) {
             JPanel tick = new JPanel();
             tick.setPreferredSize(healthTickSize);
             tick.setBackground(full);
-            tick.setBorder(tickBorderCompound);
+            tick.setBorder(BorderFactory.createRaisedBevelBorder());
             healthTicks[i] = tick;
+            healthChecker[i] = true;
             container.add(tick);
         }
         

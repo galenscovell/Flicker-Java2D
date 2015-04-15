@@ -20,7 +20,6 @@ import java.util.List;
 public class Renderer {
     private int tileSize, viewportWidth, viewportHeight;
     private List<Tile> tiles;
-
     private Fog fog;
     private Player player;
     private List<Entity> entities;
@@ -51,7 +50,7 @@ public class Renderer {
             // Tile [x, y] are in Tiles, convert to pixels
             tileX = tile.x * tileSize;
             tileY = tile.y * tileSize;
-            // Ignore tiles outside of current viewport
+            // Only draw Tiles within current viewport
             if ((tileX + tileSize) >= camUpperLeftX && (tileX - tileSize) <= maxX && (tileY + tileSize) >= camUpperLeftY && (tileY - tileSize) <= maxY) {
                 tile.draw(gfx, tileSize);
             }
@@ -59,7 +58,7 @@ public class Renderer {
 
         for (Entity entity : entities) {
             // Entity [x, y] are in pixels
-            // Ignore entities outside of current viewport
+            // Only draw Entities within current viewport
             if (entity.getX() >= camUpperLeftX && entity.getX() <= maxX && entity.getY() >= camUpperLeftY && entity.getY() <= maxY) {
                 entity.draw(gfx, tileSize, interpolation);
                 if (!entity.isInView()) {
@@ -78,6 +77,7 @@ public class Renderer {
 
     public void placePlayer() {
         boolean playerPlaced = false;
+        int critterPlaced = 0;
         // Ensure player start position is on floor
         for (Tile tile : tiles) {
             if (tile.isFloor() && !playerPlaced) {
@@ -87,27 +87,11 @@ public class Renderer {
             } else if (tile.isFloor() && playerPlaced) {
                 entities.add(new Salamander(tile.x * tileSize, tile.y * tileSize));
                 tile.toggleOccupied();
-                return;
+                critterPlaced++;
+                if (critterPlaced == 2) {
+                    return;
+                }
             }
-        }
-    }
-
-    public boolean playerMove(int dx, int dy) {
-        int playerX = (player.getX() / tileSize);
-        int playerY = (player.getY() / tileSize);
-
-        Tile nextTile = findTile(playerX + dx, playerY + dy);
-        if (nextTile.isFloor() && !nextTile.isOccupied()) {
-            // If possible, move to new Tile and set old Tile as unoccupied
-            Tile currentTile = findTile(playerX, playerY);
-            currentTile.toggleOccupied();
-            player.move(dx * tileSize, dy * tileSize, true);
-            nextTile.toggleOccupied();
-            return true;
-        } else {
-            // Otherwise just turn in that direction
-            player.move(dx * tileSize, dy * tileSize, false);
-            return false;
         }
     }
 

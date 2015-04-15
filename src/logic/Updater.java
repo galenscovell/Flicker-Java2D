@@ -9,6 +9,9 @@ package logic;
 import entities.Entity;
 import entities.Player;
 
+import ui.HUDPanel;
+import ui.MainFrame;
+
 import java.util.List;
 import java.util.Random;
 
@@ -16,27 +19,75 @@ import java.util.Random;
 public class Updater {
     private int tileSize;
     private List<Tile> tiles;
+    private Player player;
+    private boolean playerTurn;
+    private int playerMoves;
 
 
     public Updater(List<Tile> tiles, int tileSize) {
         this.tiles = tiles;
         this.tileSize = tileSize;
+        this.playerTurn = true;
+        this.playerMoves = MainFrame.playerStats.getAgi();
     }
 
-    public void entityMove(List<Entity> entities, Player player) {
-        for (Entity entity : entities) {
-            if (entity.isInView()) {
-                chaseMove(entity, player);
-            } else {
-                exploreMove(entity);
+    public void updateTurn(int[] input, List<Entity> entities) {
+        if (playerTurn) {
+            if (playerMove(input[0], input[1])) {
+                playerMoves--;
+                if (playerMoves == 0) {
+                    playerTurn = false;
+                }
+            }
+        } else {
+            playerMove(0, 0);
+            for (Entity entity : entities) {
+                if (entity.getMoves() > 0) {
+                    entityMove(entity);
+                    entity.decrementMoves();
+                } else {
+                    haltEntityMove(entity);
+                    entity.resetMoves();
+                    playerMoves = MainFrame.playerStats.getAgi();
+                    playerTurn = true;
+                }
             }
         }
     }
 
-    public void haltEntityMove(List<Entity> entities) {
-        for (Entity entity : entities) {
-            entity.move(0, 0, false);
+    public void setPlayer(Player player) {
+        this.player = player;
+    }
+
+    public boolean playerMove(int dx, int dy) {
+        int playerX = (player.getX() / tileSize);
+        int playerY = (player.getY() / tileSize);
+
+        Tile nextTile = findTile(playerX + dx, playerY + dy);
+        if (nextTile.isFloor() && !nextTile.isOccupied()) {
+            // If possible, move to new Tile and set old Tile as unoccupied
+            Tile currentTile = findTile(playerX, playerY);
+            currentTile.toggleOccupied();
+            player.move(dx * tileSize, dy * tileSize, true);
+            nextTile.toggleOccupied();
+            return true;
+        } else {
+            // Otherwise just turn in that direction
+            player.move(dx * tileSize, dy * tileSize, false);
+            return false;
         }
+    }
+
+    private void entityMove(Entity entity) {
+        if (entity.isInView()) {
+            chaseMove(entity);
+        } else {
+            exploreMove(entity);
+        }
+    }
+
+    private void haltEntityMove(Entity entity) {
+        entity.move(0, 0, false);
     }
 
     private void exploreMove(Entity entity) {
@@ -45,7 +96,7 @@ public class Updater {
         int entityY = (entity.getY() / tileSize);
 
         Random generator = new Random();
-        int choice = generator.nextInt(5);
+        int choice = generator.nextInt(2);
         if (choice == 0) {
             dx = generator.nextInt(3) - 1;
             dy = 0;
@@ -70,7 +121,7 @@ public class Updater {
         }
     }
 
-    private void chaseMove(Entity entity, Player player) {
+    private void chaseMove(Entity entity) {
         int playerX = (player.getX() / tileSize);
         int playerY = (player.getY() / tileSize);
         int entityX = (entity.getX() / tileSize);
@@ -85,9 +136,9 @@ public class Updater {
 
         // If entity is horizontally or vertically aligned with and adjacent to Player, attack
         if (diffX == 0 && (diffY == 1 || diffY == -1)) {
-            attackMove(entity, player);
+            attackMove(entity);
         } else if (diffY == 0 && (diffX == 1 || diffX == -1)) {
-            attackMove(entity, player);
+            attackMove(entity);
         }
 
         Tile upTile = findTile(entityX, entityY - 1);
@@ -132,8 +183,9 @@ public class Updater {
         entity.move(dx * tileSize, dy * tileSize, true);
     }
 
-    private void attackMove(Entity entity, Player player) {
+    private void attackMove(Entity entity) {
         System.out.println("Salamander attacks!");
+        MainFrame.hud.changeHealth(-1);
     }
 
     private Tile findTile(int x, int y) {

@@ -17,6 +17,7 @@ import javax.swing.JFrame;
 public class MainFrame implements Runnable {
     private int windowX, windowY;
     private JFrame frame;
+    public static HUDPanel hud;
     public static PlayerStats playerStats;
 
 
@@ -39,7 +40,7 @@ public class MainFrame implements Runnable {
 
     private void createComponents(Container container) {
         GamePanel gamePanel = new GamePanel(windowX, windowY - 100, 64);
-        HUDPanel hud = new HUDPanel(windowX, 100);
+        hud = new HUDPanel(windowX, 100);
         container.add(hud, BorderLayout.PAGE_START);
         container.add(gamePanel, BorderLayout.PAGE_END);
         gamePanel.start();

@@ -1,7 +1,7 @@
 
 /**
  * GAMEPANEL CLASS
- * Handles game thread, game loop calls to updater/renderer, and player input.
+ * Handles game thread, game loop calls to updater/renderer, and player input key-bindings.
  */
 
 package ui;
@@ -25,7 +25,7 @@ import javax.swing.KeyStroke;
 
 @SuppressWarnings("serial")
 public class GamePanel extends JPanel implements Runnable {
-    final int FRAMERATE = 45;
+    final int FRAMERATE = 60;
     final int TIMESTEP = 10;
     private double interpolation;
 
@@ -133,8 +133,6 @@ public class GamePanel extends JPanel implements Runnable {
         long startTime, endTime, sleepTime;
         int[] inputDirection;
         int updateAccumulator = 0;
-        int playerMoves = 4;
-        int entityMoves = 0;
 
         while (running) {
             updateAccumulator++;
@@ -142,29 +140,14 @@ public class GamePanel extends JPanel implements Runnable {
 
             // Player movement and entity logic
             if (updateAccumulator >= TIMESTEP) {
-                if (playerMoves > 0) {
-                    inputDirection = checkInput();
-                    if (renderer.playerMove(inputDirection[0], inputDirection[1])) {
-                        playerMoves--;
-                    }
-                } else if (playerMoves == 0) {
-                    renderer.playerMove(0, 0);
-                    playerMoves--;
-                    entityMoves = 3;
-                } else if (entityMoves > 0) {
-                    updater.entityMove(renderer.getEntityList(), renderer.getPlayer());
-                    entityMoves--;
-                } else if (entityMoves == 0) {
-                    updater.haltEntityMove(renderer.getEntityList());
-                    entityMoves--;
-                    playerMoves = 4;
-                }
+                updater.updateTurn(checkInput(), renderer.getEntityList());
                 updateAccumulator = 0;
             }
 
-            // Rendering
+            // Graphics rendering
             interpolation = (double) updateAccumulator / TIMESTEP;
             repaint();
+
             endTime = System.currentTimeMillis();
             // Sleep to keep graphics rendering at framerate
             sleepTime = (1000 / FRAMERATE) - (endTime - startTime);
@@ -197,6 +180,7 @@ public class GamePanel extends JPanel implements Runnable {
         }
         world.skin();
         renderer.placePlayer();
+        updater.setPlayer(renderer.getPlayer());
         this.running = true;
         thread.start(); // call run()
     }
