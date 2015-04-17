@@ -13,9 +13,10 @@ import java.awt.Graphics2D;
 
 
 public class Salamander implements Entity {
-    private int x, y, prevX, prevY, currentX, currentY;
+    private int x, y, prevX, prevY;
     private int spriteNumber, waitFrames;
     private boolean inView;
+    private boolean isAttacking;
 
     private SpriteSheet sheet;
     private Sprite sprite;
@@ -32,8 +33,6 @@ public class Salamander implements Entity {
         this.y = y;
         this.prevX = x;
         this.prevY = y;
-        this.currentX = x;
-        this.currentY = y;
         this.sheet = SpriteSheet.charsheet;
 
         this.leftSprites = new Sprite[2];
@@ -77,6 +76,18 @@ public class Salamander implements Entity {
         attacks--;
     }
 
+    public boolean isAttacking() {
+        return isAttacking;
+    }
+
+    public void toggleAttacking() {
+        if (isAttacking) {
+            isAttacking = false;
+        } else {
+            isAttacking = true;
+        }
+    }
+
     public int getX() {
         return x;
     }
@@ -116,14 +127,23 @@ public class Salamander implements Entity {
 
     public void draw(Graphics2D gfx, int tileSize, double interpolation) {
         animate(currentSet);
-        currentX = (int) (prevX + ((x - prevX) * interpolation));
-        currentY = (int) (prevY + ((y - prevY) * interpolation));
+        int currentX = (int) (prevX + ((x - prevX) * interpolation));
+        int currentY = (int) (prevY + ((y - prevY) * interpolation));
         
         gfx.drawImage(sprite.getSprite(), currentX, currentY, tileSize, tileSize, null);
     }
 
-    public void attack(Graphics2D gfx, int, tileSize, double interpolation) {
+    public void attack(Graphics2D gfx, int tileSize, double interpolation, Player player) {
+        int diffX = player.getX() - x;
+        int diffY = player.getY() - y;
+        int currentX = (int) (prevX + (diffX * interpolation));
+        int currentY = (int) (prevY + (diffY * interpolation));
         
+        if (interpolation >= 0.9) {
+            toggleAttacking();
+        } else {
+            gfx.drawImage(sprite.getSprite(), currentX, currentY, tileSize, tileSize, null);
+        }
     }
 
     private void animate(Sprite[] currentSet) {

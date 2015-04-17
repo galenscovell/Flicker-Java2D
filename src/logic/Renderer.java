@@ -60,10 +60,12 @@ public class Renderer {
             // Entity [x, y] are in pixels
             // Only draw Entities within current viewport
             if (entity.getX() >= camUpperLeftX && entity.getX() <= maxX && entity.getY() >= camUpperLeftY && entity.getY() <= maxY) {
-                entity.draw(gfx, tileSize, interpolation);
-                if (!entity.isInView()) {
-                    entity.toggleInView();
+                if (entity.isAttacking()) {
+                    entity.attack(gfx, tileSize, interpolation, player);
+                } else {
+                    entity.draw(gfx, tileSize, interpolation);
                 }
+                if (!entity.isInView()) entity.toggleInView();
             } else if (entity.isInView()) {
                 entity.toggleInView();
             }

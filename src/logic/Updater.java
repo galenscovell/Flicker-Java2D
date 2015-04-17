@@ -184,7 +184,7 @@ public class Updater {
     }
 
     private void attackMove(Entity entity) {
-        System.out.println("Salamander attacks!");
+        entity.toggleAttacking();
         hud.changeHealth(-1);
     }
 
