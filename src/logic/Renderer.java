@@ -23,6 +23,7 @@ public class Renderer {
     private Fog fog;
     private Player player;
     private List<Entity> entities;
+    private Torchlight torchlight;
 
 
     public Renderer(List<Tile> tiles, int tileSize, int x, int y) {
@@ -32,6 +33,7 @@ public class Renderer {
         this.viewportHeight = y;
         this.fog = new Fog();
         this.entities = new ArrayList<Entity>();
+        this.torchlight = new Torchlight(tileSize);
     }
 
     public void render(Graphics2D gfx, double interpolation) {
@@ -53,6 +55,7 @@ public class Renderer {
             // Only draw Tiles within current viewport
             if ((tileX + tileSize) >= camUpperLeftX && (tileX - tileSize) <= maxX && (tileY + tileSize) >= camUpperLeftY && (tileY - tileSize) <= maxY) {
                 tile.draw(gfx, tileSize);
+                torchlight.castLight(gfx, tile, player);
             }
         }
 
