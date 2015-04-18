@@ -23,9 +23,8 @@ public class Salamander implements Entity {
     private Sprite[] currentSet;
     private Sprite[] leftSprites, rightSprites;
 
-    private int agi;
-    private int moves;
-    private int attacks;
+    private int speed;
+    private int moveTime;
 
 
     public Salamander(int x, int y) {
@@ -49,31 +48,20 @@ public class Salamander implements Entity {
         this.spriteNumber = 0;
         this.waitFrames = 20;
 
-        this.agi = 3;
+        this.speed = 2;
+        this.moveTime = 0;
     }
 
-    public int getMoves() {
-        return moves;
+    public boolean isMoveTime() {
+        return moveTime == speed;
     }
 
-    public void resetMoves() {
-        moves = agi;
+    public void resetMoveTime() {
+        moveTime = 0;
     }
 
-    public void decrementMoves() {
-        moves--;
-    }
-
-    public int getAttacks() {
-        return attacks;
-    }
-
-    public void resetAttacks() {
-        attacks = agi / 3;
-    }
-
-    public void decrementAttacks() {
-        attacks--;
+    public void incrementMoveTime() {
+        moveTime++;
     }
 
     public boolean isAttacking() {
@@ -109,9 +97,6 @@ public class Salamander implements Entity {
     }
 
     public void move(int dx, int dy, boolean possible) {
-        prevX = x;
-        prevY = y;
-
         if (dx < 0) {
             currentSet = leftSprites;
         } else if (dx > 0) {
@@ -123,10 +108,21 @@ public class Salamander implements Entity {
             x += dx;
             y += dy;
         }
+
+        if (!isInView()) {
+            prevX = x;
+            prevY = y;
+        }
     }
 
     public void draw(Graphics2D gfx, int tileSize, double interpolation) {
         animate(currentSet);
+        if (interpolation == 1) {
+            prevX = x;
+            prevY = y;
+            gfx.drawImage(sprite.getSprite(), x, y, tileSize, tileSize, null);
+            return;
+        }
         int currentX = (int) (prevX + ((x - prevX) * interpolation));
         int currentY = (int) (prevY + ((y - prevY) * interpolation));
         
@@ -139,7 +135,7 @@ public class Salamander implements Entity {
         int currentX = (int) (prevX + (diffX * interpolation));
         int currentY = (int) (prevY + (diffY * interpolation));
         
-        if (interpolation >= 0.9) {
+        if (interpolation >= 0.5) {
             toggleAttacking();
         } else {
             gfx.drawImage(sprite.getSprite(), currentX, currentY, tileSize, tileSize, null);

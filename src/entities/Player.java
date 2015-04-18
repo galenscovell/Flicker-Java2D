@@ -79,9 +79,6 @@ public class Player {
     }
 
     public void move(int dx, int dy, boolean possible) {
-        prevX = x;
-        prevY = y;
-
         if (dy < 0) {
             currentSet = upSprites;
         } else if (dy > 0) {
@@ -101,6 +98,12 @@ public class Player {
 
     public void draw(Graphics2D gfx, int tileSize, double interpolation) {
         animate(currentSet);
+        if (interpolation == 1.0) {
+            prevX = x;
+            prevY = y;
+            gfx.drawImage(sprite.getSprite(), x, y, tileSize, tileSize, null);
+            return;
+        }
         currentX = (int) (prevX + ((x - prevX) * interpolation));
         currentY = (int) (prevY + ((y - prevY) * interpolation));
         

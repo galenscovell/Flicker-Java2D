@@ -10,6 +10,7 @@ import entities.Entity;
 import entities.Player;
 import entities.Salamander;
 import graphics.Fog;
+import graphics.Torchlight;
 
 import java.awt.Graphics2D;
 
@@ -33,7 +34,7 @@ public class Renderer {
         this.viewportHeight = y;
         this.fog = new Fog();
         this.entities = new ArrayList<Entity>();
-        this.torchlight = new Torchlight(tileSize);
+        this.torchlight = new Torchlight();
     }
 
     public void render(Graphics2D gfx, double interpolation) {
@@ -44,8 +45,7 @@ public class Renderer {
         int maxY = camUpperLeftY + viewportHeight;
         
         // Translate graphics origin to camera's upper left
-        // Extend the corner by half a tile in both directions to prevent rendering issues
-        gfx.translate(-(camUpperLeftX + tileSize / 2), -(camUpperLeftY + tileSize / 2));
+        gfx.translate(-camUpperLeftX, -camUpperLeftY);
 
         int tileX, tileY;
         for (Tile tile : tiles) {
@@ -55,7 +55,6 @@ public class Renderer {
             // Only draw Tiles within current viewport
             if ((tileX + tileSize) >= camUpperLeftX && (tileX - tileSize) <= maxX && (tileY + tileSize) >= camUpperLeftY && (tileY - tileSize) <= maxY) {
                 tile.draw(gfx, tileSize);
-                torchlight.castLight(gfx, tile, player);
             }
         }
 
@@ -68,16 +67,19 @@ public class Renderer {
                 } else {
                     entity.draw(gfx, tileSize, interpolation);
                 }
-                if (!entity.isInView()) entity.toggleInView();
+                if (!entity.isInView()) {
+                    entity.toggleInView();
+                }
             } else if (entity.isInView()) {
                 entity.toggleInView();
             }
         }
         player.draw(gfx, tileSize, interpolation);
         fog.render(gfx);
+        // torchlight.render(gfx, player.getX() - 256, player.getY() - 256);
 
         // Reset graphics origin
-        gfx.translate((camUpperLeftX + tileSize / 2), (camUpperLeftY + tileSize / 2));
+        gfx.translate(camUpperLeftX, camUpperLeftY);
     }
 
     public void placePlayer() {

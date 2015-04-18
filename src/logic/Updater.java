@@ -19,49 +19,32 @@ public class Updater {
     private int tileSize;
     private List<Tile> tiles;
     private Player player;
-    private boolean playerTurn;
-    private int playerMoves;
     private HUDPanel hud;
 
 
     public Updater(List<Tile> tiles, int tileSize, HUDPanel hud) {
         this.tiles = tiles;
         this.tileSize = tileSize;
-        this.playerTurn = true;
         this.hud = hud;
     }
 
-    public void updateTurn(int[] input, List<Entity> entities) {
-        if (playerTurn) {
-            if (playerMove(input[0], input[1])) {
-                playerMoves--;
-                if (playerMoves == 0) {
-                    playerTurn = false;
-                }
-            }
-        } else {
-            playerMove(0, 0);
+    public void updateEntities(int[] input, List<Entity> entities) {
+        if (playerMove(input[0], input[1])) {
             for (Entity entity : entities) {
-                if (entity.getMoves() > 0) {
-                    entityMove(entity);
-                    entity.decrementMoves();
-                } else {
-                    haltEntityMove(entity);
-                    entity.resetMoves();
-                    entity.resetAttacks();
-                    playerMoves = player.getAgi();
-                    playerTurn = true;
-                }
+                entityMove(entity);
             }
         }
     }
 
     public void setPlayer(Player player) {
         this.player = player;
-        this.playerMoves = player.getAgi();
     }
 
     public boolean playerMove(int dx, int dy) {
+        if (dx == 0 && dy == 0) {
+            return false;
+        }
+
         int playerX = (player.getX() / tileSize);
         int playerY = (player.getY() / tileSize);
 
@@ -72,24 +55,25 @@ public class Updater {
             currentTile.toggleOccupied();
             player.move(dx * tileSize, dy * tileSize, true);
             nextTile.toggleOccupied();
-            return true;
         } else {
             // Otherwise just turn in that direction
             player.move(dx * tileSize, dy * tileSize, false);
-            return false;
         }
+        return true;
     }
 
     private void entityMove(Entity entity) {
-        if (entity.isInView()) {
-            chaseMove(entity);
+        if (entity.isMoveTime()) {
+            if (entity.isInView()) {
+                chaseMove(entity);
+            } else {
+                exploreMove(entity);
+            }
+            entity.resetMoveTime();
         } else {
-            exploreMove(entity);
+            entity.incrementMoveTime();
         }
-    }
-
-    private void haltEntityMove(Entity entity) {
-        entity.move(0, 0, false);
+            
     }
 
     private void exploreMove(Entity entity) {
@@ -131,14 +115,10 @@ public class Updater {
         boolean right = false;
 
         // If entity is horizontally or vertically aligned with and adjacent to Player, attack
-        if (entity.getAttacks() > 0) {
-            if (diffX == 0 && (diffY == 1 || diffY == -1)) {
-                attackMove(entity);
-                entity.decrementAttacks();
-            } else if (diffY == 0 && (diffX == 1 || diffX == -1)) {
-                attackMove(entity);
-                entity.decrementAttacks();
-            }
+        if (diffX == 0 && (diffY == 1 || diffY == -1)) {
+            attackMove(entity);
+        } else if (diffY == 0 && (diffX == 1 || diffX == -1)) {
+            attackMove(entity);
         }
 
         Tile upTile = findTile(entityX, entityY - 1);

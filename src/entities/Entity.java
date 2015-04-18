@@ -21,11 +21,7 @@ public interface Entity {
     public boolean isInView();
     public boolean isAttacking();
     public void toggleAttacking();
-
-    public int getMoves();
-    public void resetMoves();
-    public void decrementMoves();
-    public int getAttacks();
-    public void resetAttacks();
-    public void decrementAttacks();
+    public boolean isMoveTime();
+    public void resetMoveTime();
+    public void incrementMoveTime();
 }
