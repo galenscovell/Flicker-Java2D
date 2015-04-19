@@ -57,11 +57,6 @@ public class Player {
         return agi;
     }
 
-    public void setCoords(int newX, int newY) {
-        x = newX;
-        y = newY;
-    }
-
     public int getX() {
         return x;
     }
@@ -98,6 +93,7 @@ public class Player {
 
     public void draw(Graphics2D gfx, int tileSize, double interpolation) {
         animate(currentSet);
+        // When interpolation is 1, movement animation is complete
         if (interpolation == 1.0) {
             prevX = x;
             prevY = y;

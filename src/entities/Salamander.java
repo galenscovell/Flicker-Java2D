@@ -117,6 +117,7 @@ public class Salamander implements Entity {
 
     public void draw(Graphics2D gfx, int tileSize, double interpolation) {
         animate(currentSet);
+        // When interpolation is 1, movement animation is complete
         if (interpolation == 1) {
             prevX = x;
             prevY = y;
@@ -135,6 +136,7 @@ public class Salamander implements Entity {
         int currentX = (int) (prevX + (diffX * interpolation));
         int currentY = (int) (prevY + (diffY * interpolation));
         
+        // Attack animation only covers half of player's tile
         if (interpolation >= 0.5) {
             toggleAttacking();
         } else {

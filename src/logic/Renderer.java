@@ -34,7 +34,7 @@ public class Renderer {
         this.viewportHeight = y;
         this.fog = new Fog();
         this.entities = new ArrayList<Entity>();
-        this.torchlight = new Torchlight();
+        this.torchlight = new Torchlight(tileSize);
     }
 
     public void render(Graphics2D gfx, double interpolation) {
@@ -74,9 +74,10 @@ public class Renderer {
                 entity.toggleInView();
             }
         }
+
+        torchlight.castLight(gfx, player, tiles);
         player.draw(gfx, tileSize, interpolation);
         fog.render(gfx);
-        // torchlight.render(gfx, player.getX() - 256, player.getY() - 256);
 
         // Reset graphics origin
         gfx.translate(camUpperLeftX, camUpperLeftY);
@@ -87,16 +88,9 @@ public class Renderer {
         // Ensure player start position is on floor
         for (Tile tile : tiles) {
             if (tile.isFloor() && !playerPlaced) {
-                // If Player exists, set new position
-                if (player != null) {
-                    player.setCoords(tile.x * tileSize, tile.y * tileSize);
-                    playerPlaced = true;
-                // Else create new Player instance
-                } else {
-                    this.player = new Player(tile.x * tileSize, tile.y * tileSize);
-                    tile.toggleOccupied();
-                    playerPlaced = true;
-                }
+                this.player = new Player(tile.x * tileSize, tile.y * tileSize);
+                tile.toggleOccupied();
+                playerPlaced = true;
             } else if (tile.isFloor() && playerPlaced) {
                 entities.add(new Salamander(tile.x * tileSize, tile.y * tileSize));
                 tile.toggleOccupied();

@@ -29,6 +29,9 @@ public class GamePanel extends JPanel implements Runnable {
     final int TIMESTEP = 10;
     private double interpolation;
 
+    final int worldWidth = 640;
+    final int worldHeight = 640;
+
     private boolean running;
     private boolean upPressed, downPressed, leftPressed, rightPressed;
 
@@ -41,7 +44,7 @@ public class GamePanel extends JPanel implements Runnable {
     public GamePanel(int panelWidth, int panelHeight, int tileSize, MainFrame root) {
         setPreferredSize(new Dimension(panelWidth, panelHeight));
         setDoubleBuffered(true);
-        this.world = new World(3000, 3000, tileSize);
+        this.world = new World(worldWidth, worldHeight, tileSize);
         this.renderer = new Renderer(world.getTiles(), tileSize, panelWidth, panelHeight);
         this.updater = new Updater(world.getTiles(), tileSize, root.getHud());
 
