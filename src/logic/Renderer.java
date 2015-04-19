@@ -55,6 +55,7 @@ public class Renderer {
             // Only draw Tiles within current viewport
             if ((tileX + tileSize) >= camUpperLeftX && (tileX - tileSize) <= maxX && (tileY + tileSize) >= camUpperLeftY && (tileY - tileSize) <= maxY) {
                 tile.draw(gfx, tileSize);
+                torchlight.setDark(gfx, tile);
             }
         }
 

@@ -26,33 +26,50 @@ public class Torchlight {
 
     public Torchlight(int tileSize) {
         this.tileSize = tileSize;
-        this.lit = new Color(0.2f, 0.1f, 0.0f, 0.0f);
-        this.dim = new Color(0.2f, 0.1f, 0.0f, 0.15f);
-        this.dark = new Color(0.0f, 0.0f, 0.0f, 0.3f);
-        this.darker = new Color(0.0f, 0.0f, 0.0f, 0.6f);
+        this.lit = new Color(0.0f, 0.0f, 0.0f, 0.1f);
+        this.dim = new Color(0.0f, 0.0f, 0.0f, 0.3f);
+        this.dark = new Color(0.0f, 0.0f, 0.0f, 0.5f);
+        this.darker = new Color(0.0f, 0.0f, 0.0f, 0.7f);
         this.pitch = new Color(0.0f, 0.0f, 0.0f, 0.9f);
     }
 
+    public void setDark(Graphics2D gfx, Tile tile) {
+        gfx.setColor(darker);
+        gfx.fillRect(tile.x * tileSize, tile.y * tileSize, tileSize, tileSize);
+    }
+
     public void castLight(Graphics2D gfx, Player player, List<Tile> tiles) {
-        Point start = new Point(player.getX() / tileSize, player.getY() / tileSize);
-        int absDiffX, absDiffY;
+        float x, y;
 
-        for (Tile tile : tiles) {
-            absDiffX = Math.abs(start.x - tile.x);
-            absDiffY = Math.abs(start.y - tile.y);
-
-            // Ignore all tiles except those within radius
-            if (absDiffX > 5 || absDiffY > 5) {
-                continue;
-            }
-
-            Point end = new Point(tile.x, tile.y);
-            castRay(gfx, start, end);
+        for (int i = 0; i < 360; i += 10) {
+            x = (float) Math.cos((float) i * 0.01745f);
+            y = (float) Math.sin((float) i * 0.01745f);
+            castRay(gfx, player, x, y, tiles);
         }
     }
 
-    private void castRay(Graphics2D gfx, Point start, Point end) {
-        gfx.setColor(Color.WHITE);
-        gfx.drawLine(start.x * tileSize, start.y * tileSize, end.x * tileSize, end.y * tileSize);
+    private void castRay(Graphics2D gfx, Player player, float x, float y, List<Tile> tiles) {
+        float ox, oy;
+        ox = (float) player.getCurrentX() + (tileSize / 2) + 0.5f;
+        oy = (float) player.getCurrentY() + (tileSize / 2) + 0.5f;
+        for (int i = 0; i < 128; i++) {
+            Tile tile = findTileSpace((int) ox, (int) oy, tiles);
+            if (tile == null) {
+                return;
+            }
+            gfx.setColor(Color.WHITE);
+            gfx.fillRect(tile.x * tileSize, tile.y * tileSize, tileSize, tileSize);
+            ox += x;
+            oy += y;
+        }
+    }
+
+    private Tile findTileSpace(int x, int y, List<Tile> tiles) {
+        for (Tile tile : tiles) {
+            if ((tile.x * tileSize <= x && tile.x * tileSize + tileSize >= x) && (tile.y * tileSize <= y && tile.y * tileSize + tileSize >= y)) {
+                return tile;
+            }
+        }
+        return null;
     }
 }

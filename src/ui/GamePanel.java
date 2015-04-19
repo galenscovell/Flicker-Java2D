@@ -29,8 +29,8 @@ public class GamePanel extends JPanel implements Runnable {
     final int TIMESTEP = 10;
     private double interpolation;
 
-    final int worldWidth = 640;
-    final int worldHeight = 640;
+    final int worldWidth = 3200;
+    final int worldHeight = 3200;
 
     private boolean running;
     private boolean upPressed, downPressed, leftPressed, rightPressed;
