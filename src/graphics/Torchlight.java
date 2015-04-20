@@ -8,68 +8,68 @@ package graphics;
 
 import entities.Player;
 import logic.Tile;
-import logic.Point;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Polygon;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class Torchlight {
     private int tileSize;
     private Color lit;
-    private Color dim;
     private Color dark;
 
     public Torchlight(int tileSize) {
         this.tileSize = tileSize;
-        this.lit = new Color(255, 214, 170, 50);
-        this.dim = new Color(255, 197, 143, 50);
-        this.dark = new Color(255, 147, 41, 50);
+        this.lit = new Color(255, 214, 170, 80);
+        this.dark = new Color(0, 0, 0, 240);
     }
 
-    public void castLight(Graphics2D gfx, Player player, Tile[] viewportTiles) {
+    public void castLight(Graphics2D gfx, Player player, Map<Tile, Boolean> lightMap) {
         float x, y;
-        Point[] rayPoints = new Point[30];
-        int index = 0;
-        for (int i = 0; i < 360; i += 12) {
+        for (int i = 0; i < 360; i += 6) {
             x = (float) Math.cos((float) i * 0.01745f);
             y = (float) Math.sin((float) i * 0.01745f);
-            rayPoints[index] = castRay(gfx, player, x, y, viewportTiles);
-            index++;
+            castRay(player, x, y, lightMap);
         }
-        connectRays(gfx, rayPoints);
+        connectRays(gfx, lightMap);
     }
 
-    private Point castRay(Graphics2D gfx, Player player, float x, float y, Tile[] viewportTiles) {
+    private void castRay(Player player, float x, float y, Map<Tile, Boolean> lightMap) {
         float ox = (float) player.getCurrentX() + (tileSize / 2) + 0.5f;
         float oy = (float) player.getCurrentY() + (tileSize / 2) + 0.5f;
-        for (int i = 0; i < 128; i++) {
-            Tile tile = findTileSpace((int) ox, (int) oy, viewportTiles);
-            if (tile == null || tile.isPerimeter()) {
-                return new Point((int)ox, (int)oy);
+        for (int i = 0; i < 96; i++) {
+            Tile tile = findTileSpace((int) ox, (int) oy, lightMap);
+            if (tile == null) {
+                return;
+            } else {
+                lightMap.put(tile, true);
             }
             ox += x;
             oy += y;
         }
-        return new Point((int)ox, (int)oy);
     }
 
-    private void connectRays(Graphics2D gfx, Point[] rayPoints) {
-        int[] xPoints = new int[rayPoints.length];
-        int[] yPoints = new int[rayPoints.length];
-        for (int i = 0; i < rayPoints.length; i++) {
-            xPoints[i] = rayPoints[i].x;
-            yPoints[i] = rayPoints[i].y;
+    private void connectRays(Graphics2D gfx, Map<Tile, Boolean> lightMap) {
+        for (Map.Entry<Tile, Boolean> entry : lightMap.entrySet()) {
+            Tile tile = entry.getKey();
+            if (entry.getValue()) {
+                gfx.setColor(lit);
+            } else {
+                gfx.setColor(dark);
+            }
+            gfx.fillRect(tile.x * tileSize, tile.y * tileSize, tileSize, tileSize);
         }
-        gfx.setColor(lit);
-        Polygon p = new Polygon(xPoints, yPoints, rayPoints.length);
-        gfx.fillPolygon(p);
     }
 
-    private Tile findTileSpace(int x, int y, Tile[] viewportTiles) {
-        for (Tile tile : viewportTiles) {
-            if ((tile.x * tileSize <= x && tile.x * tileSize + tileSize >= x) && (tile.y * tileSize <= y && tile.y * tileSize + tileSize >= y)) {
+    private Tile findTileSpace(int x, int y, Map<Tile, Boolean> lightMap) {
+        int tileX, tileY;
+        for (Tile tile : lightMap.keySet()) {
+            tileX = tile.x * tileSize;
+            tileY = tile.y * tileSize;
+            if (tileX <= x && (tileX + tileSize) >= x && tileY <= y && (tileY + tileSize) >= y) {
                 return tile;
             }
         }
