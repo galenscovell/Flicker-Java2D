@@ -78,7 +78,12 @@ public class Tile {
     }
 
     public void draw(Graphics2D gfx, int tileSize) {
-        gfx.drawImage(sprite.getSprite(), x * tileSize, y * tileSize, tileSize, tileSize, null);
+        try {
+            gfx.drawImage(sprite.getSprite(), x * tileSize, y * tileSize, tileSize, tileSize, null);
+        } catch (NullPointerException e) {
+            System.out.println("Tile is floor: " + isFloor() + ", Tile is perimeter: " + isPerimeter() + ", Tile is corridor: " + isCorridor());
+        }
+        
     }
 
     public void findSprite() {

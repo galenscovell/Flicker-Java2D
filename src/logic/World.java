@@ -61,6 +61,9 @@ public class World {
                 } else {
                     pruned.add(tile);
                 }
+            // Switch over lingering corridor tiles
+            } else if (tile.isCorridor()) {
+                tile.state = 1;
             }
         }
 
