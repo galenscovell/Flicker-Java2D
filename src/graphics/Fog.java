@@ -17,7 +17,7 @@ import java.io.IOException;
 public class Fog {
     private BufferedImage image;
     private int x, y, size;
-    private float alpha = 0.1f;
+    private float alpha = 0.05f;
     private int frameSkip;
 
     public Fog() {

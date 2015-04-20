@@ -12,6 +12,7 @@ import entities.Salamander;
 import graphics.Fog;
 import graphics.Torchlight;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 
 import java.util.ArrayList;
@@ -48,6 +49,8 @@ public class Renderer {
         gfx.translate(-camUpperLeftX, -camUpperLeftY);
 
         int tileX, tileY;
+        Tile[] viewportTiles = new Tile[540];
+        int index = 0;
         for (Tile tile : tiles) {
             // Tile [x, y] are in Tiles, convert to pixels
             tileX = tile.x * tileSize;
@@ -55,7 +58,14 @@ public class Renderer {
             // Only draw Tiles within current viewport
             if ((tileX + tileSize) >= camUpperLeftX && (tileX - tileSize) <= maxX && (tileY + tileSize) >= camUpperLeftY && (tileY - tileSize) <= maxY) {
                 tile.draw(gfx, tileSize);
-                torchlight.setDark(gfx, tile);
+                if (tile.isPerimeter()) {
+                    gfx.setColor(new Color(0, 0, 0, 220));
+                } else {
+                    gfx.setColor(new Color(0, 0, 0, 240));
+                }
+                gfx.fillRect(tile.x * tileSize, tile.y * tileSize, tileSize, tileSize);
+                viewportTiles[index] = tile;
+                index++;
             }
         }
 
@@ -76,8 +86,8 @@ public class Renderer {
             }
         }
 
-        torchlight.castLight(gfx, player, tiles);
         player.draw(gfx, tileSize, interpolation);
+        torchlight.castLight(gfx, player, viewportTiles);
         fog.render(gfx);
 
         // Reset graphics origin
