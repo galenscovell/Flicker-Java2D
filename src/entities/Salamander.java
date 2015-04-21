@@ -9,6 +9,7 @@ package entities;
 import graphics.Sprite;
 import graphics.SpriteSheet;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 
 
@@ -108,11 +109,6 @@ public class Salamander implements Entity {
             x += dx;
             y += dy;
         }
-
-        if (!isInView()) {
-            prevX = x;
-            prevY = y;
-        }
     }
 
     public void draw(Graphics2D gfx, int tileSize, double interpolation) {
@@ -130,14 +126,31 @@ public class Salamander implements Entity {
         gfx.drawImage(sprite.getSprite(), currentX, currentY, tileSize, tileSize, null);
     }
 
-    public void attack(Graphics2D gfx, int tileSize, double interpolation, Player player) {
+    public void attack(Graphics2D gfx, int tileSize, double interpolation, Player player, int width, int height) {
         int diffX = player.getX() - x;
         int diffY = player.getY() - y;
+        if (diffX > 0) {
+            currentSet = rightSprites;
+        } else if (diffX < 0) {
+            currentSet = leftSprites;
+        }
+        animate(currentSet);
         int currentX = (int) (prevX + (diffX * interpolation));
         int currentY = (int) (prevY + (diffY * interpolation));
         
+        if (interpolation <= 0.1) {
+            gfx.setColor(new Color(200, 40, 40, 120));
+        } else if (interpolation > 0.1 && interpolation <= 0.3) {
+            gfx.setColor(new Color(200, 40, 40, 90));
+        } else if (interpolation > 0.3 && interpolation <= 0.5) {
+            gfx.setColor(new Color(200, 40, 40, 30));
+        } else if (interpolation > 0.5 && interpolation < 0.6) {
+            gfx.setColor(new Color(0, 0, 0, 0));
+        }
+        gfx.fillRect(player.getX() - (width / 2), player.getY() - (height / 2), width, height);
+
         // Attack animation only covers half of player's tile
-        if (interpolation >= 0.5) {
+        if (interpolation >= 0.6) {
             toggleAttacking();
         } else {
             gfx.drawImage(sprite.getSprite(), currentX, currentY, tileSize, tileSize, null);

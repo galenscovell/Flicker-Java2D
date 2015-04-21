@@ -61,7 +61,7 @@ public class Renderer {
             tileX = tile.x * tileSize;
             tileY = tile.y * tileSize;
             
-            if (inViewport(tileX, tileY, camUpperLeftY, maxX, camUpperLeftY, maxY)) {
+            if (inViewport(tileX, tileY, camUpperLeftX, maxX, camUpperLeftY, maxY)) {
                 tile.draw(gfx, tileSize);
                 if (tile.isFloor()) {
                     lightMap.put(tile, false);
@@ -72,20 +72,24 @@ public class Renderer {
             }
         }
 
+        int diffX, diffY;
         for (Entity entity : entities) {
             // Entity [x, y] are in pixels
-            if (inViewport(entity.getX(), entity.getY(), camUpperLeftY, maxX, camUpperLeftY, maxY)) {
+            if (inViewport(entity.getX(), entity.getY(), camUpperLeftX, maxX, camUpperLeftY, maxY)) {
                 if (entity.isAttacking()) {
-                    entity.attack(gfx, tileSize, interpolation, player);
+                    entity.attack(gfx, tileSize, interpolation, player, viewportWidth, viewportHeight);
                 } else {
                     entity.draw(gfx, tileSize, interpolation);
                 }
-                if (!entity.isInView()) {
+
+                diffX = Math.abs(player.getX() - entity.getX());
+                diffY = Math.abs(player.getY() - entity.getY());
+                if (!entity.isInView() && (diffX < 128 && diffY < 128)) {
+                    entity.toggleInView();
+                } else if (entity.isInView() && (diffX >= 128 || diffY >= 128)) {
                     entity.toggleInView();
                 }
-            } else if (entity.isInView()) {
-                entity.toggleInView();
-            }
+            } 
         }
 
         player.draw(gfx, tileSize, interpolation);

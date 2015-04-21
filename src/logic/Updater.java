@@ -115,9 +115,7 @@ public class Updater {
         boolean right = false;
 
         // If entity is horizontally or vertically aligned with and adjacent to Player, attack
-        if (diffX == 0 && (diffY == 1 || diffY == -1)) {
-            attackMove(entity);
-        } else if (diffY == 0 && (diffX == 1 || diffX == -1)) {
+        if ((diffX == 0 && (diffY == 1 || diffY == -1)) || (diffY == 0 && (diffX == 1 || diffX == -1))) {
             attackMove(entity);
         }
 
