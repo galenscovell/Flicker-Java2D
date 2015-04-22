@@ -40,7 +40,7 @@ public class Updater {
         this.player = player;
     }
 
-    public boolean playerMove(int dx, int dy) {
+    private boolean playerMove(int dx, int dy) {
         if (dx == 0 && dy == 0) {
             return false;
         }

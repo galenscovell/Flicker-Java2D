@@ -49,6 +49,10 @@ public class Tile {
         return state == 3;
     }
 
+    public boolean isWater() {
+        return state == 4;
+    }
+
     public boolean isOccupied() {
         return occupied;
     }
@@ -78,12 +82,7 @@ public class Tile {
     }
 
     public void draw(Graphics2D gfx, int tileSize) {
-        try {
-            gfx.drawImage(sprite.getSprite(), x * tileSize, y * tileSize, tileSize, tileSize, null);
-        } catch (NullPointerException e) {
-            System.out.println("Tile is floor: " + isFloor() + ", Tile is perimeter: " + isPerimeter() + ", Tile is corridor: " + isCorridor());
-        }
-        
+        gfx.drawImage(sprite.getSprite(), x * tileSize, y * tileSize, tileSize, tileSize, null);
     }
 
     public void findSprite() {
@@ -186,6 +185,8 @@ public class Tile {
                     sprite = new Sprite(sheet, 65);
             }
         }
+        neighborTilePoints = null;
+        floorNeighbors = 0;
     }
 
     private List<Point> findNeighbors(int columns, int rows) {
@@ -206,9 +207,9 @@ public class Tile {
     }
 
     private boolean isOutOfBounds(int i, int j, int columns, int rows) {
-        if (i < 0 || j < 0){
+        if (i < 0 || j < 0) {
             return true;
-        } else if (i >= columns || j >= rows){
+        } else if (i >= columns || j >= rows) {
             return true;
         } else {
             return false;

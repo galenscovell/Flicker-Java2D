@@ -26,7 +26,7 @@ import javax.swing.KeyStroke;
 @SuppressWarnings("serial")
 public class GamePanel extends JPanel implements Runnable {
     final int FRAMERATE = 60;
-    final int TIMESTEP = 10;
+    final int TIMESTEP = 12;
     private double interpolation;
 
     final int worldWidth = 3200;

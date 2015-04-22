@@ -45,7 +45,6 @@ public class Renderer {
     }
 
     public void render(Graphics2D gfx, double interpolation) {
-        lightMap.clear();
         // These values are in pixels, not tile units
         int camUpperLeftX = player.getCurrentX() - (viewportWidth / 2);
         int camUpperLeftY = player.getCurrentY() - (viewportHeight / 2);
@@ -55,6 +54,7 @@ public class Renderer {
         // Translate graphics origin to camera's upper left
         gfx.translate(-camUpperLeftX, -camUpperLeftY);
 
+        lightMap.clear();
         int tileX, tileY;
         for (Tile tile : tiles) {
             // Tile [x, y] are in Tiles, convert to pixels
@@ -66,7 +66,7 @@ public class Renderer {
                 if (tile.isFloor()) {
                     lightMap.put(tile, false);
                 } else {
-                    gfx.setColor(new Color(0, 0, 0, 220));
+                    gfx.setColor(new Color(0, 0, 0, 235));
                     gfx.fillRect(tileX, tileY, tileSize, tileSize);
                 }
             }
@@ -84,9 +84,9 @@ public class Renderer {
 
                 diffX = Math.abs(player.getX() - entity.getX());
                 diffY = Math.abs(player.getY() - entity.getY());
-                if (!entity.isInView() && (diffX < 128 && diffY < 128)) {
+                if (!entity.isInView() && (diffX < 100 && diffY < 100)) {
                     entity.toggleInView();
-                } else if (entity.isInView() && (diffX >= 128 || diffY >= 128)) {
+                } else if (entity.isInView() && (diffX >= 100 || diffY >= 100)) {
                     entity.toggleInView();
                 }
             } 

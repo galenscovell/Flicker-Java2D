@@ -23,13 +23,13 @@ public class Torchlight {
 
     public Torchlight(int tileSize) {
         this.tileSize = tileSize;
-        this.lit = new Color(255, 214, 170, 60);
-        this.dark = new Color(0, 0, 0, 240);
+        this.lit = new Color(255, 214, 170, 50);
+        this.dark = new Color(0, 0, 0, 250);
     }
 
     public void castLight(Graphics2D gfx, Player player, Map<Tile, Boolean> lightMap) {
         float x, y;
-        for (int i = 0; i < 360; i += 5) {
+        for (int i = 0; i < 360; i += 10) {
             x = (float) Math.cos((float) i * 0.01745f);
             y = (float) Math.sin((float) i * 0.01745f);
             castRay(player, x, y, lightMap);
@@ -38,17 +38,17 @@ public class Torchlight {
     }
 
     private void castRay(Player player, float x, float y, Map<Tile, Boolean> lightMap) {
-        float ox = (float) player.getCurrentX() + (tileSize / 2) + 0.5f;
-        float oy = (float) player.getCurrentY() + (tileSize / 2) + 0.5f;
-        for (int i = 0; i < 100; i++) {
+        float ox = (float) player.getCurrentX() + (tileSize / 2);
+        float oy = (float) player.getCurrentY() + (tileSize / 2);
+        for (int i = 0; i <= 32; i++) {
             Tile tile = findTileSpace((int) ox, (int) oy, lightMap);
             if (tile == null) {
                 return;
             } else {
                 lightMap.put(tile, true);
             }
-            ox += x;
-            oy += y;
+            ox += x * 4;
+            oy += y * 4;
         }
     }
 
