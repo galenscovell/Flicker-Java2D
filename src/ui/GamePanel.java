@@ -181,7 +181,7 @@ public class GamePanel extends JPanel implements Runnable {
             world.update();
             smoothTicks--;
         }
-        world.skin();
+        world.optimizeLayout();
         renderer.placePlayer();
         updater.setPlayer(renderer.getPlayer());
         this.running = true;

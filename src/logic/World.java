@@ -27,21 +27,6 @@ public class World {
         this.tiles = builder.getTiles();
     }
 
-    public void checkAdjacent() {
-        int key;
-        for (Tile tile : tiles.values()) {
-            int value = 0;
-            List<Point> neighborPoints = tile.getNeighbors();
-            for (Point point : neighborPoints) {
-                key = point.x * columns + point.y;
-                if (tiles.get(key).isFloor()) {
-                    value++;
-                }
-            }
-            tile.setFloorNeighbors(value);
-        }
-    }
-
     public void update() {
         checkAdjacent();
         for (Tile tile : tiles.values()) {
@@ -49,8 +34,11 @@ public class World {
         }
     }
 
-    public void skin() {
-        Bitmasker bitmasker = new Bitmasker();
+    public Map<Integer, Tile> getTiles() {
+        return tiles;
+    }
+
+    public void optimizeLayout() {
         List<Integer> pruned = new ArrayList<Integer>();
 
         // If Tile is a wall connected to a floor Tile, it becomes a perimeter Tile
@@ -119,6 +107,11 @@ public class World {
             tiles.remove(removeKey);
         }
 
+        skin();
+    }
+
+    private void skin() {
+        Bitmasker bitmasker = new Bitmasker();
         for (Tile tile : tiles.values()) {
             if (tile.isPerimeter() || tile.isFloor()) {
                 tile.setBitmask(bitmasker.findBitmask(tile, tiles, columns));
@@ -128,11 +121,20 @@ public class World {
         for (Tile tile : tiles.values()) {
             tile.findSprite();
         }
-
-        builder = null;
     }
 
-    public Map<Integer, Tile> getTiles() {
-        return tiles;
+    private void checkAdjacent() {
+        int key;
+        for (Tile tile : tiles.values()) {
+            int value = 0;
+            List<Point> neighborPoints = tile.getNeighbors();
+            for (Point point : neighborPoints) {
+                key = point.x * columns + point.y;
+                if (tiles.get(key).isFloor()) {
+                    value++;
+                }
+            }
+            tile.setFloorNeighbors(value);
+        }
     }
 }

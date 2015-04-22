@@ -1,7 +1,7 @@
 
 /**
  * BUILDER INTERFACE
- * All builders utilize build(), smooth(), getTiles() and getGrid()
+ * All builders utilize build(), smooth() and getTiles()
  */
 
 package logic;
