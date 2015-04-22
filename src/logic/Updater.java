@@ -12,19 +12,21 @@ import entities.Player;
 import ui.HUDPanel;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 
 public class Updater {
-    private int tileSize;
-    private List<Tile> tiles;
+    private int tileSize, columns;
+    private Map<Integer, Tile> tiles;
     private Player player;
     private HUDPanel hud;
 
 
-    public Updater(List<Tile> tiles, int tileSize, HUDPanel hud) {
+    public Updater(Map<Integer, Tile> tiles, int tileSize, int worldWidth, HUDPanel hud) {
         this.tiles = tiles;
         this.tileSize = tileSize;
+        this.columns = worldWidth / tileSize;
         this.hud = hud;
     }
 
@@ -167,11 +169,11 @@ public class Updater {
     }
 
     private Tile findTile(int x, int y) {
-        for (Tile tile : tiles) {
-            if (tile.x == x && tile.y == y) {
-                return tile;
-            }
+        int key = x * columns + y;
+        if (tiles.containsKey(key)) {
+            return tiles.get(key);
+        } else {
+            return null;
         }
-        return null;
     }
 }

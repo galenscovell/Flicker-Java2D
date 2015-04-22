@@ -46,7 +46,7 @@ public class GamePanel extends JPanel implements Runnable {
         setDoubleBuffered(true);
         this.world = new World(worldWidth, worldHeight, tileSize);
         this.renderer = new Renderer(world.getTiles(), tileSize, panelWidth, panelHeight);
-        this.updater = new Updater(world.getTiles(), tileSize, root.getHud());
+        this.updater = new Updater(world.getTiles(), tileSize, worldWidth, root.getHud());
 
         // Setup player input bindings
         getInputMap().put(KeyStroke.getKeyStroke("UP"), "moveUp");

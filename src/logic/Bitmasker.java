@@ -14,11 +14,12 @@
 package logic;
 
 import java.util.List;
+import java.util.Map;
 
 
 public class Bitmasker {
 
-    public int findBitmask(Tile tile, Tile[][] grid) {
+    public int findBitmask(Tile tile, Map<Integer, Tile> tiles, int columns) {
         boolean top = false;
         boolean bottom = false;
         boolean left = false;
@@ -27,29 +28,23 @@ public class Bitmasker {
         List<Point> neighbors = tile.getNeighbors();
 
         // Find neighbor positions
-        for (Point neighbor : neighbors) {
-            int x = neighbor.x;
-            int y = neighbor.y;
-
+        for (Point point : neighbors) {
+            Tile neighborTile = tiles.get(point.x * columns + point.y);
             // Find neighboring perimeter Tiles
-            if (grid[x][y].isPerimeter()) {
-                int diffX = tile.x - x;
-                int diffY = tile.y - y;
+            if (neighborTile != null && neighborTile.isPerimeter()) {
+                int diffX = tile.x - neighborTile.x;
+                int diffY = tile.y - neighborTile.y;
 
-                if (diffX == -1) {
-                    if (diffY == 0) {
-                        right = true;
-                    }
+                if (diffX == -1 && diffY == 0) {
+                    right = true;
                 } else if (diffX == 0) {
                     if (diffY == -1) {
                         bottom = true;
                     } else if (diffY == 1) {
                         top = true;
                     }
-                } else if (diffX == 1) {
-                    if (diffY == 0) {
-                        left = true;
-                    }
+                } else if (diffX == 1 && diffY == 0) {
+                    left = true;
                 }
             }
         }

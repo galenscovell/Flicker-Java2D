@@ -8,13 +8,14 @@ package logic;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 public class World {
     private int tileSize;
     private int columns, rows;
     private Builder builder;
-    private List<Tile> tiles;
+    private Map<Integer, Tile> tiles;
 
 
     public World(int width, int height, int tileSize) {
@@ -27,12 +28,13 @@ public class World {
     }
 
     public void checkAdjacent() {
-        Tile[][] grid = builder.getGrid();
-        for (Tile tile : tiles) {
+        int key;
+        for (Tile tile : tiles.values()) {
             int value = 0;
             List<Point> neighborPoints = tile.getNeighbors();
             for (Point point : neighborPoints) {
-                if (grid[point.x][point.y].isFloor()) {
+                key = point.x * columns + point.y;
+                if (tiles.get(key).isFloor()) {
                     value++;
                 }
             }
@@ -42,24 +44,24 @@ public class World {
 
     public void update() {
         checkAdjacent();
-        for (Tile tile : tiles) {
+        for (Tile tile : tiles.values()) {
             builder.smooth(tile);
         }
     }
 
     public void skin() {
-        Tile[][] grid = builder.getGrid();
         Bitmasker bitmasker = new Bitmasker();
-        List<Tile> pruned = new ArrayList<Tile>();
+        List<Integer> pruned = new ArrayList<Integer>();
 
         // If Tile is a wall connected to a floor Tile, it becomes a perimeter Tile
-        for (Tile tile : tiles) {
+        for (Map.Entry<Integer, Tile> entry : tiles.entrySet()) {
+            Tile tile = entry.getValue();
             if (tile.isWall()) {
                 if (tile.getFloorNeighbors() > 0) {
                     tile.state = 3;
                 // Otherwise add Tile to remove list
                 } else {
-                    pruned.add(tile);
+                    pruned.add(entry.getKey());
                 }
             // Switch over lingering corridor tiles
             } else if (tile.isCorridor()) {
@@ -69,11 +71,11 @@ public class World {
 
         // Set perimeter Tiles not on perimeter to be floor Tiles
         int wallNeighbors;
-        for (Tile tile : tiles) {
+        for (Tile tile : tiles.values()) {
             if (tile.isPerimeter()) {
                 wallNeighbors = 0;
                 for (Point neighbor : tile.getNeighbors()) {
-                    if (grid[neighbor.x][neighbor.y].isWall()) {
+                    if (tiles.get(neighbor.x * columns + neighbor.y).isWall()) {
                         wallNeighbors++;
                     }
                 }
@@ -84,11 +86,13 @@ public class World {
         }
 
         // If Tile is on world boundary or has adjacent non-perimeter wall, make it perimeter
-        for (Tile tile : tiles) {
+        int key;
+        for (Tile tile : tiles.values()) {
             if (tile.isFloor()) {
                 wallNeighbors = 0;
                 for (Point neighbor : tile.getNeighbors()) {
-                    if (grid[neighbor.x][neighbor.y].isWall()) {
+                    key = neighbor.x * columns + neighbor.y;
+                    if (tiles.get(key).isWall()) {
                         wallNeighbors++;
                     }
                 }
@@ -101,33 +105,34 @@ public class World {
         // Recheck Tiles for floor neighbors, if floor exists without any adjacent
         // floor Tiles remove it. If Tile has only one adjacent floor make it perimeter.
         checkAdjacent();
-        for (Tile tile : tiles) {
+        for (Map.Entry<Integer, Tile> entry : tiles.entrySet()) {
+            Tile tile = entry.getValue();
             if (tile.getFloorNeighbors() == 1) {
                 tile.state = 3;
             } else if (tile.getFloorNeighbors() == 0) {
-                pruned.add(tile);
+                pruned.add(entry.getKey());
             }
         }
 
         // Remove pruned Tiles from Tiles list
-        for (Tile tile : pruned) {
-            tiles.remove(tile);
+        for (int removeKey : pruned) {
+            tiles.remove(removeKey);
         }
 
-        for (Tile tile : tiles) {
+        for (Tile tile : tiles.values()) {
             if (tile.isPerimeter() || tile.isFloor()) {
-                tile.setBitmask(bitmasker.findBitmask(tile, grid));
+                tile.setBitmask(bitmasker.findBitmask(tile, tiles, columns));
             }
         }
 
-        for (Tile tile : tiles) {
+        for (Tile tile : tiles.values()) {
             tile.findSprite();
         }
 
         builder = null;
     }
 
-    public List<Tile> getTiles() {
+    public Map<Integer, Tile> getTiles() {
         return tiles;
     }
 }

@@ -23,8 +23,7 @@ import java.util.Map;
 
 public class Renderer {
     private int tileSize, viewportWidth, viewportHeight;
-    private List<Tile> tiles;
-    private Map<Tile, Boolean> lightMap;
+    private Map<Integer, Tile> tiles;
     private List<Entity> entities;
 
     private Fog fog;
@@ -32,12 +31,11 @@ public class Renderer {
     private Torchlight torchlight;
 
 
-    public Renderer(List<Tile> tiles, int tileSize, int x, int y) {
+    public Renderer(Map<Integer, Tile> tiles, int tileSize, int x, int y) {
         this.tileSize = tileSize;
         this.viewportWidth = x;
         this.viewportHeight = y;
         this.tiles = tiles;
-        this.lightMap = new HashMap<Tile, Boolean>();
         this.entities = new ArrayList<Entity>();
 
         this.fog = new Fog();
@@ -54,9 +52,9 @@ public class Renderer {
         // Translate graphics origin to camera's upper left
         gfx.translate(-camUpperLeftX, -camUpperLeftY);
 
-        lightMap.clear();
+        Map<Tile, Boolean> lightMap = new HashMap<Tile, Boolean>();
         int tileX, tileY;
-        for (Tile tile : tiles) {
+        for (Tile tile : tiles.values()) {
             // Tile [x, y] are in Tiles, convert to pixels
             tileX = tile.x * tileSize;
             tileY = tile.y * tileSize;
@@ -84,9 +82,9 @@ public class Renderer {
 
                 diffX = Math.abs(player.getX() - entity.getX());
                 diffY = Math.abs(player.getY() - entity.getY());
-                if (!entity.isInView() && (diffX < 100 && diffY < 100)) {
+                if (!entity.isInView() && (diffX < 130 && diffY < 130)) {
                     entity.toggleInView();
-                } else if (entity.isInView() && (diffX >= 100 || diffY >= 100)) {
+                } else if (entity.isInView() && (diffX >= 130 || diffY >= 130)) {
                     entity.toggleInView();
                 }
             } 
@@ -103,7 +101,7 @@ public class Renderer {
     public void placePlayer() {
         boolean playerPlaced = false;
         // Ensure player start position is on floor
-        for (Tile tile : tiles) {
+        for (Tile tile : tiles.values()) {
             if (tile.isFloor() && !playerPlaced) {
                 this.player = new Player(tile.x * tileSize, tile.y * tileSize);
                 tile.toggleOccupied();

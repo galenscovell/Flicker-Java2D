@@ -6,12 +6,11 @@
 
 package logic;
 
-import java.util.List;
+import java.util.Map;
 
 
 public interface Builder {
     public void build();
     public void smooth(Tile tile);
-    public List<Tile> getTiles();
-    public Tile[][] getGrid();
+    public Map<Integer, Tile> getTiles();
 }

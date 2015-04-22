@@ -8,7 +8,9 @@
 package logic;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 
@@ -152,17 +154,15 @@ public class DungeonBuilder implements Builder {
         }
     }
 
-    public List<Tile> getTiles() {
-        List<Tile> tiles = new ArrayList<Tile>();
+    public Map<Integer, Tile> getTiles() {
+        Map<Integer, Tile> tiles = new HashMap<Integer, Tile>();
+        int key;
         for (int y = 0; y < rows; y++) {
             for (int x = 0; x < columns; x++) {
-                tiles.add(grid[x][y]);
+                key = x * columns + y;
+                tiles.put(key, grid[x][y]);
             }
         }
         return tiles;
-    }
-
-    public Tile[][] getGrid() {
-        return grid;
     }
 }
