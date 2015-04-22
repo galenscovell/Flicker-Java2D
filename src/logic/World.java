@@ -113,12 +113,7 @@ public class World {
     private void skin() {
         Bitmasker bitmasker = new Bitmasker();
         for (Tile tile : tiles.values()) {
-            if (tile.isPerimeter() || tile.isFloor()) {
-                tile.setBitmask(bitmasker.findBitmask(tile, tiles, columns));
-            }
-        }
-
-        for (Tile tile : tiles.values()) {
+            tile.setBitmask(bitmasker.findBitmask(tile, tiles, columns));
             tile.findSprite();
         }
     }

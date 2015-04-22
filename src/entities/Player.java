@@ -15,7 +15,6 @@ import java.awt.Graphics2D;
 public class Player {
     private int x, y, prevX, prevY, currentX, currentY;
     private int spriteNumber, waitFrames;
-    private int agi;
 
     private SpriteSheet sheet;
     private Sprite sprite;
@@ -49,12 +48,6 @@ public class Player {
         this.sprite = currentSet[0];
         this.spriteNumber = 0;
         this.waitFrames = 20;
-
-        this.agi = 4;
-    }
-
-    public int getAgi() {
-        return agi;
     }
 
     public int getX() {
