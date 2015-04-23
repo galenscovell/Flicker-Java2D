@@ -6,6 +6,7 @@
 
 package logic;
 
+import entities.Dead;
 import entities.Entity;
 import entities.Player;
 
@@ -30,9 +31,9 @@ public class Updater {
         this.hud = hud;
     }
 
-    public void updateEntities(int[] input, boolean attacking, List<Entity> entities) {
+    public void updateEntities(int[] input, boolean attacking, List<Entity> entities, List<Dead> deadList) {
         if (attacking && !player.isAttacking()) {
-            playerAttack(entities);
+            playerAttack(entities, deadList);
         }
 
         if (playerMove(input[0], input[1]) || attacking) {
@@ -46,14 +47,22 @@ public class Updater {
         this.player = player;
     }
 
-    private void playerAttack(List<Entity> entities) {
+    private void playerAttack(List<Entity> entities, List<Dead> deadList) {
         player.toggleAttack();
         Point attackedTile = player.getAttackedPoint();
+        Entity hitEntity = null;
 
         for (Entity entity : entities) {
             if (entity.getX() == attackedTile.x && entity.getY() == attackedTile.y) {
-                System.out.println("Entity hit.");
+                Tile tile = findTile(attackedTile.x / tileSize, attackedTile.y / tileSize);
+                tile.toggleOccupied();
+                hitEntity = entity;
             }
+        }
+
+        if (hitEntity != null) {
+            entities.remove(hitEntity);
+            deadList.add(new Dead(attackedTile.x, attackedTile.y, tileSize));
         }
     }
 

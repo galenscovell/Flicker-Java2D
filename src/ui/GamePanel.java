@@ -86,7 +86,7 @@ public class GamePanel extends JPanel implements Runnable {
 
             // Player movement and entity logic
             if (updateAccumulator > TIMESTEP) {
-                updater.updateEntities(checkMovement(), spacePressed, renderer.getEntityList());
+                updater.updateEntities(checkMovement(), spacePressed, renderer.getEntityList(), renderer.getDeadList());
                 updateAccumulator = 0;
                 spacePressed = false;
             }

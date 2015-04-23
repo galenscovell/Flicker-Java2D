@@ -6,6 +6,7 @@
 
 package logic;
 
+import entities.Dead;
 import entities.Entity;
 import entities.Player;
 import entities.Salamander;
@@ -25,7 +26,7 @@ public class Renderer {
     private int tileSize, viewportWidth, viewportHeight;
     private Map<Integer, Tile> tiles;
     private List<Entity> entities;
-
+    private List<Dead> deadList;
     private Fog fog;
     private Player player;
     private Torchlight torchlight;
@@ -37,7 +38,7 @@ public class Renderer {
         this.viewportHeight = y;
         this.tiles = tiles;
         this.entities = new ArrayList<Entity>();
-
+        this.deadList = new ArrayList<Dead>();
         this.fog = new Fog();
         this.torchlight = new Torchlight(tileSize);
     }
@@ -67,6 +68,13 @@ public class Renderer {
                     gfx.setColor(new Color(0, 0, 0, 220));
                     gfx.fillRect(tileX, tileY, tileSize, tileSize);
                 }
+            }
+        }
+
+        for (Dead dead : deadList) {
+            // Dead [x, y] are in pixels
+            if (inViewport(dead.getX(), dead.getY(), camUpperLeftX, maxX, camUpperLeftY, maxY)) {
+                dead.draw(gfx);
             }
         }
 
@@ -119,6 +127,10 @@ public class Renderer {
 
     public List<Entity> getEntityList() {
         return entities;
+    }
+
+    public List<Dead> getDeadList() {
+        return deadList;
     }
 
     public Player getPlayer() {
