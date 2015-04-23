@@ -75,25 +75,25 @@ public class Renderer {
             // Entity [x, y] are in pixels
             if (inViewport(entity.getX(), entity.getY(), camUpperLeftX, maxX, camUpperLeftY, maxY)) {
                 if (entity.isAttacking()) {
-                    entity.attack(gfx, tileSize, interpolation, player, viewportWidth, viewportHeight);
+                    entity.attack(gfx, interpolation, player);
                 } else {
-                    entity.draw(gfx, tileSize, interpolation);
+                    entity.draw(gfx, interpolation);
                 }
 
                 diffX = Math.abs(player.getX() - entity.getX());
                 diffY = Math.abs(player.getY() - entity.getY());
-                if (!entity.isInView() && (diffX < 130 && diffY < 130)) {
+                if (!entity.isInView() && (diffX < 150 && diffY < 150)) {
                     entity.toggleInView();
-                } else if (entity.isInView() && (diffX >= 130 || diffY >= 130)) {
+                } else if (entity.isInView() && (diffX >= 150 || diffY >= 150)) {
                     entity.toggleInView();
                 }
             } 
         }
 
         if (player.isAttacking()) {
-            player.attack(gfx, tileSize, interpolation);
+            player.attack(gfx, interpolation);
         }
-        player.draw(gfx, tileSize, interpolation);
+        player.draw(gfx, interpolation);
         torchlight.castLight(gfx, player, lightMap);
         fog.render(gfx);
 
@@ -106,11 +106,11 @@ public class Renderer {
         // Ensure player start position is on floor
         for (Tile tile : tiles.values()) {
             if (tile.isFloor() && !playerPlaced) {
-                this.player = new Player(tile.x * tileSize, tile.y * tileSize);
+                this.player = new Player(tile.x * tileSize, tile.y * tileSize, tileSize);
                 tile.toggleOccupied();
                 playerPlaced = true;
             } else if (tile.isFloor() && playerPlaced) {
-                entities.add(new Salamander(tile.x * tileSize, tile.y * tileSize));
+                entities.add(new Salamander(tile.x * tileSize, tile.y * tileSize, tileSize));
                 tile.toggleOccupied();
                 return;
             }

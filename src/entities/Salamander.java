@@ -12,8 +12,8 @@ import graphics.SpriteSheet;
 
 public class Salamander extends Creature {
 
-    public Salamander(int x, int y) {
-        super(x, y);
+    public Salamander(int x, int y, int tileSize) {
+        super(x, y, tileSize);
         setSprites();
         setStats();
     }

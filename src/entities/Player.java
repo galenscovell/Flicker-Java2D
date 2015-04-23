@@ -6,17 +6,18 @@
 
 package entities;
 
-import graphics.Weapon;
-
 import graphics.Sprite;
 import graphics.SpriteSheet;
+import graphics.Weapon;
+
+import logic.Point;
 
 import java.awt.Graphics2D;
 
 
 public class Player {
     private int x, y, prevX, prevY, currentX, currentY;
-    private int spriteNumber, waitFrames;
+    private int spriteNumber, waitFrames, tileSize;
 
     private Sprite sprite;
     private Sprite[] currentSet;
@@ -27,13 +28,14 @@ public class Player {
     private boolean attacking;
 
 
-    public Player(int x, int y) {
+    public Player(int x, int y, int tileSize) {
         this.x = x;
         this.y = y; 
         this.prevX = x;
         this.prevY = y;
         this.currentX = x;
         this.currentY = y;
+        this.tileSize = tileSize;
         setWeapon("pickaxe");
 
         SpriteSheet sheet = SpriteSheet.charsheet;
@@ -94,7 +96,7 @@ public class Player {
         }
     }
 
-    public void draw(Graphics2D gfx, int tileSize, double interpolation) {
+    public void draw(Graphics2D gfx, double interpolation) {
         animate(currentSet);
         // When interpolation is 1, movement animation is complete
         if (interpolation == 1.0) {
@@ -121,16 +123,28 @@ public class Player {
         }
     }
 
-    public void attack(Graphics2D gfx, int tileSize, double interpolation) {
+    public Point getAttackedPoint() {
+        if (currentSet == upSprites) {
+            return new Point(currentX, currentY - tileSize);
+        } else if (currentSet == downSprites) {
+            return new Point(currentX, currentY + tileSize);
+        } else if (currentSet == leftSprites) {
+            return new Point(currentX - tileSize, currentY);
+        } else {
+            return new Point(currentX + tileSize, currentY);
+        }
+    }
+
+    public void attack(Graphics2D gfx, double interpolation) {
         if (!weaponPrepared) {
-            String dir;
+            String dir = " ";
             if (currentSet == upSprites) {
                 dir = "up";
             } else if (currentSet == downSprites) {
                 dir = "down";
             } else if (currentSet == leftSprites) {
                 dir = "left";
-            } else {
+            } else if (currentSet == rightSprites) {
                 dir = "right";
             }
             weapon.setDirection(dir);
@@ -142,11 +156,11 @@ public class Player {
         int weaponFrame = weapon.getFrame();
         if (weaponFrame <= 3) {
             weapon.draw(gfx, tileSize, 0);
-        } else if (weaponFrame > 3 && weaponFrame < 9) {
+        } else if (weaponFrame > 3 && weaponFrame < 6) {
             weapon.draw(gfx, tileSize, 1);
-        } else if (weaponFrame > 9 && weaponFrame < 14) {
+        } else if (weaponFrame > 5 && weaponFrame < 17) {
             weapon.draw(gfx, tileSize, 2);
-        } else if (weaponFrame == 15) {
+        } else if (weaponFrame == 18) {
             weaponPrepared = false;
             toggleAttack();
             return;

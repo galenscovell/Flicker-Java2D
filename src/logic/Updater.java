@@ -32,7 +32,7 @@ public class Updater {
 
     public void updateEntities(int[] input, boolean attacking, List<Entity> entities) {
         if (attacking && !player.isAttacking()) {
-            player.toggleAttack();
+            playerAttack(entities);
         }
 
         if (playerMove(input[0], input[1]) || attacking) {
@@ -44,6 +44,17 @@ public class Updater {
 
     public void setPlayer(Player player) {
         this.player = player;
+    }
+
+    private void playerAttack(List<Entity> entities) {
+        player.toggleAttack();
+        Point attackedTile = player.getAttackedPoint();
+
+        for (Entity entity : entities) {
+            if (entity.getX() == attackedTile.x && entity.getY() == attackedTile.y) {
+                System.out.println("Entity hit.");
+            }
+        }
     }
 
     private boolean playerMove(int dx, int dy) {

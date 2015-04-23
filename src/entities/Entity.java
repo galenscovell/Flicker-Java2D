@@ -12,8 +12,8 @@ import java.awt.Graphics2D;
 
 public interface Entity {
     public void move(int dx, int dy, boolean possible);
-    public void draw(Graphics2D gfx, int tileSize, double interpolation);
-    public void attack(Graphics2D gfx, int tileSize, double interpolation, Player player, int width, int height);
+    public void draw(Graphics2D gfx, double interpolation);
+    public void attack(Graphics2D gfx, double interpolation, Player player);
     
     public int getX();
     public int getY();

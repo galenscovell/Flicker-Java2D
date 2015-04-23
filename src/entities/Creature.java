@@ -13,7 +13,7 @@ import java.awt.Graphics2D;
 
 public class Creature implements Entity {
     private int x, y, prevX, prevY;
-    private int spriteNumber, waitFrames;
+    private int spriteNumber, waitFrames, tileSize;
     private boolean inView;
     private boolean isAttacking;
 
@@ -25,7 +25,7 @@ public class Creature implements Entity {
     private int moveTime;
 
 
-    public Creature(int x, int y) {
+    public Creature(int x, int y, int tileSize) {
         this.x = x;
         this.y = y;
         this.prevX = x;
@@ -33,6 +33,7 @@ public class Creature implements Entity {
         this.spriteNumber = 0;
         this.waitFrames = 20;
         this.moveTime = 0;
+        this.tileSize = tileSize;
     }
 
     public void move(int dx, int dy, boolean possible) {
@@ -49,7 +50,7 @@ public class Creature implements Entity {
         }
     }
 
-    public void draw(Graphics2D gfx, int tileSize, double interpolation) {
+    public void draw(Graphics2D gfx, double interpolation) {
         animate(currentSet);
         // When interpolation is 1, movement animation is complete
         if (interpolation == 1) {
@@ -64,7 +65,7 @@ public class Creature implements Entity {
         gfx.drawImage(sprite.getSprite(), currentX, currentY, tileSize, tileSize, null);
     }
 
-    public void attack(Graphics2D gfx, int tileSize, double interpolation, Player player, int width, int height) {
+    public void attack(Graphics2D gfx, double interpolation, Player player) {
         int diffX = player.getX() - x;
         int diffY = player.getY() - y;
         if (diffX > 0) {
@@ -76,17 +77,6 @@ public class Creature implements Entity {
         int currentX = (int) (prevX + (diffX * interpolation));
         int currentY = (int) (prevY + (diffY * interpolation));
         
-        if (interpolation <= 0.1) {
-            gfx.setColor(new Color(200, 40, 40, 120));
-        } else if (interpolation > 0.1 && interpolation <= 0.3) {
-            gfx.setColor(new Color(200, 40, 40, 90));
-        } else if (interpolation > 0.3 && interpolation <= 0.5) {
-            gfx.setColor(new Color(200, 40, 40, 30));
-        } else if (interpolation > 0.5 && interpolation < 0.6) {
-            gfx.setColor(new Color(0, 0, 0, 0));
-        }
-        gfx.fillRect(player.getX() - (width / 2), player.getY() - (height / 2), width, height);
-
         // Attack animation only covers half of player's tile
         if (interpolation >= 0.6) {
             toggleAttacking();
