@@ -30,8 +30,12 @@ public class Updater {
         this.hud = hud;
     }
 
-    public void updateEntities(int[] input, List<Entity> entities) {
-        if (playerMove(input[0], input[1])) {
+    public void updateEntities(int[] input, boolean attacking, List<Entity> entities) {
+        if (attacking && !player.isAttacking()) {
+            player.toggleAttack();
+        }
+
+        if (playerMove(input[0], input[1]) || attacking) {
             for (Entity entity : entities) {
                 entityMove(entity);
             }
@@ -43,6 +47,12 @@ public class Updater {
     }
 
     private boolean playerMove(int dx, int dy) {
+        // Prevent movement during player attack animation
+        if (player.isAttacking()) {
+            dx = 0;
+            dy = 0;
+        }
+
         if (dx == 0 && dy == 0) {
             return false;
         }

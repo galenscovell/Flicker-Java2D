@@ -64,7 +64,7 @@ public class Renderer {
                 if (tile.isFloor()) {
                     lightMap.put(tile, false);
                 } else {
-                    gfx.setColor(new Color(0, 0, 0, 235));
+                    gfx.setColor(new Color(0, 0, 0, 220));
                     gfx.fillRect(tileX, tileY, tileSize, tileSize);
                 }
             }
@@ -90,6 +90,9 @@ public class Renderer {
             } 
         }
 
+        if (player.isAttacking()) {
+            player.attack(gfx, tileSize, interpolation);
+        }
         player.draw(gfx, tileSize, interpolation);
         torchlight.castLight(gfx, player, lightMap);
         fog.render(gfx);

@@ -26,14 +26,16 @@ import javax.swing.KeyStroke;
 @SuppressWarnings("serial")
 public class GamePanel extends JPanel implements Runnable {
     final int FRAMERATE = 60;
-    final int TIMESTEP = 12;
+    final int TIMESTEP = 10;
     private double interpolation;
 
-    final int worldWidth = 3200;
-    final int worldHeight = 3200;
+    // Pixel size of world
+    final int worldWidth = 4800;
+    final int worldHeight = 4800;
 
     private boolean running;
     private boolean upPressed, downPressed, leftPressed, rightPressed;
+    private boolean spacePressed, enterReleased, pReleased;
 
     private World world;
     private Thread thread;
@@ -49,15 +51,17 @@ public class GamePanel extends JPanel implements Runnable {
         this.updater = new Updater(world.getTiles(), tileSize, worldWidth, root.getHud());
 
         // Setup player input bindings
-        getInputMap().put(KeyStroke.getKeyStroke("UP"), "moveUp");
-        getInputMap().put(KeyStroke.getKeyStroke("DOWN"), "moveDown");
-        getInputMap().put(KeyStroke.getKeyStroke("LEFT"), "moveLeft");
-        getInputMap().put(KeyStroke.getKeyStroke("RIGHT"), "moveRight");
+        getInputMap().put(KeyStroke.getKeyStroke("pressed W"), "moveUp");
+        getInputMap().put(KeyStroke.getKeyStroke("pressed S"), "moveDown");
+        getInputMap().put(KeyStroke.getKeyStroke("pressed A"), "moveLeft");
+        getInputMap().put(KeyStroke.getKeyStroke("pressed D"), "moveRight");
 
-        getInputMap().put(KeyStroke.getKeyStroke("released UP"), "releaseUp");
-        getInputMap().put(KeyStroke.getKeyStroke("released DOWN"), "releaseDown");
-        getInputMap().put(KeyStroke.getKeyStroke("released LEFT"), "releaseLeft");
-        getInputMap().put(KeyStroke.getKeyStroke("released RIGHT"), "releaseRight");
+        getInputMap().put(KeyStroke.getKeyStroke("released W"), "releaseUp");
+        getInputMap().put(KeyStroke.getKeyStroke("released S"), "releaseDown");
+        getInputMap().put(KeyStroke.getKeyStroke("released A"), "releaseLeft");
+        getInputMap().put(KeyStroke.getKeyStroke("released D"), "releaseRight");
+
+        getInputMap().put(KeyStroke.getKeyStroke("released SPACE"), "useWeapon");
 
         getActionMap().put("moveUp", moveUp);
         getActionMap().put("moveDown", moveDown);
@@ -68,73 +72,12 @@ public class GamePanel extends JPanel implements Runnable {
         getActionMap().put("releaseDown", releaseDown);
         getActionMap().put("releaseLeft", releaseLeft);
         getActionMap().put("releaseRight", releaseRight);
-    }
 
-    Action moveUp = new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-            upPressed = true;
-        }
-    };
-
-    Action moveDown = new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-            downPressed = true;
-        }
-    };
-
-    Action moveLeft = new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-            leftPressed = true;
-        }
-    };
-
-    Action moveRight = new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-            rightPressed = true;
-        }
-    };
-
-    Action releaseUp = new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-            upPressed = false;
-        }
-    };
-
-    Action releaseDown = new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-            downPressed = false;
-        }
-    };
-
-    Action releaseLeft = new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-            leftPressed = false;
-        }
-    };
-
-    Action releaseRight = new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-            rightPressed = false;
-        }
-    };
-
-    private int[] checkInput() {
-        int[] direction = new int[2];
-        if (upPressed) {
-            direction[1]--;
-        } else if (downPressed) {
-            direction[1]++;
-        } else if (leftPressed) {
-            direction[0]--;
-        } else if (rightPressed) {
-            direction[0]++;
-        }
-        return direction;
+        getActionMap().put("useWeapon", useWeapon);
     }
 
     public void run() {
         long startTime, endTime, sleepTime;
-        int[] inputDirection;
         int updateAccumulator = 0;
 
         while (running) {
@@ -143,8 +86,9 @@ public class GamePanel extends JPanel implements Runnable {
 
             // Player movement and entity logic
             if (updateAccumulator > TIMESTEP) {
-                updater.updateEntities(checkInput(), renderer.getEntityList());
+                updater.updateEntities(checkMovement(), spacePressed, renderer.getEntityList());
                 updateAccumulator = 0;
+                spacePressed = false;
             }
 
             // Graphics rendering
@@ -197,11 +141,73 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
-    public void pause() {
-        if (running) {
-            running = false;
-        } else {
-            running = true;
+    Action moveUp = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+            upPressed = true;
         }
+    };
+
+    Action moveDown = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+            downPressed = true;
+        }
+    };
+
+    Action moveLeft = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+            leftPressed = true;
+        }
+    };
+
+    Action moveRight = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+            rightPressed = true;
+        }
+    };
+
+    Action releaseUp = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+            upPressed = false;
+        }
+    };
+
+    Action releaseDown = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+            downPressed = false;
+        }
+    };
+
+    Action releaseLeft = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+            leftPressed = false;
+        }
+    };
+
+    Action releaseRight = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+            rightPressed = false;
+        }
+    };
+
+    Action useWeapon = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+            if (!(upPressed || downPressed || leftPressed || rightPressed)) {
+                spacePressed = true;
+            }
+        }
+    };
+
+    private int[] checkMovement() {
+        int[] direction = new int[2];
+        if (upPressed) {
+            direction[1]--;
+        } else if (downPressed) {
+            direction[1]++;
+        } else if (leftPressed) {
+            direction[0]--;
+        } else if (rightPressed) {
+            direction[0]++;
+        }
+        return direction;
     }
 }
