@@ -35,7 +35,7 @@ public class Dead {
     }
 
     public void draw(Graphics2D gfx) {
-        gfx.drawImage(sprite.getSprite(), x, y, tileSize, tileSize, null);
+        gfx.drawImage(sprite.getSprite(), x * tileSize, y * tileSize, tileSize, tileSize, null);
     }
 
     private Sprite setSprite() {

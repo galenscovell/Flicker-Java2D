@@ -7,13 +7,9 @@
 package graphics;
 
 import entities.Player;
-import logic.Tile;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-
-import java.util.HashMap;
-import java.util.Map;
 
 
 public class Torchlight {
@@ -34,7 +30,7 @@ public class Torchlight {
         this.lightMap = new float[resistanceMap.length][resistanceMap[0].length];
     }
 
-    public void findFOV(Graphics2D gfx, Player player) {
+    public void findFOV(Graphics2D gfx, Player player, int minX, int maxX, int minY, int maxY) {
         startX = player.getCurrentX() / tileSize;
         startY = player.getCurrentY() / tileSize;
         lightMap[startY][startX] = 1.0f;
@@ -43,14 +39,17 @@ public class Torchlight {
             castLight(1, 1.0f, 0.0f, mult[0][i], mult[1][i], mult[2][i], mult[3][i]);
         }
 
-        drawLight(gfx);
+        drawLight(gfx, minX, maxX, minY, maxY);
     }
 
-    private void drawLight(Graphics2D gfx) {
+    private void drawLight(Graphics2D gfx, int minX, int maxX, int minY, int maxY) {
+        // Fill alpha over Tile depending on lightMap value
         for (int x = 0; x < lightMap[0].length; x++) {
             for (int y = 0; y < lightMap.length; y++) {
-                gfx.setColor(new Color(0.0f, 0.0f, 0.0f, 1.0f - lightMap[y][x]));
-                gfx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
+                if (!(x < minX || x > maxX || y < minY || y > maxY)) {
+                    gfx.setColor(new Color(0.0f, 0.0f, 0.0f, 1.0f - lightMap[y][x]));
+                    gfx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
+                }
                 // Reset each value for next frame
                 lightMap[y][x] = 0.0f;
             }
@@ -104,5 +103,15 @@ public class Torchlight {
                 }
             }
         }
+    }
+
+    public void updateResistanceMap(int x, int y, boolean blocking) {
+        float value;
+        if (blocking) {
+            value = 2.0f;
+        } else {
+            value = 0.0f;
+        }
+        resistanceMap[y][x] = value;
     }
 }

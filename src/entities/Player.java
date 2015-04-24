@@ -58,6 +58,20 @@ public class Player {
         this.waitFrames = 20;
     }
 
+    public Point getFacingPoint() {
+        int tileX = x / tileSize;
+        int tileY = y / tileSize;
+        if (currentSet == upSprites) {
+            return new Point(tileX, tileY - 1);
+        } else if (currentSet == downSprites) {
+            return new Point(tileX, tileY + 1);
+        } else if (currentSet == leftSprites) {
+            return new Point(tileX - 1, tileY);
+        } else {
+            return new Point(tileX + 1, tileY);
+        }
+    }
+
     public int getX() {
         return x;
     }
@@ -116,18 +130,6 @@ public class Player {
             attacking = false;
         } else {
             attacking = true;
-        }
-    }
-
-    public Point getAttackedPoint() {
-        if (currentSet == upSprites) {
-            return new Point(currentX, currentY - tileSize);
-        } else if (currentSet == downSprites) {
-            return new Point(currentX, currentY + tileSize);
-        } else if (currentSet == leftSprites) {
-            return new Point(currentX - tileSize, currentY);
-        } else {
-            return new Point(currentX + tileSize, currentY);
         }
     }
 

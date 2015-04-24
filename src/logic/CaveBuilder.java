@@ -9,6 +9,7 @@ package logic;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 
 public class CaveBuilder implements Builder {

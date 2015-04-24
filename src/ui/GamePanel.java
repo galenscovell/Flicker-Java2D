@@ -35,7 +35,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     private boolean running;
     private boolean upPressed, downPressed, leftPressed, rightPressed;
-    private boolean spacePressed, enterReleased, pReleased;
+    private boolean spaceReleased, eReleased;
 
     private World world;
     private Thread thread;
@@ -62,6 +62,7 @@ public class GamePanel extends JPanel implements Runnable {
         getInputMap().put(KeyStroke.getKeyStroke("released D"), "releaseRight");
 
         getInputMap().put(KeyStroke.getKeyStroke("released SPACE"), "useWeapon");
+        getInputMap().put(KeyStroke.getKeyStroke("released E"), "interact");
 
         getActionMap().put("moveUp", moveUp);
         getActionMap().put("moveDown", moveDown);
@@ -74,6 +75,7 @@ public class GamePanel extends JPanel implements Runnable {
         getActionMap().put("releaseRight", releaseRight);
 
         getActionMap().put("useWeapon", useWeapon);
+        getActionMap().put("interact", interact);
     }
 
     public void run() {
@@ -86,9 +88,10 @@ public class GamePanel extends JPanel implements Runnable {
 
             // Player movement and entity logic
             if (updateAccumulator > TIMESTEP) {
-                updater.updateEntities(checkMovement(), spacePressed, renderer.getEntityList(), renderer.getDeadList());
+                updater.update(checkMovement(), spaceReleased, eReleased, renderer.getEntityList(), renderer.getDeadList(), renderer.getInanimateList());
                 updateAccumulator = 0;
-                spacePressed = false;
+                spaceReleased = false;
+                eReleased = false;
             }
 
             // Graphics rendering
@@ -193,8 +196,16 @@ public class GamePanel extends JPanel implements Runnable {
 
     Action useWeapon = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
-            if (!(upPressed || downPressed || leftPressed || rightPressed)) {
-                spacePressed = true;
+            if (!(upPressed || downPressed || leftPressed || rightPressed || eReleased)) {
+                spaceReleased = true;
+            }
+        }
+    };
+
+    Action interact = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+            if (!(upPressed || downPressed || leftPressed || rightPressed || spaceReleased)) {
+                eReleased = true;
             }
         }
     };

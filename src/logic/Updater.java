@@ -1,10 +1,12 @@
 
 /**
  * UPDATER CLASS
- * Handles Entity logic.
+ * Handles game logic: interactions, movements, behaviors and HUD updates.
  */
 
 package logic;
+
+import inanimates.Inanimate;
 
 import entities.Dead;
 import entities.Entity;
@@ -31,15 +33,19 @@ public class Updater {
         this.hud = hud;
     }
 
-    public void updateEntities(int[] input, boolean attacking, List<Entity> entities, List<Dead> deadList) {
-        if (attacking && !player.isAttacking()) {
-            playerAttack(entities, deadList);
-        }
-
+    public void update(int[] input, boolean attacking, boolean interacting, List<Entity> entities, List<Dead> deadList, List<Inanimate> inanimates) {
         if (playerMove(input[0], input[1]) || attacking) {
+            if (attacking && !player.isAttacking()) {
+                playerAttack(entities, deadList);
+            }
+
             for (Entity entity : entities) {
                 entityMove(entity);
             }
+        }
+
+        if (interacting && !playerInteract(inanimates)) {
+            System.out.println("There doesn't appear to be anything here.");
         }
     }
 
@@ -47,14 +53,26 @@ public class Updater {
         this.player = player;
     }
 
+    private boolean playerInteract(List<Inanimate> inanimates) {
+        Point facingPoint = player.getFacingPoint();
+        Tile facingTile = findTile(facingPoint.x, facingPoint.y);
+        for (Inanimate inanimate : inanimates) {
+            if (inanimate.getX() == facingTile.x && inanimate.getY() == facingTile.y) {
+                inanimate.interact(facingTile);
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void playerAttack(List<Entity> entities, List<Dead> deadList) {
         player.toggleAttack();
-        Point attackedTile = player.getAttackedPoint();
+        Point attackedTile = player.getFacingPoint();
         Entity hitEntity = null;
 
         for (Entity entity : entities) {
-            if (entity.getX() == attackedTile.x && entity.getY() == attackedTile.y) {
-                Tile tile = findTile(attackedTile.x / tileSize, attackedTile.y / tileSize);
+            if (entity.getX() == attackedTile.x * tileSize && entity.getY() == attackedTile.y * tileSize) {
+                Tile tile = findTile(attackedTile.x, attackedTile.y);
                 tile.toggleOccupied();
                 hitEntity = entity;
             }
@@ -97,9 +115,9 @@ public class Updater {
     private void entityMove(Entity entity) {
         if (entity.isMoveTime()) {
             if (entity.isInView()) {
-                chaseMove(entity);
+                entityAggressiveMove(entity);
             } else {
-                exploreMove(entity);
+                entityPassiveMove(entity);
             }
             entity.resetMoveTime();
         } else {
@@ -108,7 +126,7 @@ public class Updater {
             
     }
 
-    private void exploreMove(Entity entity) {
+    private void entityPassiveMove(Entity entity) {
         Random generator = new Random();
         int entityX = (entity.getX() / tileSize);
         int entityY = (entity.getY() / tileSize);
@@ -135,7 +153,7 @@ public class Updater {
         }
     }
 
-    private void chaseMove(Entity entity) {
+    private void entityAggressiveMove(Entity entity) {
         int entityX = (entity.getX() / tileSize);
         int entityY = (entity.getY() / tileSize);
         int diffX = (entityX - (player.getX() / tileSize));
@@ -148,7 +166,7 @@ public class Updater {
 
         // If entity is horizontally or vertically aligned with and adjacent to Player, attack
         if ((diffX == 0 && (diffY == 1 || diffY == -1)) || (diffY == 0 && (diffX == 1 || diffX == -1))) {
-            attackMove(entity);
+            entityAttack(entity);
         }
 
         Tile upTile = findTile(entityX, entityY - 1);
@@ -193,7 +211,7 @@ public class Updater {
         entity.move(dx * tileSize, dy * tileSize, true);
     }
 
-    private void attackMove(Entity entity) {
+    private void entityAttack(Entity entity) {
         entity.toggleAttacking();
         hud.changeHealth(-1);
     }

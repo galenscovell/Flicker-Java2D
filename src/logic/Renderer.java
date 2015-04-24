@@ -1,7 +1,9 @@
 
 /**
  * RENDERER CLASS
- * Renders Tiles and Entities within viewport around Player.
+ * Handles game graphics.
+ * Calls rendering for Player and Tiles, Entities, and Inanimates within current Player viewport.
+ * Creates resistance/light maps for FOV calls via Torchlight as well as Fog.
  */
 
 package logic;
@@ -10,6 +12,7 @@ import entities.Dead;
 import entities.Entity;
 import entities.Player;
 import entities.Salamander;
+
 import graphics.Fog;
 import graphics.Torchlight;
 
@@ -32,9 +35,9 @@ public class Renderer {
     private List<Dead> deadList;
     private List<Inanimate> inanimates;
 
-    private Fog fog;
     private Player player;
     private Torchlight torchlight;
+    private Fog fog;
 
 
     public Renderer(Map<Integer, Tile> tiles, int tileSize, int x, int y) {
@@ -51,36 +54,34 @@ public class Renderer {
     }
 
     public void render(Graphics2D gfx, double interpolation) {
-        // These values are in pixels, not tile units
+        // These values are in pixels, not Tiles
         int camUpperLeftX = player.getCurrentX() - (viewportWidth / 2);
         int camUpperLeftY = player.getCurrentY() - (viewportHeight / 2);
         int maxX = camUpperLeftX + viewportWidth;
         int maxY = camUpperLeftY + viewportHeight;
-        
+
         // Translate graphics origin to camera's upper left
         gfx.translate(-camUpperLeftX, -camUpperLeftY);
 
-        int tileX, tileY;
         for (Tile tile : tiles.values()) {
             // Tile [x, y] are in Tiles, convert to pixels
-            tileX = tile.x * tileSize;
-            tileY = tile.y * tileSize;
-            if (inViewport(tileX, tileY, camUpperLeftX, maxX, camUpperLeftY, maxY)) {
+            if (inViewport(tile.x * tileSize, tile.y * tileSize, camUpperLeftX, maxX, camUpperLeftY, maxY)) {
                 tile.draw(gfx, tileSize);
             }
         }
 
         for (Dead dead : deadList) {
-            // Dead [x, y] are in pixels
-            if (inViewport(dead.getX(), dead.getY(), camUpperLeftX, maxX, camUpperLeftY, maxY)) {
+            // Dead [x, y] are in Tiles, convert to pixels
+            if (inViewport(dead.getX() * tileSize, dead.getY() * tileSize, camUpperLeftX, maxX, camUpperLeftY, maxY)) {
                 dead.draw(gfx);
             }
         }
 
-        for (Inanimate thing : inanimates) {
-            // Inanimate [x, y] are in pixels
-            if (inViewport(thing.getX(), thing.getY(), camUpperLeftX, maxX, camUpperLeftY, maxY)) {
-                thing.draw(gfx);
+        for (Inanimate inanimate : inanimates) {
+            // Inanimate [x, y] are in Tiles, convert to pixels
+            if (inViewport(inanimate.getX() * tileSize, inanimate.getY() * tileSize, camUpperLeftX, maxX, camUpperLeftY, maxY)) {
+                inanimate.draw(gfx);
+                torchlight.updateResistanceMap(inanimate.getX(), inanimate.getY(), inanimate.isBlocking());
             }
         }
 
@@ -107,12 +108,29 @@ public class Renderer {
         if (player.isAttacking()) {
             player.attack(gfx, interpolation);
         }
+
         player.draw(gfx, interpolation);
-        torchlight.findFOV(gfx, player);
+        torchlight.findFOV(gfx, player, camUpperLeftX / tileSize, maxX / tileSize, camUpperLeftY / tileSize, maxY / tileSize);
         fog.render(gfx);
 
         // Reset graphics origin
         gfx.translate(camUpperLeftX, camUpperLeftY);
+    }
+
+    public List<Entity> getEntityList() {
+        return entities;
+    }
+
+    public List<Dead> getDeadList() {
+        return deadList;
+    }
+
+    public List<Inanimate> getInanimateList() {
+        return inanimates;
+    }
+
+    public Player getPlayer() {
+        return player;
     }
 
     public void placePlayer() {
@@ -131,27 +149,15 @@ public class Renderer {
         }
     }
 
-    public List<Entity> getEntityList() {
-        return entities;
-    }
-
-    public List<Dead> getDeadList() {
-        return deadList;
-    }
-
-    public Player getPlayer() {
-        return player;
-    }
-
     public void placeInanimates() {
         for (Tile tile : tiles.values()) {
             if (tile.isFloor() && tile.getFloorNeighbors() > 2) {
                 if (tile.getBitmask() == 1010) {
-                    inanimates.add(new Door(tile.x * tileSize, tile.y * tileSize, tileSize, 0));
+                    inanimates.add(new Door(tile.x, tile.y, tileSize, 0));
                     tile.toggleBlocking();
                     tile.toggleOccupied();
                 } else if (tile.getBitmask() == 101) {
-                    inanimates.add(new Door(tile.x * tileSize, tile.y * tileSize, tileSize, 1));
+                    inanimates.add(new Door(tile.x, tile.y, tileSize, 1));
                     tile.toggleBlocking();
                     tile.toggleOccupied();
                 }
@@ -173,7 +179,6 @@ public class Renderer {
             }
             resistanceMap[tile.y][tile.x] = resistance;
         }
-
         this.torchlight = new Torchlight(tileSize, resistanceMap);
     }
 
