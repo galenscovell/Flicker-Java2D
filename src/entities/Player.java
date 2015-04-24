@@ -6,9 +6,9 @@
 
 package entities;
 
+import graphics.Pickaxe;
 import graphics.Sprite;
 import graphics.SpriteSheet;
-import graphics.Weapon;
 
 import logic.Point;
 
@@ -23,7 +23,7 @@ public class Player {
     private Sprite[] currentSet;
     private Sprite[] upSprites, downSprites, leftSprites, rightSprites;
 
-    private Weapon weapon;
+    private Pickaxe weapon;
     private boolean weaponPrepared;
     private boolean attacking;
 
@@ -36,7 +36,7 @@ public class Player {
         this.currentX = x;
         this.currentY = y;
         this.tileSize = tileSize;
-        setWeapon("pickaxe");
+        this.weapon = new Pickaxe();
 
         SpriteSheet sheet = SpriteSheet.charsheet;
         this.upSprites = new Sprite[4];
@@ -72,10 +72,6 @@ public class Player {
 
     public int getCurrentY() {
         return currentY;
-    }
-
-    public void setWeapon(String type) {
-        this.weapon = new Weapon(type);
     }
 
     public void move(int dx, int dy, boolean possible) {

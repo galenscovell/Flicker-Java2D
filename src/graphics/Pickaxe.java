@@ -1,7 +1,7 @@
 
 /**
- * WEAPON CLASS
- * Handles loading of weapon sprites for attack animations.
+ * PICKAXE CLASS
+ * Handles loading of pickaxe sprites for attack animations.
  */
 
 package graphics;
@@ -9,7 +9,7 @@ package graphics;
 import java.awt.Graphics2D;
 
 
-public class Weapon {
+public class Pickaxe {
     private int x, y, playerX, playerY;
     private Sprite sprite;
     private Sprite[] currentSet;
@@ -17,31 +17,28 @@ public class Weapon {
     private int frame;
 
 
-    public Weapon(String type) {
+    public Pickaxe() {
         SpriteSheet sheet = SpriteSheet.charsheet;
+        this.upSprites = new Sprite[3];
+        this.downSprites = new Sprite[3];
+        this.leftSprites = new Sprite[3];
+        this.rightSprites = new Sprite[3];
 
-        if (type.equals("pickaxe")) {
-            this.upSprites = new Sprite[3];
-            this.downSprites = new Sprite[3];
-            this.leftSprites = new Sprite[3];
-            this.rightSprites = new Sprite[3];
+        upSprites[0] = new Sprite(sheet, 67);
+        upSprites[1] = new Sprite(sheet, 68);
+        upSprites[2] = new Sprite(sheet, 64);
 
-            upSprites[0] = new Sprite(sheet, 67);
-            upSprites[1] = new Sprite(sheet, 68);
-            upSprites[2] = new Sprite(sheet, 64);
+        downSprites[0] = new Sprite(sheet, 65);
+        downSprites[1] = new Sprite(sheet, 69);
+        downSprites[2] = new Sprite(sheet, 66);
 
-            downSprites[0] = new Sprite(sheet, 65);
-            downSprites[1] = new Sprite(sheet, 69);
-            downSprites[2] = new Sprite(sheet, 66);
+        leftSprites[0] = new Sprite(sheet, 64);
+        leftSprites[1] = new Sprite(sheet, 70);
+        leftSprites[2] = new Sprite(sheet, 65);
 
-            leftSprites[0] = new Sprite(sheet, 64);
-            leftSprites[1] = new Sprite(sheet, 70);
-            leftSprites[2] = new Sprite(sheet, 65);
-
-            rightSprites[0] = new Sprite(sheet, 66);
-            rightSprites[1] = new Sprite(sheet, 71);
-            rightSprites[2] = new Sprite(sheet, 67);
-        }
+        rightSprites[0] = new Sprite(sheet, 66);
+        rightSprites[1] = new Sprite(sheet, 71);
+        rightSprites[2] = new Sprite(sheet, 67);
     }
 
     public int getFrame() {

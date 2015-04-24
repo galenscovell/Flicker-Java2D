@@ -22,7 +22,7 @@ public class Tile {
     private List<Point> neighborTilePoints;
     private int bitmask;
     private Sprite sprite;
-    private boolean occupied;
+    private boolean occupied, blocking;
 
 
     public Tile(int x, int y, int columns, int rows) {
@@ -49,10 +49,6 @@ public class Tile {
         return state == 3;
     }
 
-    public boolean isWater() {
-        return state == 4;
-    }
-
     public boolean isOccupied() {
         return occupied;
     }
@@ -62,6 +58,18 @@ public class Tile {
             occupied = false;
         } else {
             occupied = true;
+        }
+    }
+
+    public boolean isBlocking() {
+        return blocking;
+    }
+
+    public void toggleBlocking() {
+        if (blocking) {
+            blocking = false;
+        } else {
+            blocking = true;
         }
     }
 
@@ -79,6 +87,10 @@ public class Tile {
 
     public void setBitmask(int value) {
         bitmask = value;
+    }
+
+    public int getBitmask() {
+        return bitmask;
     }
 
     public void draw(Graphics2D gfx, int tileSize) {
@@ -185,8 +197,6 @@ public class Tile {
                     sprite = new Sprite(sheet, 65);
             }
         }
-        neighborTilePoints = null;
-        floorNeighbors = 0;
     }
 
     private List<Point> findNeighbors(int columns, int rows) {
