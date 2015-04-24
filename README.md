@@ -1,9 +1,9 @@
+<img src='http://galenscovell.github.io/css/pics/flicker.png' width=500px />
 
 Flicker
 ======
 
-<b>Description:</b>
-<blockquote>Full-fledged graphical roguelike coded in Java. Work in progress with numerous features added daily.</blockquote>
+Full-fledged graphical roguelike coded in Java. Work in progress with numerous features added daily.
 
 <b>Current Features:</b>
 ======
