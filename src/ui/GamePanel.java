@@ -126,6 +126,8 @@ public class GamePanel extends JPanel implements Runnable {
             smoothTicks--;
         }
         world.optimizeLayout();
+        renderer.placeInanimates();
+        renderer.createResistanceMap(worldWidth, worldHeight);
         renderer.placePlayer();
         updater.setPlayer(renderer.getPlayer());
         this.running = true;

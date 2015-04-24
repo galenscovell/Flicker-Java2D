@@ -7,9 +7,8 @@
 
 package logic;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class CaveBuilder implements Builder {
@@ -20,21 +19,21 @@ public class CaveBuilder implements Builder {
     public CaveBuilder(int columns, int rows) {
         this.columns = columns;
         this.rows = rows;
-        this.grid = new Tile[columns][rows];
+        this.grid = new Tile[rows][columns];
     }
 
     public void build() {
         Random random = new Random();
         int chance, state;
 
-        for (int y = 0; y < rows; y++) {
-            for (int x = 0; x < columns; x++) {
-                grid[x][y] = new Tile(x, y, columns, rows);
+        for (int x = 0; x < columns; x++) {
+            for (int y = 0; y < rows; y++) {
+                grid[y][x] = new Tile(x, y, columns, rows);
                 chance = random.nextInt(100);
                 if (chance < 40) {
-                    grid[x][y].state = 1;
+                    grid[y][x].state = 1;
                 } else {
-                    grid[x][y].state = 0;
+                    grid[y][x].state = 0;
                 }
             }
         }
@@ -48,17 +47,15 @@ public class CaveBuilder implements Builder {
         }
     }
 
-    public List<Tile> getTiles() {
-        List<Tile> tiles = new ArrayList<Tile>();
-        for (int y = 0; y < rows; y++) {
-            for (int x = 0; x < columns; x++) {
-                tiles.add(grid[x][y]);
+    public Map<Integer, Tile> getTiles() {
+        Map<Integer, Tile> tiles = new HashMap<Integer, Tile>();
+        int key;
+        for (int x = 0; x < columns; x++) {
+            for (int y = 0; y < rows; y++) {
+                key = x * columns + y;
+                tiles.put(key, grid[y][x]);
             }
         }
         return tiles;
-    }
-
-    public Tile[][] getGrid() {
-        return grid;
     }
 }

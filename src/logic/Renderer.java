@@ -13,7 +13,9 @@ import entities.Salamander;
 import graphics.Fog;
 import graphics.Torchlight;
 
-import java.awt.Color;
+import inanimates.Door;
+import inanimates.Inanimate;
+
 import java.awt.Graphics2D;
 
 import java.util.ArrayList;
@@ -25,8 +27,11 @@ import java.util.Map;
 public class Renderer {
     private int tileSize, viewportWidth, viewportHeight;
     private Map<Integer, Tile> tiles;
+
     private List<Entity> entities;
     private List<Dead> deadList;
+    private List<Inanimate> inanimates;
+
     private Fog fog;
     private Player player;
     private Torchlight torchlight;
@@ -37,10 +42,12 @@ public class Renderer {
         this.viewportWidth = x;
         this.viewportHeight = y;
         this.tiles = tiles;
+
         this.entities = new ArrayList<Entity>();
         this.deadList = new ArrayList<Dead>();
+        this.inanimates = new ArrayList<Inanimate>();
+
         this.fog = new Fog();
-        this.torchlight = new Torchlight(tileSize);
     }
 
     public void render(Graphics2D gfx, double interpolation) {
@@ -53,21 +60,13 @@ public class Renderer {
         // Translate graphics origin to camera's upper left
         gfx.translate(-camUpperLeftX, -camUpperLeftY);
 
-        Map<Tile, Boolean> lightMap = new HashMap<Tile, Boolean>();
         int tileX, tileY;
         for (Tile tile : tiles.values()) {
             // Tile [x, y] are in Tiles, convert to pixels
             tileX = tile.x * tileSize;
             tileY = tile.y * tileSize;
-            
             if (inViewport(tileX, tileY, camUpperLeftX, maxX, camUpperLeftY, maxY)) {
                 tile.draw(gfx, tileSize);
-                if (tile.isFloor()) {
-                    lightMap.put(tile, false);
-                } else {
-                    gfx.setColor(new Color(0, 0, 0, 220));
-                    gfx.fillRect(tileX, tileY, tileSize, tileSize);
-                }
             }
         }
 
@@ -75,6 +74,13 @@ public class Renderer {
             // Dead [x, y] are in pixels
             if (inViewport(dead.getX(), dead.getY(), camUpperLeftX, maxX, camUpperLeftY, maxY)) {
                 dead.draw(gfx);
+            }
+        }
+
+        for (Inanimate thing : inanimates) {
+            // Inanimate [x, y] are in pixels
+            if (inViewport(thing.getX(), thing.getY(), camUpperLeftX, maxX, camUpperLeftY, maxY)) {
+                thing.draw(gfx);
             }
         }
 
@@ -102,7 +108,7 @@ public class Renderer {
             player.attack(gfx, interpolation);
         }
         player.draw(gfx, interpolation);
-        torchlight.castLight(gfx, player, lightMap);
+        torchlight.findFOV(gfx, player);
         fog.render(gfx);
 
         // Reset graphics origin
@@ -135,6 +141,40 @@ public class Renderer {
 
     public Player getPlayer() {
         return player;
+    }
+
+    public void placeInanimates() {
+        for (Tile tile : tiles.values()) {
+            if (tile.isFloor() && tile.getFloorNeighbors() > 2) {
+                if (tile.getBitmask() == 1010) {
+                    inanimates.add(new Door(tile.x * tileSize, tile.y * tileSize, tileSize, 0));
+                    tile.toggleBlocking();
+                    tile.toggleOccupied();
+                } else if (tile.getBitmask() == 101) {
+                    inanimates.add(new Door(tile.x * tileSize, tile.y * tileSize, tileSize, 1));
+                    tile.toggleBlocking();
+                    tile.toggleOccupied();
+                }
+            }
+        }
+    }
+
+    public void createResistanceMap(int width, int height) {
+        int columns = width / tileSize;
+        int rows = height / tileSize;
+        float[][] resistanceMap = new float[rows][columns];
+
+        for (Tile tile : tiles.values()) {
+            float resistance;
+            if (tile.isPerimeter() || tile.isBlocking()) {
+                resistance = 2.0f;
+            } else {
+                resistance = 0.0f;
+            }
+            resistanceMap[tile.y][tile.x] = resistance;
+        }
+
+        this.torchlight = new Torchlight(tileSize, resistanceMap);
     }
 
     private boolean inViewport(int x, int y, int camUpperLeftX, int maxX, int camUpperLeftY, int maxY) {

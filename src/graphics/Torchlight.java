@@ -17,62 +17,92 @@ import java.util.Map;
 
 
 public class Torchlight {
-    private int tileSize;
-    private Color lit;
-    private Color dark;
+    private int tileSize, radius, startX, startY;
+    private int[][] mult;
+    private float[][] resistanceMap;
+    private float[][] lightMap;
 
-    public Torchlight(int tileSize) {
+
+    public Torchlight(int tileSize, float[][] resistanceMap) {
         this.tileSize = tileSize;
-        this.lit = new Color(255, 214, 170, 75);
-        this.dark = new Color(0, 0, 0, 245);
+        this.radius = 6;
+        this.mult = new int[][]{{1, 0, 0, -1, -1, 0, 0, 1}, 
+                                {0, 1, -1, 0, 0, -1, 1, 0}, 
+                                {0, 1, 1, 0, 0, -1, -1, 0}, 
+                                {1, 0, 0, 1, -1, 0, 0, -1}};
+        this.resistanceMap = resistanceMap;
+        this.lightMap = new float[resistanceMap.length][resistanceMap[0].length];
     }
 
-    public void castLight(Graphics2D gfx, Player player, Map<Tile, Boolean> lightMap) {
-        float x, y;
-        for (int i = 0; i < 360; i += 10) {
-            x = (float) Math.cos((float) i * 0.01745f);
-            y = (float) Math.sin((float) i * 0.01745f);
-            castRay(player, x, y, lightMap);
+    public void findFOV(Graphics2D gfx, Player player) {
+        startX = player.getCurrentX() / tileSize;
+        startY = player.getCurrentY() / tileSize;
+        lightMap[startY][startX] = 1.0f;
+
+        for (int i = 0; i < 8; i++) {
+            castLight(1, 1.0f, 0.0f, mult[0][i], mult[1][i], mult[2][i], mult[3][i]);
         }
-        fillRays(gfx, lightMap);
+
+        drawLight(gfx);
     }
 
-    private void castRay(Player player, float x, float y, Map<Tile, Boolean> lightMap) {
-        float ox = (float) player.getCurrentX() + (tileSize / 2);
-        float oy = (float) player.getCurrentY() + (tileSize / 2);
-        for (int i = 0; i < 36; i++) {
-            Tile tile = findTileSpace((int) ox, (int) oy, lightMap);
-            if (tile == null) {
-                return;
-            } else {
-                lightMap.put(tile, true);
-            }
-            ox += x * 4;
-            oy += y * 4;
-        }
-    }
-
-    private void fillRays(Graphics2D gfx, Map<Tile, Boolean> lightMap) {
-        for (Map.Entry<Tile, Boolean> entry : lightMap.entrySet()) {
-            Tile tile = entry.getKey();
-            if (entry.getValue()) {
-                gfx.setColor(lit);
-            } else {
-                gfx.setColor(dark);
-            }
-            gfx.fillRect(tile.x * tileSize, tile.y * tileSize, tileSize, tileSize);
-        }
-    }
-
-    private Tile findTileSpace(int x, int y, Map<Tile, Boolean> lightMap) {
-        int tileX, tileY;
-        for (Tile tile : lightMap.keySet()) {
-            tileX = tile.x * tileSize;
-            tileY = tile.y * tileSize;
-            if (tileX <= x && (tileX + tileSize) >= x && tileY <= y && (tileY + tileSize) >= y) {
-                return tile;
+    private void drawLight(Graphics2D gfx) {
+        for (int x = 0; x < lightMap[0].length; x++) {
+            for (int y = 0; y < lightMap.length; y++) {
+                gfx.setColor(new Color(0.0f, 0.0f, 0.0f, 1.0f - lightMap[y][x]));
+                gfx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
+                // Reset each value for next frame
+                lightMap[y][x] = 0.0f;
             }
         }
-        return null;
+    }
+
+    private void castLight(int row, float startSlope, float endSlope, int xx, int xy, int yx, int yy) {
+        float newStart = 0.0f;
+        if (startSlope < endSlope) {
+            return;
+        }
+
+        boolean blocked = false;
+        for (int distance = row; distance <= radius && !blocked; distance++) {
+            int dy = -distance;
+            for (int dx = -distance; dx <= 0; dx++) {
+                int currentX = startX + dx * xx + dy * xy;
+                int currentY = startY + dx * yx + dy * yy;
+                float leftSlope = (dx - 0.5f) / (dy + 0.5f);
+                float rightSlope = (dx + 0.5f) / (dy - 0.5f);
+
+                if (!(currentX >= 0 && currentY >= 0 && currentX < lightMap[0].length && currentY < lightMap.length) || startSlope < rightSlope) {
+                    continue;
+                } else if (endSlope > leftSlope) {
+                    break;
+                }
+
+                // Check if in lightable area and light if needed
+                float radiusCircle = (float) Math.sqrt(dx * dx + dy * dy);
+                if (radiusCircle <= radius) {
+                    float brightness = (1 - (radiusCircle / radius));
+                    lightMap[currentY][currentX] = brightness;
+                }
+
+                // Previous cell was blocking
+                if (blocked) {
+                    if (resistanceMap[currentY][currentX] >= 1) {
+                        newStart = rightSlope;
+                        continue;
+                    } else {
+                        blocked = false;
+                        startSlope = newStart;
+                    }
+                } else {
+                    // Hit wall within sight line
+                    if (resistanceMap[currentY][currentX] >= 1 && distance < radius) {
+                        blocked = true;
+                        castLight(distance + 1, startSlope, leftSlope, xx, xy, yx, yy);
+                        newStart = rightSlope;
+                    }
+                }
+            }
+        }
     }
 }
