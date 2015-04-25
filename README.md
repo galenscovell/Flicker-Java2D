@@ -8,7 +8,7 @@ Full-fledged graphical roguelike coded in Java. Work in progress with numerous f
 <b>Current Features:</b>
 ======
 <b>Mechanics</b>
-* Procedurally generated caves/dungeons
+* Endless procedurally generated caves/dungeons with persistent Player across levels
 * Viewport rendering with camera centered on Player
 * Efficient game-loop with clear separation of rendering and logic
 * Smooth key-binding input free of delays
