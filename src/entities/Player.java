@@ -88,7 +88,7 @@ public class Player {
         return currentY;
     }
 
-    public void move(int dx, int dy, boolean possible) {
+    public void turn(int dx, int dy) {
         if (dy < 0) {
             currentSet = upSprites;
         } else if (dy > 0) {
@@ -98,12 +98,13 @@ public class Player {
         } else if (dx > 0) {
             currentSet = rightSprites;
         }
+    }
 
-        if (possible) {
-            animate(currentSet);
-            x += dx;
-            y += dy;
-        }
+    public void move(int dx, int dy) {
+        turn(dx, dy);
+        animate(currentSet);
+        x += dx;
+        y += dy;
     }
 
     public void draw(Graphics2D gfx, double interpolation) {

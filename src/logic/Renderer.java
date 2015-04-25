@@ -19,16 +19,18 @@ import graphics.Torchlight;
 import inanimates.Door;
 import inanimates.Inanimate;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 
 public class Renderer {
-    private int tileSize, viewportWidth, viewportHeight;
+    private int tileSize, viewportWidth, viewportHeight, columns, rows;
     private Map<Integer, Tile> tiles;
 
     private List<Entity> entities;
@@ -40,11 +42,13 @@ public class Renderer {
     private Fog fog;
 
 
-    public Renderer(Map<Integer, Tile> tiles, int tileSize, int x, int y) {
+    public Renderer(Map<Integer, Tile> tiles, int tileSize, int x, int y, int width, int height) {
         this.tileSize = tileSize;
         this.viewportWidth = x;
         this.viewportHeight = y;
         this.tiles = tiles;
+        this.columns = width / tileSize;
+        this.rows = height / tileSize;
 
         this.entities = new ArrayList<Entity>();
         this.deadList = new ArrayList<Dead>();
@@ -134,19 +138,26 @@ public class Renderer {
     }
 
     public void placePlayer() {
+        int placements = 5;
         boolean playerPlaced = false;
-        // Ensure player start position is on floor
-        for (Tile tile : tiles.values()) {
-            if (tile.isFloor() && !playerPlaced) {
+        while (placements > 0) {
+            Tile tile = findRandomTile();
+            if (playerPlaced) {
+                entities.add(new Salamander(tile.x * tileSize, tile.y * tileSize, tileSize));
+                tile.toggleOccupied();
+            } else {
                 this.player = new Player(tile.x * tileSize, tile.y * tileSize, tileSize);
                 tile.toggleOccupied();
                 playerPlaced = true;
-            } else if (tile.isFloor() && playerPlaced) {
-                entities.add(new Salamander(tile.x * tileSize, tile.y * tileSize, tileSize));
-                tile.toggleOccupied();
-                return;
             }
+            placements--;
         }
+    }
+
+    public void placeStairs() {
+        Tile tile = findRandomTile();
+        tile.setStairs();
+        tile.toggleOccupied();
     }
 
     public void placeInanimates() {
@@ -165,9 +176,7 @@ public class Renderer {
         }
     }
 
-    public void createResistanceMap(int width, int height) {
-        int columns = width / tileSize;
-        int rows = height / tileSize;
+    public void createResistanceMap() {
         float[][] resistanceMap = new float[rows][columns];
 
         for (Tile tile : tiles.values()) {
@@ -180,6 +189,24 @@ public class Renderer {
             resistanceMap[tile.y][tile.x] = resistance;
         }
         this.torchlight = new Torchlight(tileSize, resistanceMap);
+    }
+
+    private Tile findRandomTile() {
+        Random random = new Random();
+        boolean found = false;
+
+        while (!found) {
+            int choiceX = random.nextInt(columns);
+            int choiceY = random.nextInt(rows);
+            if (tiles.containsKey(choiceX * columns + choiceY)) {
+                Tile tile = tiles.get(choiceX * columns + choiceY);
+                if (tile.isFloor() && !tile.isOccupied()) {
+                    found = true;
+                    return tile;
+                }
+            }
+        }
+        return null;
     }
 
     private boolean inViewport(int x, int y, int camUpperLeftX, int maxX, int camUpperLeftY, int maxY) {

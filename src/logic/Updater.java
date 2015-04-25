@@ -34,8 +34,12 @@ public class Updater {
     }
 
     public void update(int[] input, boolean attacking, boolean interacting, List<Entity> entities, List<Dead> deadList, List<Inanimate> inanimates) {
+        if (attacking && !player.isAttacking()) {
+            player.toggleAttack();
+        }
+
         if (playerMove(input[0], input[1]) || attacking) {
-            if (attacking && !player.isAttacking()) {
+            if (player.isAttacking()) {
                 playerAttack(entities, deadList);
             }
 
@@ -66,7 +70,6 @@ public class Updater {
     }
 
     private void playerAttack(List<Entity> entities, List<Dead> deadList) {
-        player.toggleAttack();
         Point attackedTile = player.getFacingPoint();
         Entity hitEntity = null;
 
@@ -86,12 +89,7 @@ public class Updater {
 
     private boolean playerMove(int dx, int dy) {
         // Prevent movement during player attack animation
-        if (player.isAttacking()) {
-            dx = 0;
-            dy = 0;
-        }
-
-        if (dx == 0 && dy == 0) {
+        if (player.isAttacking() || (dx == 0 && dy == 0)) {
             return false;
         }
 
@@ -100,16 +98,15 @@ public class Updater {
 
         Tile nextTile = findTile(playerX + dx, playerY + dy);
         if (nextTile.isFloor() && !nextTile.isOccupied()) {
-            // If possible, move to new Tile and set old Tile as unoccupied
             Tile currentTile = findTile(playerX, playerY);
             currentTile.toggleOccupied();
-            player.move(dx * tileSize, dy * tileSize, true);
+            player.move(dx * tileSize, dy * tileSize);
             nextTile.toggleOccupied();
+            return true;
         } else {
-            // Otherwise just turn in that direction
-            player.move(dx * tileSize, dy * tileSize, false);
+            player.turn(dx, dy);
+            return false;
         }
-        return true;
     }
 
     private void entityMove(Entity entity) {

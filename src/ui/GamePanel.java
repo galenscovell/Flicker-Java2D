@@ -47,7 +47,7 @@ public class GamePanel extends JPanel implements Runnable {
         setPreferredSize(new Dimension(panelWidth, panelHeight));
         setDoubleBuffered(true);
         this.world = new World(worldWidth, worldHeight, tileSize);
-        this.renderer = new Renderer(world.getTiles(), tileSize, panelWidth, panelHeight);
+        this.renderer = new Renderer(world.getTiles(), tileSize, panelWidth, panelHeight, worldWidth, worldHeight);
         this.updater = new Updater(world.getTiles(), tileSize, worldWidth, root.getHud());
 
         // Setup player input bindings
@@ -130,9 +130,10 @@ public class GamePanel extends JPanel implements Runnable {
         }
         world.optimizeLayout();
         renderer.placeInanimates();
-        renderer.createResistanceMap(worldWidth, worldHeight);
+        renderer.createResistanceMap();
         renderer.placePlayer();
         updater.setPlayer(renderer.getPlayer());
+        renderer.placeStairs();
         this.running = true;
         thread.start(); // call run()
     }
