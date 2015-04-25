@@ -2,6 +2,7 @@
 /**
  * PLAYER CLASS
  * Displays player sprite and handles player coordinates.
+ * Only one Player instance exists for persistence across levels.
  */
 
 package entities;
@@ -70,6 +71,18 @@ public class Player {
         } else {
             return new Point(tileX + 1, tileY);
         }
+    }
+
+    public void setX(int val) {
+        prevX = val;
+        x = val;
+        currentX = val;
+    }
+
+    public void setY(int val) {
+        prevY = val;
+        y = val;
+        currentY = val;
     }
 
     public int getX() {

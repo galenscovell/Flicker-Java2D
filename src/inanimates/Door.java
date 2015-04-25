@@ -44,6 +44,10 @@ public class Door implements Inanimate {
         return y;
     }
 
+    public String getType() {
+        return "Door";
+    }
+
     public void interact(Tile tile) {
         if (blocking) {
             this.currentSprite = sprites[1];

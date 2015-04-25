@@ -22,7 +22,7 @@ public class Tile {
     private List<Point> neighborTilePoints;
     private int bitmask;
     private Sprite sprite;
-    private boolean occupied, blocking, stairs;
+    private boolean occupied, blocking;
 
 
     public Tile(int x, int y, int columns, int rows) {
@@ -47,16 +47,6 @@ public class Tile {
 
     public boolean isPerimeter() {
         return state == 3;
-    }
-
-    public void setStairs() {
-        stairs = true;
-        SpriteSheet sheet = SpriteSheet.tilesheet;
-        sprite = new Sprite(sheet, 98);
-    }
-
-    public boolean isStairs() {
-        return stairs;
     }
 
     public boolean isOccupied() {

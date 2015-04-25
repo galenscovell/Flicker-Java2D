@@ -17,4 +17,5 @@ public interface Inanimate {
     public void interact(Tile tile);
     public boolean isBlocking();
     public void draw(Graphics2D gfx);
+    public String getType();
 }

@@ -24,6 +24,7 @@ public class Updater {
     private Map<Integer, Tile> tiles;
     private Player player;
     private HUDPanel hud;
+    private Inanimate stairs;
 
 
     public Updater(Map<Integer, Tile> tiles, int tileSize, int worldWidth, HUDPanel hud) {
@@ -53,8 +54,20 @@ public class Updater {
         }
     }
 
-    public void setPlayer(Player player) {
-        this.player = player;
+    public void setPlayer(Player playerInstance) {
+        this.player = playerInstance;
+    }
+
+    public void setStairs(List<Inanimate> inanimates) {
+        for (Inanimate inanimate : inanimates) {
+            if (inanimate.getType().equals("Stairs")) {
+                this.stairs = inanimate;
+            }
+        }
+    }
+
+    public boolean playerDescends() {
+        return ((player.getCurrentX() / tileSize) == stairs.getX() && (player.getCurrentY() / tileSize) == stairs.getY());
     }
 
     private boolean playerInteract(List<Inanimate> inanimates) {

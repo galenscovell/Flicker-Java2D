@@ -6,6 +6,8 @@
 
 package ui;
 
+import entities.Player;
+
 import logic.Renderer;
 import logic.Updater;
 import logic.World;
@@ -32,23 +34,29 @@ public class GamePanel extends JPanel implements Runnable {
     // Pixel size of world
     final int worldWidth = 4800;
     final int worldHeight = 4800;
+    final int tileSize = 48;
+    private int panelWidth;
+    private int panelHeight;
 
     private boolean running;
     private boolean upPressed, downPressed, leftPressed, rightPressed;
     private boolean spaceReleased, eReleased;
 
+    private MainFrame root;
     private World world;
     private Thread thread;
     private Renderer renderer;
     private Updater updater;
+    private Player playerInstance;
 
 
-    public GamePanel(int panelWidth, int panelHeight, int tileSize, MainFrame root) {
-        setPreferredSize(new Dimension(panelWidth, panelHeight));
+    public GamePanel(int x, int y, MainFrame root) {
+        this.root = root;
+        this.panelWidth = x;
+        this.panelHeight = y;
+        setPreferredSize(new Dimension(x, y));
         setDoubleBuffered(true);
-        this.world = new World(worldWidth, worldHeight, tileSize);
-        this.renderer = new Renderer(world.getTiles(), tileSize, panelWidth, panelHeight, worldWidth, worldHeight);
-        this.updater = new Updater(world.getTiles(), tileSize, worldWidth, root.getHud());
+        this.playerInstance = new Player(0, 0, tileSize);
 
         // Setup player input bindings
         getInputMap().put(KeyStroke.getKeyStroke("pressed W"), "moveUp");
@@ -92,6 +100,9 @@ public class GamePanel extends JPanel implements Runnable {
                 updateAccumulator = 0;
                 spaceReleased = false;
                 eReleased = false;
+                if (updater.playerDescends()) {
+                    createNewLevel();
+                }
             }
 
             // Graphics rendering
@@ -122,18 +133,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     public synchronized void start() {
         this.thread = new Thread(this, "Display");
-
-        int smoothTicks = 6;
-        while (smoothTicks > 0) {
-            world.update();
-            smoothTicks--;
-        }
-        world.optimizeLayout();
-        renderer.placeInanimates();
-        renderer.createResistanceMap();
-        renderer.placePlayer();
-        updater.setPlayer(renderer.getPlayer());
-        renderer.placeStairs();
+        createNewLevel();
         this.running = true;
         thread.start(); // call run()
     }
@@ -145,6 +145,22 @@ public class GamePanel extends JPanel implements Runnable {
         } catch (InterruptedException e) {
             thread.interrupt();
         }
+    }
+
+    private void createNewLevel() {
+        this.world = new World(worldWidth, worldHeight, tileSize);
+        this.renderer = new Renderer(world.getTiles(), tileSize, panelWidth, panelHeight, worldWidth, worldHeight);
+        this.updater = new Updater(world.getTiles(), tileSize, worldWidth, root.getHud());
+        
+        int smoothTicks = 6;
+        while (smoothTicks > 0) {
+            world.update();
+            smoothTicks--;
+        }
+        world.optimizeLayout();
+        renderer.assembleLevel(playerInstance);
+        updater.setPlayer(playerInstance);
+        updater.setStairs(renderer.getInanimateList());
     }
 
     Action moveUp = new AbstractAction() {

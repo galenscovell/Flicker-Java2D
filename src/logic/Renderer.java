@@ -18,8 +18,8 @@ import graphics.Torchlight;
 
 import inanimates.Door;
 import inanimates.Inanimate;
+import inanimates.Stairs;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 
 import java.util.ArrayList;
@@ -133,34 +133,13 @@ public class Renderer {
         return inanimates;
     }
 
-    public Player getPlayer() {
-        return player;
+    public void assembleLevel(Player player) {
+        placeInanimates();
+        createResistanceMap();
+        placePlayer(player);
     }
 
-    public void placePlayer() {
-        int placements = 5;
-        boolean playerPlaced = false;
-        while (placements > 0) {
-            Tile tile = findRandomTile();
-            if (playerPlaced) {
-                entities.add(new Salamander(tile.x * tileSize, tile.y * tileSize, tileSize));
-                tile.toggleOccupied();
-            } else {
-                this.player = new Player(tile.x * tileSize, tile.y * tileSize, tileSize);
-                tile.toggleOccupied();
-                playerPlaced = true;
-            }
-            placements--;
-        }
-    }
-
-    public void placeStairs() {
-        Tile tile = findRandomTile();
-        tile.setStairs();
-        tile.toggleOccupied();
-    }
-
-    public void placeInanimates() {
+    private void placeInanimates() {
         for (Tile tile : tiles.values()) {
             if (tile.isFloor() && tile.getFloorNeighbors() > 2) {
                 if (tile.getBitmask() == 1010) {
@@ -174,11 +153,13 @@ public class Renderer {
                 }
             }
         }
+
+        Tile stairTile = findRandomTile();
+        inanimates.add(new Stairs(stairTile.x, stairTile.y, tileSize));
     }
 
-    public void createResistanceMap() {
+    private void createResistanceMap() {
         float[][] resistanceMap = new float[rows][columns];
-
         for (Tile tile : tiles.values()) {
             float resistance;
             if (tile.isPerimeter() || tile.isBlocking()) {
@@ -189,6 +170,25 @@ public class Renderer {
             resistanceMap[tile.y][tile.x] = resistance;
         }
         this.torchlight = new Torchlight(tileSize, resistanceMap);
+    }
+
+    private void placePlayer(Player playerInstance) {
+        int placements = 5;
+        boolean playerPlaced = false;
+        while (placements > 0) {
+            Tile tile = findRandomTile();
+            if (playerPlaced) {
+                entities.add(new Salamander(tile.x * tileSize, tile.y * tileSize, tileSize));
+                tile.toggleOccupied();
+            } else {
+                this.player = playerInstance;
+                player.setX(tile.x * tileSize);
+                player.setY(tile.y * tileSize);
+                tile.toggleOccupied();
+                playerPlaced = true;
+            }
+            placements--;
+        }
     }
 
     private Tile findRandomTile() {
