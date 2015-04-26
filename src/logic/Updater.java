@@ -71,6 +71,10 @@ public class Updater {
         return ((player.getCurrentX() / tileSize) == stairs.getX() && (player.getCurrentY() / tileSize) == stairs.getY());
     }
 
+    public void deconstruct() {
+        tiles = null;
+    }
+
     private boolean playerInteract(List<Inanimate> inanimates) {
         Point facingPoint = player.getFacingPoint();
         Tile facingTile = findTile(facingPoint.x, facingPoint.y);

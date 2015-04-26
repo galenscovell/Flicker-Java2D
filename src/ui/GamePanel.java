@@ -36,11 +36,12 @@ public class GamePanel extends JPanel implements Runnable {
     private boolean spaceReleased, eReleased;
 
     private MainFrame root;
-    private World world;
+    private Player playerInstance;
     private Thread thread;
+    
+    private World world;
     private Renderer renderer;
     private Updater updater;
-    private Player playerInstance;
 
 
     public GamePanel(MainFrame root) {
@@ -91,7 +92,12 @@ public class GamePanel extends JPanel implements Runnable {
                 updateAccumulator = 0;
                 spaceReleased = false;
                 eReleased = false;
+
                 if (updater.playerDescends()) {
+                    renderer.deconstruct();
+                    updater.deconstruct();
+                    world.deconstruct();
+                    System.gc(); // Suggest garbage collection on null references
                     createNewLevel();
                 }
             }
@@ -125,33 +131,26 @@ public class GamePanel extends JPanel implements Runnable {
     public synchronized void start() {
         this.thread = new Thread(this, "Display");
         createNewLevel();
-        this.running = true;
         thread.start(); // call run()
     }
 
-    public synchronized void stop() {
-        running = false;
-        try {
-            thread.join();
-        } catch (InterruptedException e) {
-            thread.interrupt();
-        }
-    }
-
     private void createNewLevel() {
+        running = false;
         this.world = new World();
         this.renderer = new Renderer(world.getTiles());
         this.updater = new Updater(world.getTiles(), root.getHud());
         
-        int smoothTicks = 6;
+        int smoothTicks = Constants.WORLD_SMOOTHING_PASSES;
         while (smoothTicks > 0) {
             world.update();
             smoothTicks--;
         }
+
         world.optimizeLayout();
         renderer.assembleLevel(playerInstance);
         updater.setPlayer(playerInstance);
         updater.setStairs(renderer.getInanimateList());
+        running = true;
     }
 
     Action moveUp = new AbstractAction() {

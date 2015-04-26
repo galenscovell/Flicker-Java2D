@@ -141,6 +141,15 @@ public class Renderer {
         placePlayer(player);
     }
 
+    public void deconstruct() {
+        entities = null;
+        deadList = null;
+        inanimates = null;
+        tiles = null;
+        fog = null;
+        torchlight = null;
+    }
+
     private void placeInanimates() {
         for (Tile tile : tiles.values()) {
             if (tile.isFloor() && tile.getFloorNeighbors() > 2) {

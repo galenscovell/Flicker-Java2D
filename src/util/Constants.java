@@ -32,4 +32,7 @@ public class Constants {
     // Logic updates per second = Framerate / Timestep
     public static final int FRAMERATE = 60;
     public static final int TIMESTEP = 10;
+
+    // Number of smoothing passes during world generation
+    public static final int WORLD_SMOOTHING_PASSES = 6;
 }

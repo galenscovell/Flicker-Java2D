@@ -110,6 +110,11 @@ public class World {
         skin();
     }
 
+    public void deconstruct() {
+        tiles = null;
+        builder = null;
+    }
+
     private void skin() {
         Bitmasker bitmasker = new Bitmasker();
         for (Tile tile : tiles.values()) {
