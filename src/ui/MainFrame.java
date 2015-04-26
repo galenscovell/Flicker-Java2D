@@ -6,6 +6,8 @@
 
 package ui;
 
+import util.Constants;
+
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -14,19 +16,13 @@ import javax.swing.JFrame;
 
 
 public class MainFrame implements Runnable {
-    private int windowX, windowY;
     private JFrame frame;
     private HUDPanel hud;
 
 
-    public MainFrame(int x, int y) {
-        this.windowX = x;
-        this.windowY = y;
-    }
-
     public void run() {
         this.frame = new JFrame("Flicker");
-        frame.setPreferredSize(new Dimension(windowX, windowY));
+        frame.setPreferredSize(new Dimension(Constants.WINDOW_X, Constants.WINDOW_Y));
         frame.setResizable(false);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         createComponents(frame);
@@ -40,8 +36,8 @@ public class MainFrame implements Runnable {
     }
 
     private void createComponents(Container container) {
-        hud = new HUDPanel(windowX, 100);
-        GamePanel gamePanel = new GamePanel(windowX, windowY - 100, this);
+        this.hud = new HUDPanel();
+        GamePanel gamePanel = new GamePanel(this);
         container.add(hud, BorderLayout.PAGE_START);
         container.add(gamePanel, BorderLayout.PAGE_END);
         gamePanel.start();

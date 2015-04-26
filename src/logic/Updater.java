@@ -14,23 +14,24 @@ import entities.Player;
 
 import ui.HUDPanel;
 
+import util.Constants;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
 
 public class Updater {
-    private int tileSize, columns;
+    private int tileSize;
     private Map<Integer, Tile> tiles;
     private Player player;
     private HUDPanel hud;
     private Inanimate stairs;
 
 
-    public Updater(Map<Integer, Tile> tiles, int tileSize, int worldWidth, HUDPanel hud) {
+    public Updater(Map<Integer, Tile> tiles, HUDPanel hud) {
         this.tiles = tiles;
-        this.tileSize = tileSize;
-        this.columns = worldWidth / tileSize;
+        this.tileSize = Constants.TILESIZE;
         this.hud = hud;
     }
 
@@ -227,7 +228,7 @@ public class Updater {
     }
 
     private Tile findTile(int x, int y) {
-        int key = x * columns + y;
+        int key = x * Constants.TILE_COLUMNS + y;
         if (tiles.containsKey(key)) {
             return tiles.get(key);
         } else {

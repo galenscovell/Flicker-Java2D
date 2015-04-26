@@ -20,6 +20,8 @@ import inanimates.Door;
 import inanimates.Inanimate;
 import inanimates.Stairs;
 
+import util.Constants;
+
 import java.awt.Graphics2D;
 
 import java.util.ArrayList;
@@ -42,13 +44,13 @@ public class Renderer {
     private Fog fog;
 
 
-    public Renderer(Map<Integer, Tile> tiles, int tileSize, int x, int y, int width, int height) {
-        this.tileSize = tileSize;
-        this.viewportWidth = x;
-        this.viewportHeight = y;
+    public Renderer(Map<Integer, Tile> tiles) {
+        this.tileSize = Constants.TILESIZE;
+        this.viewportWidth = Constants.WINDOW_X;
+        this.viewportHeight = Constants.WINDOW_Y - Constants.HUD_HEIGHT;
         this.tiles = tiles;
-        this.columns = width / tileSize;
-        this.rows = height / tileSize;
+        this.columns = Constants.TILE_COLUMNS;
+        this.rows = Constants.TILE_ROWS;
 
         this.entities = new ArrayList<Entity>();
         this.deadList = new ArrayList<Dead>();

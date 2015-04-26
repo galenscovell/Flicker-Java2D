@@ -6,22 +6,22 @@
 
 package logic;
 
+import util.Constants;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 
 public class World {
-    private int tileSize;
     private int columns, rows;
     private Builder builder;
     private Map<Integer, Tile> tiles;
 
 
-    public World(int width, int height, int tileSize) {
-        this.tileSize = tileSize;
-        this.columns = width / tileSize;
-        this.rows = height / tileSize;
+    public World() {
+        this.columns = Constants.TILE_COLUMNS;
+        this.rows = Constants.TILE_ROWS;
         this.builder = new DungeonBuilder(columns, rows);
         builder.build();
         this.tiles = builder.getTiles();

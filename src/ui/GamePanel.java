@@ -12,6 +12,8 @@ import logic.Renderer;
 import logic.Updater;
 import logic.World;
 
+import util.Constants;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -27,16 +29,7 @@ import javax.swing.KeyStroke;
 
 @SuppressWarnings("serial")
 public class GamePanel extends JPanel implements Runnable {
-    final int FRAMERATE = 60;
-    final int TIMESTEP = 10;
     private double interpolation;
-
-    // Pixel size of world
-    final int worldWidth = 4800;
-    final int worldHeight = 4800;
-    final int tileSize = 48;
-    private int panelWidth;
-    private int panelHeight;
 
     private boolean running;
     private boolean upPressed, downPressed, leftPressed, rightPressed;
@@ -50,13 +43,11 @@ public class GamePanel extends JPanel implements Runnable {
     private Player playerInstance;
 
 
-    public GamePanel(int x, int y, MainFrame root) {
+    public GamePanel(MainFrame root) {
         this.root = root;
-        this.panelWidth = x;
-        this.panelHeight = y;
-        setPreferredSize(new Dimension(x, y));
+        setPreferredSize(new Dimension(Constants.WINDOW_X, Constants.WINDOW_Y - Constants.HUD_HEIGHT));
         setDoubleBuffered(true);
-        this.playerInstance = new Player(0, 0, tileSize);
+        this.playerInstance = new Player(0, 0, Constants.TILESIZE);
 
         // Setup player input bindings
         getInputMap().put(KeyStroke.getKeyStroke("pressed W"), "moveUp");
@@ -95,7 +86,7 @@ public class GamePanel extends JPanel implements Runnable {
             startTime = System.currentTimeMillis();
 
             // Player movement and entity logic
-            if (updateAccumulator > TIMESTEP) {
+            if (updateAccumulator > Constants.TIMESTEP) {
                 updater.update(checkMovement(), spaceReleased, eReleased, renderer.getEntityList(), renderer.getDeadList(), renderer.getInanimateList());
                 updateAccumulator = 0;
                 spaceReleased = false;
@@ -106,12 +97,12 @@ public class GamePanel extends JPanel implements Runnable {
             }
 
             // Graphics rendering
-            interpolation = (double) updateAccumulator / TIMESTEP;
+            interpolation = (double) updateAccumulator / Constants.TIMESTEP;
             repaint();
 
             endTime = System.currentTimeMillis();
             // Sleep to keep graphics rendering at framerate
-            sleepTime = (1000 / FRAMERATE) - (endTime - startTime);
+            sleepTime = (1000 / Constants.FRAMERATE) - (endTime - startTime);
             if (sleepTime > 0) {
                 try {
                     Thread.sleep(sleepTime); 
@@ -148,9 +139,9 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     private void createNewLevel() {
-        this.world = new World(worldWidth, worldHeight, tileSize);
-        this.renderer = new Renderer(world.getTiles(), tileSize, panelWidth, panelHeight, worldWidth, worldHeight);
-        this.updater = new Updater(world.getTiles(), tileSize, worldWidth, root.getHud());
+        this.world = new World();
+        this.renderer = new Renderer(world.getTiles());
+        this.updater = new Updater(world.getTiles(), root.getHud());
         
         int smoothTicks = 6;
         while (smoothTicks > 0) {

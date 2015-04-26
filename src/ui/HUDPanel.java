@@ -6,6 +6,8 @@
 
 package ui;
 
+import util.Constants;
+
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -24,9 +26,9 @@ public class HUDPanel extends JPanel {
     private boolean[] healthChecker;
 
 
-    public HUDPanel(int panelWidth, int panelHeight) {
-        this.x = panelWidth;
-        this.y = panelHeight;
+    public HUDPanel() {
+        this.x = Constants.WINDOW_X;
+        this.y = Constants.HUD_HEIGHT;
         setPreferredSize(new Dimension(x, y));
         setOpaque(true);
         setBackground(Color.BLACK);
